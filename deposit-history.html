@@ -62,7 +62,7 @@
     const backBtn = document.getElementById("backBtn");
 
     backBtn.addEventListener("click", () => {
-      window.location.href = "dashboard.html"; // Update if needed
+      window.location.href = "dashboard.html";
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -100,11 +100,17 @@
           const status = d.status || "pending";
 
           let statusColor = "text-yellow-500";
-          if (status === "approved") statusColor = "text-green-600";
-          if (status === "rejected") statusColor = "text-red-600";
+          let borderColor = "border-yellow-400";
+          if (status === "approved") {
+            statusColor = "text-green-600";
+            borderColor = "border-green-500";
+          } else if (status === "rejected") {
+            statusColor = "text-red-600";
+            borderColor = "border-red-500";
+          }
 
           cards += `
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
+            <div class="bg-white rounded-lg shadow p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
                 <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
