@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>User Profile</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
@@ -15,7 +14,7 @@
 
     <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
 
-      <!-- Profile Image -->
+      <!-- Profile Image Upload -->
       <div class="text-center">
         <img id="profileImagePreview" src="https://via.placeholder.com/120" alt="Profile" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-gray-300" />
         <input type="file" id="profileImageInput" accept="image/*" class="mt-4 block mx-auto text-sm text-gray-600" />
@@ -24,6 +23,7 @@
         </button>
       </div>
 
+      <!-- Profile Info -->
       <div>
         <p class="text-sm text-gray-500">Username</p>
         <p id="username" class="text-lg font-medium text-gray-900">Loading...</p>
@@ -53,6 +53,7 @@
   </main>
 
   <script type="module">
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
       authDomain: "bdwork-346d3.firebaseapp.com",
@@ -68,6 +69,7 @@
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
+    // Init
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -84,8 +86,8 @@
       currentUser = user;
 
       try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+        const userRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -95,7 +97,6 @@
           document.getElementById("email").innerText = data.email || user.email || "N/A";
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
 
-          // Load existing profile image
           if (data.photoURL) {
             profileImagePreview.src = data.photoURL;
           }
@@ -108,7 +109,9 @@
     });
 
     uploadBtn.addEventListener("click", async () => {
-      if (!profileImageInput.files[0] || !currentUser) return alert("Please select a file first.");
+      if (!profileImageInput.files[0] || !currentUser) {
+        return alert("Please select a file first.");
+      }
 
       const file = profileImageInput.files[0];
       const storageRef = ref(storage, `users/${currentUser.uid}/profile.jpg`);
@@ -117,7 +120,6 @@
         await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(storageRef);
 
-        // Update Firestore with new image URL
         await updateDoc(doc(db, "users", currentUser.uid), {
           photoURL: downloadURL
         });
@@ -125,6 +127,7 @@
         profileImagePreview.src = downloadURL;
         alert("Profile image updated!");
       } catch (err) {
+        console.error("Upload failed:", err);
         alert("Upload failed: " + err.message);
       }
     });
