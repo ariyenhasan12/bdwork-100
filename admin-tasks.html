@@ -113,27 +113,10 @@
       const taskViewInput = document.getElementById("taskView");
       const resetTasksBtn = document.getElementById("resetTasksBtn");
 
-      function showToast(message, icon = "success") {
-        Swal.fire({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-          icon: icon,
-          title: message,
-        });
-      }
-
       onAuthStateChanged(auth, (user) => {
         if (!user) {
-          Swal.fire({
-            icon: "warning",
-            title: "Please log in first.",
-            confirmButtonText: "OK"
-          }).then(() => {
-            window.location.href = "login.html";
-          });
+          Swal.fire({ icon: "warning", title: "Login required", text: "Please log in first.", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
+          window.location.href = "login.html";
           return;
         }
         loadTasksRealtime();
@@ -186,9 +169,9 @@
               if (confirm(`Delete task "${task.name}"? This action cannot be undone.`)) {
                 try {
                   await deleteDoc(doc(db, "tasks", task.id));
-                  showToast("Task deleted.");
+                  Swal.fire({ icon: "success", title: "Task deleted", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
                 } catch (error) {
-                  showToast("Error deleting task: " + error.message, "error");
+                  Swal.fire({ icon: "error", title: "Error deleting task", text: error.message, position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
                 }
               }
             };
@@ -212,22 +195,28 @@
         const reward = parseFloat(taskRewardInput.value);
         const view = taskViewInput.value.trim();
 
-        if (!name) return showToast("Task name is required.", "warning");
-        if (isNaN(reward) || reward < 0) return showToast("Reward must be a valid non-negative number.", "warning");
+        if (!name) {
+          Swal.fire({ icon: "warning", title: "Task name is required", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
+          return;
+        }
+        if (isNaN(reward) || reward < 0) {
+          Swal.fire({ icon: "warning", title: "Invalid reward amount", text: "Reward must be a valid non-negative number.", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
+          return;
+        }
 
         try {
           if (id) {
             await setDoc(doc(db, "tasks", id), { name, description, reward, view }, { merge: true });
-            showToast("Task updated.");
+            Swal.fire({ icon: "success", title: "Task updated", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
           } else {
             await setDoc(doc(collection(db, "tasks")), { name, description, reward, view });
-            showToast("Task added.");
+            Swal.fire({ icon: "success", title: "Task added", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
           }
 
           taskForm.reset();
           taskNameInput.focus();
         } catch (error) {
-          showToast("Error saving task: " + error.message, "error");
+          Swal.fire({ icon: "error", title: "Error saving task", text: error.message, position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
         }
       });
 
@@ -265,9 +254,9 @@
           );
 
           await Promise.all(addPromises);
-          showToast("Tasks have been reset successfully.");
+          Swal.fire({ icon: "success", title: "Tasks have been reset", position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
         } catch (error) {
-          showToast("Error resetting tasks: " + error.message, "error");
+          Swal.fire({ icon: "error", title: "Error resetting tasks", text: error.message, position: "top-end", toast: true, showConfirmButton: false, timer: 3000 });
         }
       });
     </script>
