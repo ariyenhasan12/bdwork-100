@@ -3,38 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Deposit Requests</title>
+  <title>Admin Panel - Deposit Requests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-  <header class="bg-blue-700 text-white p-4 text-xl font-bold">
-    Deposit Requests
+  <header class="bg-green-600 text-white p-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Admin Panel - Deposit Requests</h1>
+    <button id="backBtn" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-800 flex items-center">
+      <i class="fas fa-arrow-left mr-2"></i> Back
+    </button>
   </header>
 
-  <main class="p-4">
-    <div class="bg-white shadow rounded p-4">
-      <div class="text-xl font-semibold text-blue-700 mb-2">Deposit Requests</div>
-      <div class="overflow-x-auto max-h-[600px]">
-        <table class="w-full text-sm border border-gray-300 rounded overflow-hidden min-w-[700px]">
-          <thead class="bg-gray-100 sticky top-0 z-10">
+  <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
+    <section>
+      <h2 class="text-2xl font-semibold mb-6">Deposit Requests</h2>
+
+      <div class="overflow-x-auto border rounded shadow bg-white max-h-[32rem]">
+        <table class="w-full min-w-[900px] border-collapse border border-gray-300">
+          <thead class="bg-gray-200 sticky top-0 z-10">
             <tr>
               <th class="p-3 border border-gray-300 text-left">User Email</th>
               <th class="p-3 border border-gray-300 text-left">Amount (৳)</th>
               <th class="p-3 border border-gray-300 text-left">Method</th>
+              <th class="p-3 border border-gray-300 text-left">Transaction ID</th>
               <th class="p-3 border border-gray-300 text-left">Date & Time</th>
               <th class="p-3 border border-gray-300 text-center">Status</th>
               <th class="p-3 border border-gray-300 text-center">Actions</th>
             </tr>
           </thead>
-          <tbody id="depositRequestsTableBody">
-            <tr><td colspan="6" class="p-4 text-center">Loading...</td></tr>
+          <tbody id="depositRequestsBody">
+            <tr><td colspan="7" class="p-4 text-center text-gray-500">Loading deposit requests...</td></tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   </main>
 
   <script type="module">
@@ -48,10 +52,11 @@
       collection,
       getDocs,
       doc,
-      updateDoc,
       getDoc,
-      increment,
-      Timestamp
+      updateDoc,
+      query,
+      orderBy,
+      limit
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -60,14 +65,123 @@
       projectId: "bdwork-346d3",
       storageBucket: "bdwork-346d3.appspot.com",
       messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const depositsTableBody = document.getElementById("depositRequestsTableBody");
+
+    const depositRequestsBody = document.getElementById("depositRequestsBody");
+    const backBtn = document.getElementById("backBtn");
+
+    backBtn.addEventListener("click", () => {
+      window.location.href = "admin.html";
+    });
+
+    async function loadDepositRequests() {
+      depositRequestsBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Loading deposit requests...</td></tr>`;
+      try {
+        const depositsCol = collection(db, "deposits");
+        const q = query(depositsCol, orderBy("timestamp", "desc"), limit(50));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          depositRequestsBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center">No deposit requests found.</td></tr>`;
+          return;
+        }
+
+        let rowsHtml = "";
+        snapshot.forEach(docSnap => {
+          const dep = docSnap.data();
+          const status = dep.status || "pending";
+          const dateStr = dep.timestamp?.toDate ? dep.timestamp.toDate().toLocaleString() : "N/A";
+
+          rowsHtml += `
+            <tr class="border-t border-gray-200 hover:bg-gray-50">
+              <td class="p-3 border border-gray-300">${dep.userEmail || "N/A"}</td>
+              <td class="p-3 border border-gray-300">৳${dep.amount || 0}</td>
+              <td class="p-3 border border-gray-300">${dep.method || "N/A"}</td>
+              <td class="p-3 border border-gray-300">${dep.transactionId || "N/A"}</td>
+              <td class="p-3 border border-gray-300">${dateStr}</td>
+              <td class="p-3 border border-gray-300 text-center font-semibold ${status === 'approved' ? 'text-green-600' : status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}">
+                ${status.charAt(0).toUpperCase() + status.slice(1)}
+              </td>
+              <td class="p-3 border border-gray-300 text-center space-x-2">
+                ${status === 'pending' ? `
+                  <button data-id="${docSnap.id}" data-action="approved" class="approve-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">Approve</button>
+                  <button data-id="${docSnap.id}" data-action="rejected" class="reject-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+                ` : '-'}
+              </td>
+            </tr>
+          `;
+        });
+
+        depositRequestsBody.innerHTML = rowsHtml;
+
+        document.querySelectorAll(".approve-btn").forEach(btn => {
+          btn.addEventListener("click", () => handleDepositAction(btn.dataset.id, "approved"));
+        });
+        document.querySelectorAll(".reject-btn").forEach(btn => {
+          btn.addEventListener("click", () => handleDepositAction(btn.dataset.id, "rejected"));
+        });
+
+      } catch (err) {
+        depositRequestsBody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-red-600">Error: ${err.message}</td></tr>`;
+        console.error(err);
+      }
+    }
+
+    async function handleDepositAction(depositId, action) {
+      if (!confirm(`Are you sure you want to ${action} this deposit request?`)) return;
+      try {
+        const depRef = doc(db, "deposits", depositId);
+        const depSnap = await getDoc(depRef);
+
+        if (!depSnap.exists()) {
+          alert("Deposit request not found.");
+          return;
+        }
+
+        const depData = depSnap.data();
+
+        if (!depData.status || depData.status !== "pending") {
+          alert("This request has already been processed.");
+          return;
+        }
+
+        if (!depData.userId) {
+          alert("Deposit request is missing user ID. Please check the database.");
+          return;
+        }
+
+        const userRef = doc(db, "users", depData.userId);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          alert("User not found.");
+          return;
+        }
+
+        const userData = userSnap.data();
+
+        if (action === "approved") {
+          const newBalance = (userData.balance || 0) + (depData.amount || 0);
+          await updateDoc(userRef, { balance: newBalance });
+          await updateDoc(depRef, { status: "approved" });
+          alert("Deposit approved and amount added to balance.");
+        } else if (action === "rejected") {
+          await updateDoc(depRef, { status: "rejected" });
+          alert("Deposit rejected.");
+        }
+
+        await loadDepositRequests();
+
+      } catch (err) {
+        alert("Error: " + err.message);
+        console.error(err);
+      }
+    }
 
     onAuthStateChanged(auth, user => {
       if (!user) {
@@ -76,79 +190,6 @@
         loadDepositRequests();
       }
     });
-
-    function formatTimestamp(timestamp) {
-      if (!timestamp || !timestamp.toDate) return "N/A";
-      const date = timestamp.toDate();
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-    }
-
-    async function loadDepositRequests() {
-      try {
-        const depositsCol = collection(db, "deposits");
-        const depositsSnapshot = await getDocs(depositsCol);
-
-        if (depositsSnapshot.empty) {
-          depositsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center">No pending deposits</td></tr>`;
-          return;
-        }
-
-        let rowsHtml = "";
-        for (const docSnap of depositsSnapshot.docs) {
-          const deposit = docSnap.data();
-          const depositId = docSnap.id;
-          const userDoc = await getDoc(doc(db, "users", deposit.userId));
-          const userEmail = userDoc.exists() ? userDoc.data().email : "N/A";
-          const formattedDate = formatTimestamp(deposit.createdAt);
-
-          rowsHtml += `
-            <tr class="hover:bg-gray-50 border-t">
-              <td class="p-3 border border-gray-300">${userEmail}</td>
-              <td class="p-3 border border-gray-300">${deposit.amount}</td>
-              <td class="p-3 border border-gray-300">${deposit.method}</td>
-              <td class="p-3 border border-gray-300">${formattedDate}</td>
-              <td class="p-3 border border-gray-300 text-center">
-                ${deposit.status === "pending" ? "<span class='text-yellow-500'>Pending</span>" : deposit.status === "approved" ? "<span class='text-green-500'>Approved</span>" : "<span class='text-red-500'>Rejected</span>"}
-              </td>
-              <td class="p-3 border border-gray-300 text-center">
-                ${deposit.status === "pending" ? `
-                  <button onclick="updateDepositStatus('${depositId}', '${deposit.userId}', ${deposit.amount}, 'approved')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded transition">Approve</button>
-                  <button onclick="updateDepositStatus('${depositId}', '${deposit.userId}', ${deposit.amount}, 'rejected')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded transition ml-2">Reject</button>
-                ` : "-"}
-              </td>
-            </tr>
-          `;
-        }
-
-        depositsTableBody.innerHTML = rowsHtml;
-      } catch (error) {
-        console.error("Error loading deposit requests:", error);
-        depositsTableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-600">Error loading deposit requests</td></tr>`;
-      }
-    }
-
-    window.updateDepositStatus = async function (depositId, userId, amount, status) {
-      const confirmAction = confirm(`Are you sure you want to mark this deposit as ${status}?`);
-      if (!confirmAction) return;
-
-      try {
-        const depositRef = doc(db, "deposits", depositId);
-        await updateDoc(depositRef, { status });
-
-        if (status === "approved") {
-          const userRef = doc(db, "users", userId);
-          await updateDoc(userRef, {
-            balance: increment(amount)
-          });
-        }
-
-        alert(`Deposit ${status} successfully.`);
-        loadDepositRequests();
-      } catch (error) {
-        console.error("Error updating deposit status:", error);
-        alert("Failed to update deposit status.");
-      }
-    };
   </script>
 </body>
 </html>
