@@ -56,15 +56,17 @@
         </form>
       </section>
 
+      <!-- Reset Button -->
+      <div class="mb-6 flex justify-end">
+        <button id="resetTasksBtn"
+          class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg font-medium shadow-md transition">
+          <i class="fas fa-rotate-left mr-2"></i>Reset Tasks
+        </button>
+      </div>
+
       <!-- Tasks List Section -->
       <section>
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold text-gray-800">All Tasks</h2>
-          <button id="resetTasksBtn"
-            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-sm">
-            <i class="fas fa-rotate-left mr-1"></i> Reset Tasks
-          </button>
-        </div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">All Tasks</h2>
         <div id="tasksList" class="space-y-4" role="list" aria-live="polite">
           <p class="text-center text-indigo-500 italic">Loading tasks...</p>
         </div>
@@ -79,8 +81,8 @@
         doc,
         setDoc,
         deleteDoc,
+        getDocs,
         onSnapshot,
-        getDocs
       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
       import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -202,28 +204,49 @@
             alert("Task added.");
           }
 
-          // Clear form after submit
-          taskIdInput.value = "";
-          taskNameInput.value = "";
-          taskDescInput.value = "";
-          taskRewardInput.value = "";
-          taskViewInput.value = "";
+          taskForm.reset();
           taskNameInput.focus();
         } catch (error) {
           alert("Error saving task: " + error.message);
         }
       });
 
-      // Reset Tasks Functionality
+      // Reset tasks
       resetTasksBtn.addEventListener("click", async () => {
-        const confirmReset = confirm("Are you sure you want to delete all tasks? This action cannot be undone.");
-        if (!confirmReset) return;
+        if (!confirm("Are you sure you want to reset all tasks? This will delete all current tasks and add new ones.")) return;
 
         try {
           const snapshot = await getDocs(tasksCol);
-          const promises = snapshot.docs.map((docSnap) => deleteDoc(doc(db, "tasks", docSnap.id)));
-          await Promise.all(promises);
-          alert("All tasks have been deleted.");
+          const deletePromises = snapshot.docs.map(docSnap => deleteDoc(docSnap.ref));
+          await Promise.all(deletePromises);
+
+          const newTasks = [
+            {
+              name: "Visit Example Website",
+              description: "Go to https://example.com and take a look.",
+              reward: 5,
+              view: "https://example.com",
+            },
+            {
+              name: "Watch Promo Video",
+              description: "Watch the full video to earn your reward.",
+              reward: 10,
+              view: "https://youtube.com",
+            },
+            {
+              name: "Join Telegram Group",
+              description: "Stay updated by joining our Telegram channel.",
+              reward: 3,
+              view: "https://t.me/example",
+            },
+          ];
+
+          const addPromises = newTasks.map(task =>
+            setDoc(doc(collection(db, "tasks")), task)
+          );
+
+          await Promise.all(addPromises);
+          alert("Tasks have been reset successfully.");
         } catch (error) {
           alert("Error resetting tasks: " + error.message);
         }
