@@ -5,21 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Withdraw History</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800">
-  <main class="max-w-2xl mx-auto p-4">
-    <div class="text-center mb-6">
-      <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
-    </div>
-    <h1 class="text-2xl font-bold mb-6 text-center">📜 Withdraw History</h1>
-    <div id="withdrawHistory" class="space-y-2">
-      <p class="text-sm text-gray-500 text-center">...</p>
-    </div>
+<body class="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen font-sans text-gray-800">
+
+  <header class="bg-blue-700 text-white py-4 px-6 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">🏦 Withdraw History</h1>
+    <a href="dashboard.html" class="bg-blue-900 px-4 py-2 rounded hover:bg-blue-950 transition text-sm">
+      ← Dashboard
+    </a>
+  </header>
+
+  <main class="p-4 max-w-3xl mx-auto">
+    <section>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Your Withdrawals</h2>
+      <div id="withdrawHistory" class="space-y-4">
+        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+          Loading withdraw history...
+        </div>
+      </div>
+    </section>
   </main>
 
+  <footer class="text-center text-gray-500 text-sm py-6">
+    &copy; 2025 BDWork. All rights reserved.
+  </footer>
+
   <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, collection, query, where, getDocs, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
       authDomain: "bdwork-346d3.firebaseapp.com",
@@ -30,19 +48,14 @@
       measurementId: "G-FM1YJ8E5GK"
     };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, collection, query, where, getDocs, orderBy
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const historyContainer = document.getElementById("withdrawHistory");
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-      const historyContainer = document.getElementById("withdrawHistory");
 
       try {
         const withdrawQuery = query(
@@ -53,34 +66,57 @@
         const withdrawSnap = await getDocs(withdrawQuery);
 
         if (withdrawSnap.empty) {
-          historyContainer.innerHTML = '<p class="text-sm text-gray-500 text-center">No withdraw history found.</p>';
-        } else {
-          historyContainer.innerHTML = "";
-          withdrawSnap.forEach(doc => {
-            const data = doc.data();
-            const date = data.timestamp?.toDate().toLocaleString() || "N/A";
-            const method = data.method || "N/A";
-            const address = data.address || "N/A";
-            const item = document.createElement("div");
-            item.className = "bg-white p-4 rounded-md shadow-sm text-sm space-y-1 border border-gray-200";
-            item.innerHTML = `
-              <div class="flex justify-between items-center">
-                <p class="font-medium text-gray-800">৳${data.amount}</p>
-                <span class="text-xs px-2 py-1 rounded-full ${
-                  data.status === "approved" ? "bg-green-100 text-green-700" :
-                  data.status === "rejected" ? "bg-red-100 text-red-700" :
-                  "bg-yellow-100 text-yellow-700"
-                }">${data.status}</span>
-              </div>
-              <p class="text-gray-600"><span class="font-medium">Method:</span> ${method}</p>
-              <p class="text-gray-600"><span class="font-medium">Address:</span> ${address}</p>
-              <p class="text-xs text-gray-500">${date}</p>
-            `;
-            historyContainer.appendChild(item);
-          });
+          historyContainer.innerHTML = `
+            <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+              No withdraw history found.
+            </div>
+          `;
+          return;
         }
+
+        historyContainer.innerHTML = "";
+        withdrawSnap.forEach(doc => {
+          const data = doc.data();
+          const amount = data.amount || 0;
+          const method = data.method || "N/A";
+          const address = data.address || "N/A";
+          const date = data.timestamp?.toDate().toLocaleString() || "N/A";
+          const status = data.status || "pending";
+
+          let borderColor = "border-yellow-400";
+          let statusColor = "text-yellow-600";
+          if (status === "approved") {
+            borderColor = "border-green-500";
+            statusColor = "text-green-600";
+          } else if (status === "rejected") {
+            borderColor = "border-red-500";
+            statusColor = "text-red-600";
+          }
+
+          const card = `
+            <div class="bg-white rounded-lg shadow p-5 border-l-4 ${borderColor}">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
+                <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
+                  ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+              </div>
+              <div class="text-sm text-gray-600 space-y-1">
+                <p><strong>Method:</strong> ${method}</p>
+                <p><strong>Address:</strong> ${address}</p>
+                <p class="text-xs text-gray-500"><strong>Date:</strong> ${date}</p>
+              </div>
+            </div>
+          `;
+          historyContainer.innerHTML += card;
+        });
       } catch (err) {
-        historyContainer.innerHTML = '<p class="text-sm text-red-500 text-center">Error loading history.</p>';
+        historyContainer.innerHTML = `
+          <div class="bg-red-100 text-red-600 p-5 rounded-lg shadow text-center">
+            Error loading history.
+          </div>
+        `;
+        console.error(err);
       }
     });
   </script>
