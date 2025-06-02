@@ -33,6 +33,11 @@
         <input type="text" id="paymentAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
       </div>
 
+      <div>
+        <label for="transactionId" class="block text-sm font-medium text-gray-600 mb-1">Transaction ID</label>
+        <input type="text" id="transactionId" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter transaction ID..." required>
+      </div>
+
       <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
         Submit Deposit Request
       </button>
@@ -78,20 +83,22 @@
       const method = document.getElementById("depositMethod").value;
       const amount = parseFloat(document.getElementById("depositAmount").value);
       const address = document.getElementById("paymentAddress").value.trim();
+      const transactionId = document.getElementById("transactionId").value.trim();
 
-      if (!method || isNaN(amount) || amount <= 0 || !address) {
-        alert("Please enter a valid method, amount, and payment address.");
+      if (!method || isNaN(amount) || amount <= 0 || !address || !transactionId) {
+        alert("Please enter a valid method, amount, payment address, and transaction ID.");
         return;
       }
 
       try {
         await addDoc(collection(db, "deposits"), {
           uid: currentUser.uid,
-          userId: currentUser.uid,              // ✅ userId auto added
-          userEmail: currentUser.email,         // Optional but useful
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
           amount: amount,
           method: method,
           address: address,
+          transactionId: transactionId,
           timestamp: Timestamp.now(),
           status: "pending"
         });
