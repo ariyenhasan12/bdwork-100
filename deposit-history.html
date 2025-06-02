@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deposit History</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
 
   <header class="bg-blue-600 text-white p-4 flex justify-between items-center">
     <h1 class="text-xl font-bold">Deposit History</h1>
-    <button onclick="history.back()" class="bg-gray-700 px-4 py-2 rounded hover:bg-gray-800 flex items-center">
-      <i class="fas fa-arrow-left mr-2"></i> Back
+    <button id="backBtn" class="bg-blue-800 px-4 py-2 rounded hover:bg-blue-900">
+      Back to Dashboard
     </button>
   </header>
 
@@ -20,18 +19,19 @@
     <section>
       <h2 class="text-2xl font-semibold mb-6">Your Deposit History</h2>
 
-      <div class="overflow-x-auto border rounded shadow bg-white max-h-[32rem]">
-        <table class="w-full min-w-[700px] border-collapse border border-gray-300">
-          <thead class="bg-gray-200 sticky top-0 z-10">
+      <div class="overflow-x-auto bg-white rounded shadow max-h-[30rem] border">
+        <table class="w-full min-w-[800px] border-collapse border border-gray-300">
+          <thead class="bg-gray-200 sticky top-0">
             <tr>
-              <th class="p-3 border border-gray-300 text-left">Amount (৳)</th>
-              <th class="p-3 border border-gray-300 text-left">Method</th>
-              <th class="p-3 border border-gray-300 text-left">Address</th>
-              <th class="p-3 border border-gray-300 text-left">Date & Time</th>
+              <th class="p-3 border">Amount (৳)</th>
+              <th class="p-3 border">Method</th>
+              <th class="p-3 border">Transaction ID</th>
+              <th class="p-3 border">Date</th>
+              <th class="p-3 border">Status</th>
             </tr>
           </thead>
           <tbody id="historyBody">
-            <tr><td colspan="4" class="p-4 text-center text-gray-500">Loading deposit history...</td></tr>
+            <tr><td colspan="5" class="text-center p-4 text-gray-500">Loading deposit history...</td></tr>
           </tbody>
         </table>
       </div>
@@ -67,50 +67,57 @@
     const db = getFirestore(app);
 
     const historyBody = document.getElementById("historyBody");
+    const backBtn = document.getElementById("backBtn");
 
-    async function loadDepositHistory(userId) {
-      historyBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">Loading...</td></tr>`;
+    backBtn.addEventListener("click", () => {
+      window.location.href = "dashboard.html"; // Change if needed
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
       try {
         const depositsRef = collection(db, "deposits");
-        const q = query(depositsRef, where("userId", "==", userId), orderBy("timestamp", "desc"));
+        const q = query(
+          depositsRef,
+          where("userId", "==", user.uid),
+          orderBy("timestamp", "desc")
+        );
+
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          historyBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-500">No deposits found.</td></tr>`;
+          historyBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-gray-500">No deposit history found.</td></tr>`;
           return;
         }
 
         let rows = "";
         snapshot.forEach(doc => {
           const d = doc.data();
-          const amount = d.amount || 0;
-          const method = d.method || "N/A";
-          const address = d.address || "N/A";
-          const date = d.timestamp?.toDate ? d.timestamp.toDate().toLocaleString() : "N/A";
+          const status = d.status || "pending";
+          const date = d.timestamp?.toDate().toLocaleString() || "N/A";
 
           rows += `
-            <tr class="border-t border-gray-200 hover:bg-gray-50">
-              <td class="p-3 border border-gray-300">৳${amount}</td>
-              <td class="p-3 border border-gray-300">${method}</td>
-              <td class="p-3 border border-gray-300">${address}</td>
-              <td class="p-3 border border-gray-300">${date}</td>
+            <tr class="border-t hover:bg-gray-50">
+              <td class="p-3 border">৳${d.amount || 0}</td>
+              <td class="p-3 border">${d.method || "N/A"}</td>
+              <td class="p-3 border">${d.transactionId || "N/A"}</td>
+              <td class="p-3 border">${date}</td>
+              <td class="p-3 border font-semibold text-center ${status === 'approved' ? 'text-green-600' : status === 'rejected' ? 'text-red-600' : 'text-yellow-600'}">
+                ${status.charAt(0).toUpperCase() + status.slice(1)}
+              </td>
             </tr>
           `;
         });
 
         historyBody.innerHTML = rows;
 
-      } catch (err) {
-        historyBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Error loading data.</td></tr>`;
-        console.error(err);
-      }
-    }
-
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        loadDepositHistory(user.uid);
+      } catch (error) {
+        historyBody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-red-600">Error loading history: ${error.message}</td></tr>`;
+        console.error(error);
       }
     });
   </script>
