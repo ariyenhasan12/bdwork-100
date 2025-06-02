@@ -58,7 +58,13 @@
 
       <!-- Tasks List Section -->
       <section>
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">All Tasks</h2>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-800">All Tasks</h2>
+          <button id="resetTasksBtn"
+            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-sm">
+            <i class="fas fa-rotate-left mr-1"></i> Reset Tasks
+          </button>
+        </div>
         <div id="tasksList" class="space-y-4" role="list" aria-live="polite">
           <p class="text-center text-indigo-500 italic">Loading tasks...</p>
         </div>
@@ -74,6 +80,7 @@
         setDoc,
         deleteDoc,
         onSnapshot,
+        getDocs
       } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
       import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -99,6 +106,7 @@
       const taskDescInput = document.getElementById("taskDesc");
       const taskRewardInput = document.getElementById("taskReward");
       const taskViewInput = document.getElementById("taskView");
+      const resetTasksBtn = document.getElementById("resetTasksBtn");
 
       onAuthStateChanged(auth, (user) => {
         if (!user) {
@@ -203,6 +211,21 @@
           taskNameInput.focus();
         } catch (error) {
           alert("Error saving task: " + error.message);
+        }
+      });
+
+      // Reset Tasks Functionality
+      resetTasksBtn.addEventListener("click", async () => {
+        const confirmReset = confirm("Are you sure you want to delete all tasks? This action cannot be undone.");
+        if (!confirmReset) return;
+
+        try {
+          const snapshot = await getDocs(tasksCol);
+          const promises = snapshot.docs.map((docSnap) => deleteDoc(doc(db, "tasks", docSnap.id)));
+          await Promise.all(promises);
+          alert("All tasks have been deleted.");
+        } catch (error) {
+          alert("Error resetting tasks: " + error.message);
         }
       });
     </script>
