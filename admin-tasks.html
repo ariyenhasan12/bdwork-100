@@ -117,18 +117,23 @@
         Swal.fire({
           toast: true,
           position: "top-end",
-          icon: icon,
-          title: message,
           showConfirmButton: false,
           timer: 3000,
           timerProgressBar: true,
+          icon: icon,
+          title: message,
         });
       }
 
       onAuthStateChanged(auth, (user) => {
         if (!user) {
-          alert("Please log in first.");
-          window.location.href = "login.html";
+          Swal.fire({
+            icon: "warning",
+            title: "Please log in first.",
+            confirmButtonText: "OK"
+          }).then(() => {
+            window.location.href = "login.html";
+          });
           return;
         }
         loadTasksRealtime();
@@ -181,7 +186,7 @@
               if (confirm(`Delete task "${task.name}"? This action cannot be undone.`)) {
                 try {
                   await deleteDoc(doc(db, "tasks", task.id));
-                  showToast("Task deleted.", "success");
+                  showToast("Task deleted.");
                 } catch (error) {
                   showToast("Error deleting task: " + error.message, "error");
                 }
@@ -207,8 +212,8 @@
         const reward = parseFloat(taskRewardInput.value);
         const view = taskViewInput.value.trim();
 
-        if (!name) return alert("Task name is required.");
-        if (isNaN(reward) || reward < 0) return alert("Reward must be a valid non-negative number.");
+        if (!name) return showToast("Task name is required.", "warning");
+        if (isNaN(reward) || reward < 0) return showToast("Reward must be a valid non-negative number.", "warning");
 
         try {
           if (id) {
@@ -260,7 +265,7 @@
           );
 
           await Promise.all(addPromises);
-          showToast("Tasks reset successfully.");
+          showToast("Tasks have been reset successfully.");
         } catch (error) {
           showToast("Error resetting tasks: " + error.message, "error");
         }
