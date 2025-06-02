@@ -14,6 +14,16 @@
     <h1 class="text-3xl font-bold text-center mb-8">👤 Profile Details</h1>
 
     <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
+
+      <!-- Profile Image -->
+      <div class="text-center">
+        <img id="profileImagePreview" src="https://via.placeholder.com/120" alt="Profile" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-gray-300" />
+        <input type="file" id="profileImageInput" accept="image/*" class="mt-4 block mx-auto text-sm text-gray-600" />
+        <button id="uploadBtn" class="mt-2 px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+          Upload Photo
+        </button>
+      </div>
+
       <div>
         <p class="text-sm text-gray-500">Username</p>
         <p id="username" class="text-lg font-medium text-gray-900">Loading...</p>
@@ -27,11 +37,6 @@
       <div>
         <p class="text-sm text-gray-500">Email</p>
         <p id="email" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-
-      <div>
-        <p class="text-sm text-gray-500">Account Created</p>
-        <p id="created" class="text-lg font-medium text-gray-900">Loading...</p>
       </div>
 
       <div>
@@ -60,14 +65,23 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const profileImageInput = document.getElementById("profileImageInput");
+    const profileImagePreview = document.getElementById("profileImagePreview");
+    const uploadBtn = document.getElementById("uploadBtn");
+
+    let currentUser;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
+      currentUser = user;
 
       try {
         const docRef = doc(db, "users", user.uid);
@@ -79,20 +93,39 @@
           document.getElementById("username").innerText = data.username || "N/A";
           document.getElementById("phone").innerText = data.phone || "N/A";
           document.getElementById("email").innerText = data.email || user.email || "N/A";
-          
-          if (data.created) {
-            const createdDate = new Date(data.created.seconds * 1000).toLocaleDateString();
-            document.getElementById("created").innerText = createdDate;
-          } else {
-            document.getElementById("created").innerText = "Unknown";
-          }
-
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+
+          // Load existing profile image
+          if (data.photoURL) {
+            profileImagePreview.src = data.photoURL;
+          }
         } else {
           alert("User data not found.");
         }
       } catch (err) {
         alert("Error loading profile: " + err.message);
+      }
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      if (!profileImageInput.files[0] || !currentUser) return alert("Please select a file first.");
+
+      const file = profileImageInput.files[0];
+      const storageRef = ref(storage, `users/${currentUser.uid}/profile.jpg`);
+
+      try {
+        await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        // Update Firestore with new image URL
+        await updateDoc(doc(db, "users", currentUser.uid), {
+          photoURL: downloadURL
+        });
+
+        profileImagePreview.src = downloadURL;
+        alert("Profile image updated!");
+      } catch (err) {
+        alert("Upload failed: " + err.message);
       }
     });
   </script>
