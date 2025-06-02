@@ -3,55 +3,95 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Profile</title>
+  <title>User Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans">
 
-  <main class="max-w-xl mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-center mb-8">👤 Profile Details</h1>
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-10">👋 Welcome to Your Dashboard</h1>
 
-    <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
+    <!-- User Info Section -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <p class="text-sm text-gray-500 mb-1">Username</p>
+        <p id="userName" class="text-lg sm:text-xl font-semibold text-gray-800 break-all">Loading...</p>
 
-      <!-- Profile Image -->
-      <div class="text-center">
-        <img id="profileImagePreview" src="https://via.placeholder.com/120" alt="Profile" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-gray-300" />
-        <input type="file" id="profileImageInput" accept="image/*" class="mt-4 block mx-auto text-sm text-gray-600" />
-        <button id="uploadBtn" class="mt-2 px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-          Upload Photo
-        </button>
+        <p class="text-sm text-gray-500 mt-6 mb-1">Balance</p>
+        <p id="userBalance" class="text-lg sm:text-xl font-bold text-green-600">৳0</p>
       </div>
 
-      <div>
-        <p class="text-sm text-gray-500">Username</p>
-        <p id="username" class="text-lg font-medium text-gray-900">Loading...</p>
+      <!-- Account Status Section -->
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-center">
+        <p id="accountStatus" class="text-lg sm:text-xl font-semibold text-gray-700">🔆</p>
       </div>
 
-      <div>
-        <p class="text-sm text-gray-500">Phone Number</p>
-        <p id="phone" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
+      <!-- Refer Section -->
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <p class="text-sm text-gray-500 mb-1">Total Refers</p>
+        <p id="totalRefers" class="text-lg sm:text-xl font-semibold text-gray-800">0</p>
 
-      <div>
-        <p class="text-sm text-gray-500">Email</p>
-        <p id="email" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-
-      <div>
-        <p class="text-sm text-gray-500">Account Status</p>
-        <p id="accountStatus" class="text-lg font-medium text-gray-900">Loading...</p>
+        <p class="text-sm text-gray-500 mt-6 mb-2">Your Refer Link</p>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <input id="referLink" readonly class="text-base sm:text-lg font-mono font-semibold text-blue-800 bg-blue-50 px-3 py-2 rounded w-full border border-blue-200" />
+          <button onclick="copyReferLink()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm transition w-full sm:w-auto">
+            Copy
+          </button>
+        </div>
       </div>
     </section>
 
-    <div class="text-center mt-8">
-      <a href="dashboard.html" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
-        ← Back to Dashboard
+    <!-- Task Section Button -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">🎯 Complete Tasks & Earn ৳5 Each</h2>
+      <a href="job.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+        Go to Tasks Page →
       </a>
+    </section>
+
+    <!-- Pro Account Section Button -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <a href="pro-account.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+        Go to Pro Account Page →
+      </a>
+    </section>
+
+    <!-- Profile Section Button -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <a href="profile.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+        Go to Profile Page →
+      </a>
+    </section>
+
+    <!-- Deposit Page Redirect -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">💰 Deposit Balance</h2>
+      <a href="deposit.html" class="text-blue-600 hover:underline text-center block">Go to Deposit Page →</a>
+    </section>
+
+    <!-- Withdraw Redirect Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">💸 Withdraw Balance</h2>
+      <a href="withdraw.html" class="text-indigo-600 hover:underline text-center block">Go to Withdraw Page →</a>
+    </section>
+
+    <!-- Withdraw History Redirect -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">📜 Withdraw History</h2>
+      <a href="withdraw-history.html" class="text-blue-600 hover:underline text-center block">View Withdraw History →</a>
+    </section>
+
+    <!-- Logout -->
+    <div class="text-center mt-8">
+      <button onclick="logout()" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition text-lg">
+        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+      </button>
     </div>
   </main>
 
+  <!-- Firebase and JS Logic -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -64,70 +104,56 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
 
-    const profileImageInput = document.getElementById("profileImageInput");
-    const profileImagePreview = document.getElementById("profileImagePreview");
-    const uploadBtn = document.getElementById("uploadBtn");
-
-    let currentUser;
+    let currentUserData = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-      currentUser = user;
 
       try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          currentUserData = { uid: user.uid, ...data };
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+          document.getElementById("userName").innerText = data.username || "No username set";
+          document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
 
-          document.getElementById("username").innerText = data.username || "N/A";
-          document.getElementById("phone").innerText = data.phone || "N/A";
-          document.getElementById("email").innerText = data.email || user.email || "N/A";
+          const currentDomain = window.location.origin;
+          const referLink = `${currentDomain}/signup.html?ref=${user.uid}`;
+          document.getElementById("referLink").value = referLink;
+
+          const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+          const referSnapshot = await getDocs(referQuery);
+          document.getElementById("totalRefers").innerText = referSnapshot.size;
+
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
-
-          // Load existing profile image
-          if (data.photoURL) {
-            profileImagePreview.src = data.photoURL;
-          }
-        } else {
-          alert("User data not found.");
         }
       } catch (err) {
-        alert("Error loading profile: " + err.message);
+        alert("Failed to load user data: " + err.message);
       }
     });
 
-    uploadBtn.addEventListener("click", async () => {
-      if (!profileImageInput.files[0] || !currentUser) return alert("Please select a file first.");
+    window.logout = async function () {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
 
-      const file = profileImageInput.files[0];
-      const storageRef = ref(storage, `users/${currentUser.uid}/profile.jpg`);
-
-      try {
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-
-        // Update Firestore with new image URL
-        await updateDoc(doc(db, "users", currentUser.uid), {
-          photoURL: downloadURL
-        });
-
-        profileImagePreview.src = downloadURL;
-        alert("Profile image updated!");
-      } catch (err) {
-        alert("Upload failed: " + err.message);
-      }
-    });
+    window.copyReferLink = function () {
+      const input = document.getElementById("referLink");
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(() => alert("Refer link copied!"));
+    };
   </script>
 </body>
 </html>
