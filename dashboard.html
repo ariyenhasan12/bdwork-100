@@ -42,6 +42,22 @@
       </div>
     </section>
 
+    <!-- Earnings Section -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center">
+        <p class="text-sm text-gray-500 mb-1">Today Earnings</p>
+        <p id="todayEarnings" class="text-xl font-bold text-green-700">৳0</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center">
+        <p class="text-sm text-gray-500 mb-1">Weekly Earnings</p>
+        <p id="weeklyEarnings" class="text-xl font-bold text-green-700">৳0</p>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 text-center">
+        <p class="text-sm text-gray-500 mb-1">Monthly Earnings</p>
+        <p id="monthlyEarnings" class="text-xl font-bold text-green-700">৳0</p>
+      </div>
+    </section>
+
     <!-- Task Section Button -->
     <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
       <h2 class="text-xl font-semibold mb-4">🎯 Complete Tasks & Earn ৳5 Each</h2>
@@ -83,66 +99,121 @@
     </div>
   </main>
 
-  <!-- Firebase and JS Logic -->
   <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+    authDomain: "bdwork-346d3.firebaseapp.com",
+    projectId: "bdwork-346d3",
+    storageBucket: "bdwork-346d3.appspot.com",
+    messagingSenderId: "900963179093",
+    appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+    measurementId: "G-FM1YJ8E5GK"
+  };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, collection, query, where, getDocs
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, updateDoc, collection, query, where, getDocs, Timestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    let currentUserData = null;
+  let currentUserData = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+  function getStartOfDay(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
 
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          currentUserData = { uid: user.uid, ...data };
+  function getStartOfWeek(date) {
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(date.setDate(diff));
+  }
 
-          document.getElementById("userEmail").innerText = data.email;
-          document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
-          document.getElementById("userReferCode").value = user.uid;
+  function getStartOfMonth(date) {
+    return new Date(date.getFullYear(), date.getMonth(), 1);
+  }
 
-          const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-          const referSnapshot = await getDocs(referQuery);
-          document.getElementById("totalRefers").innerText = referSnapshot.size;
+  async function calculateEarnings(userId) {
+    const tasksRef = collection(db, "tasks");
+    const q = query(tasksRef, where("userId", "==", userId));
+    const snapshot = await getDocs(q);
 
-          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
-        }
-      } catch (err) {
-        alert("Failed to load user data: " + err.message);
-      }
+    let todayTotal = 0, weekTotal = 0, monthTotal = 0;
+
+    const now = new Date();
+    const startOfToday = Timestamp.fromDate(getStartOfDay(new Date()));
+    const startOfWeek = Timestamp.fromDate(getStartOfWeek(new Date()));
+    const startOfMonth = Timestamp.fromDate(getStartOfMonth(new Date()));
+
+    snapshot.forEach(docSnap => {
+      const task = docSnap.data();
+      const completedAt = task.completedAt;
+
+      if (!completedAt || !task.amount) return;
+
+      const amt = Number(task.amount);
+
+      if (completedAt >= startOfMonth) monthTotal += amt;
+      if (completedAt >= startOfWeek) weekTotal += amt;
+      if (completedAt >= startOfToday) todayTotal += amt;
     });
 
-    window.logout = async function () {
-      await signOut(auth);
-      window.location.href = "login.html";
-    };
+    // Update UI
+    document.getElementById("todayEarnings").innerText = `৳${todayTotal}`;
+    document.getElementById("weeklyEarnings").innerText = `৳${weekTotal}`;
+    document.getElementById("monthlyEarnings").innerText = `৳${monthTotal}`;
 
-    window.copyReferCode = function () {
-      const input = document.getElementById("userReferCode");
-      input.select();
-      input.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(input.value).then(() => alert("Refer code copied!"));
-    };
-  </script>
+    // Save to user's Firestore document
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      todayEarnings: todayTotal,
+      weeklyEarnings: weekTotal,
+      monthlyEarnings: monthTotal
+    });
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        currentUserData = { uid: user.uid, ...data };
+
+        document.getElementById("userEmail").innerText = data.email;
+        document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
+        document.getElementById("userReferCode").value = user.uid;
+
+        const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+        const referSnapshot = await getDocs(referQuery);
+        document.getElementById("totalRefers").innerText = referSnapshot.size;
+
+        document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+
+        // Earnings calculate
+        await calculateEarnings(user.uid);
+      }
+    } catch (err) {
+      alert("Failed to load user data: " + err.message);
+    }
+  });
+
+  window.logout = async function () {
+    await signOut(auth);
+    window.location.href = "login.html";
+  };
+
+  window.copyReferCode = function () {
+    const input = document.getElementById("userReferCode");
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => alert("Refer code copied!"));
+  };
+    </script>
 </body>
 </html>
