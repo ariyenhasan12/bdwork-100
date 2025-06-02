@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Task Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body class="bg-gray-100 min-h-screen">
     <!-- Header -->
@@ -110,6 +113,18 @@
       const taskViewInput = document.getElementById("taskView");
       const resetTasksBtn = document.getElementById("resetTasksBtn");
 
+      function showToast(message, icon = "success") {
+        Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: icon,
+          title: message,
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
+
       onAuthStateChanged(auth, (user) => {
         if (!user) {
           alert("Please log in first.");
@@ -166,9 +181,9 @@
               if (confirm(`Delete task "${task.name}"? This action cannot be undone.`)) {
                 try {
                   await deleteDoc(doc(db, "tasks", task.id));
-                  alert("Task deleted.");
+                  showToast("Task deleted.", "success");
                 } catch (error) {
-                  alert("Error deleting task: " + error.message);
+                  showToast("Error deleting task: " + error.message, "error");
                 }
               }
             };
@@ -198,20 +213,19 @@
         try {
           if (id) {
             await setDoc(doc(db, "tasks", id), { name, description, reward, view }, { merge: true });
-            alert("Task updated.");
+            showToast("Task updated.");
           } else {
             await setDoc(doc(collection(db, "tasks")), { name, description, reward, view });
-            alert("Task added.");
+            showToast("Task added.");
           }
 
           taskForm.reset();
           taskNameInput.focus();
         } catch (error) {
-          alert("Error saving task: " + error.message);
+          showToast("Error saving task: " + error.message, "error");
         }
       });
 
-      // Reset tasks
       resetTasksBtn.addEventListener("click", async () => {
         if (!confirm("Are you sure you want to reset all tasks? This will delete all current tasks and add new ones.")) return;
 
@@ -246,9 +260,9 @@
           );
 
           await Promise.all(addPromises);
-          alert("Tasks have been reset successfully.");
+          showToast("Tasks reset successfully.");
         } catch (error) {
-          alert("Error resetting tasks: " + error.message);
+          showToast("Error resetting tasks: " + error.message, "error");
         }
       });
     </script>
