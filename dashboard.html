@@ -16,8 +16,8 @@
     <!-- User Info Section -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-        <p class="text-sm text-gray-500 mb-1">Email</p>
-        <p id="userEmail" class="text-lg sm:text-xl font-semibold text-gray-800 break-all">Loading...</p>
+        <p class="text-sm text-gray-500 mb-1">Username</p>
+        <p id="userName" class="text-lg sm:text-xl font-semibold text-gray-800 break-all">Loading...</p>
 
         <p class="text-sm text-gray-500 mt-6 mb-1">Balance</p>
         <p id="userBalance" class="text-lg sm:text-xl font-bold text-green-600">৳0</p>
@@ -118,7 +118,7 @@
           const data = userDoc.data();
           currentUserData = { uid: user.uid, ...data };
 
-          document.getElementById("userEmail").innerText = data.email;
+          document.getElementById("userName").innerText = data.username || "No username set";
           document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
 
           const currentDomain = window.location.origin;
