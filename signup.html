@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+
+    <input id="signupEmail" type="email" placeholder="Email" class="w-full mb-3 px-4 py-2 border rounded" />
+    <input id="signupPassword" type="password" placeholder="Password" class="w-full mb-3 px-4 py-2 border rounded" />
+    <input id="referCodeInput" type="text" placeholder="Referral Code (optional)" class="w-full mb-4 px-4 py-2 border rounded" />
+
+    <button onclick="signup()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+      <i class="fas fa-user-plus mr-1"></i> Sign Up
+    </button>
+    
+    <p class="text-sm text-center mt-4">
+      Already have an account? 
+      <a href="index.html" class="text-blue-500 hover:underline">Login here</a>
+    </p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Firebase Config
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Signup Function
+    window.signup = async function () {
+      const email = document.getElementById("signupEmail").value.trim();
+      const password = document.getElementById("signupPassword").value;
+      const inputReferCode = document.getElementById("referCodeInput").value.trim();
+
+      if (!email || !password) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return;
+      }
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        // Save user data to Firestore
+        await setDoc(doc(db, "users", uid), {
+          uid: uid,
+          email: email,
+          balance: 0,
+          role: "user",
+          referCode: uid,
+          referredBy: inputReferCode || null
+        });
+
+        // If referral code is provided, reward the referrer
+        if (inputReferCode && inputReferCode !== uid) {
+          const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            const referrerDoc = querySnapshot.docs[0];
+            const referrerRef = doc(db, "users", referrerDoc.id);
+            const currentBalance = referrerDoc.data().balance || 0;
+
+            await updateDoc(referrerRef, {
+              balance: currentBalance + 10
+            });
+          }
+        }
+
+        alert("Signup successful!");
+        window.location.href = "index.html";
+
+      } catch (error) {
+        alert("Signup failed: " + error.message);
+      }
+    };
+  </script>
+</body>
+</html>

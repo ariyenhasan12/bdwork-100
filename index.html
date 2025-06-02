@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+<script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+  <div class="w-full max-w-sm bg-white p-6 rounded shadow-md">
+    <h2 class="text-2xl font-bold text-center mb-4">Login</h2>
+
+    <input type="email" id="loginEmail" placeholder="Email" class="w-full mb-3 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    
+    <input type="password" id="loginPassword" placeholder="Password" class="w-full mb-3 px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    
+    <button onclick="login()" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
+      <i class="fas fa-sign-in-alt mr-1"></i> Login
+    </button>
+
+    <p class="text-center text-sm mt-3">Don't have an account? <a href="signup.html" class="text-blue-500 hover:underline">Sign up</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.login = async function () {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        // Fetch user document to check role
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          if (userData.role === "admin") {
+            alert("Admin login successful!");
+            window.location.href = "admin.html";  // Admin পেজ
+          } else {
+            alert("User login successful!");
+            window.location.href = "dashboard.html";  // সাধারণ ইউজার পেজ
+          }
+        } else {
+          alert("User data not found.");
+          // Optional: লগআউট বা অন্য ব্যবস্থা
+        }
+
+      } catch (error) {
+        let msg = "Login failed.";
+        if (error.code === "auth/user-not-found") {
+          msg = "No user found with this email.";
+        } else if (error.code === "auth/wrong-password") {
+          msg = "Incorrect password.";
+        } else if (error.code === "auth/invalid-email") {
+          msg = "Invalid email format.";
+        }
+        alert(msg);
+      }
+    };
+  </script>
+</body>
+</html>

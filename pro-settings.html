@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Account Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow-md relative">
+    <div class="max-w-7xl mx-auto px-4 py-3 relative flex items-center justify-center">
+      <!-- Back Icon (left side) -->
+      <p onclick="window.location.href='/admin.html'" class="absolute left-4 text-gray-700 cursor-pointer">
+        <i class="fas fa-arrow-left text-2xl"></i>
+      </p>
+
+      <!-- Centered Title -->
+      <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-md p-6 sm:p-8 mt-10">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Pro Account Settings</h2>
+
+      <form class="space-y-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="proActivationCost">Activation Cost (৳)</label>
+          <input id="proActivationCost" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="proDailyBonus">Daily Bonus (৳)</label>
+          <input id="proDailyBonus" type="number" min="0" step="0.01"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-gray-700 font-medium mb-1" for="proValidity">Validity (days)</label>
+          <input id="proValidity" type="number" min="1" step="1"
+            class="w-full border border-gray-400 rounded-md px-4 py-2 outline-none" />
+        </div>
+      </form>
+
+      <div class="mt-6">
+        <p id="updateProSettings"
+          class="w-full bg-blue-600 text-white text-center font-semibold py-2 px-4 rounded-md cursor-pointer">
+          <i class="fas fa-save mr-2"></i>Update
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const proActivationCostInput = document.getElementById("proActivationCost");
+    const proDailyBonusInput = document.getElementById("proDailyBonus");
+    const proValidityInput = document.getElementById("proValidity");
+    const updateProSettingsBtn = document.getElementById("updateProSettings");
+
+    const proSettingsDocRef = doc(db, "settings", "proAccount");
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadProSettings();
+      }
+    });
+
+    async function loadProSettings() {
+      try {
+        const docSnap = await getDoc(proSettingsDocRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          proActivationCostInput.value = data.activationCost ?? "";
+          proDailyBonusInput.value = data.dailyBonus ?? "";
+          proValidityInput.value = data.validity ?? "";
+        }
+      } catch (error) {
+        console.error("Error loading Pro Account Settings:", error);
+      }
+    }
+
+    updateProSettingsBtn.addEventListener("click", async () => {
+      const activationCost = parseFloat(proActivationCostInput.value);
+      const dailyBonus = parseFloat(proDailyBonusInput.value);
+      const validity = parseInt(proValidityInput.value);
+
+      if (
+        isNaN(activationCost) || activationCost < 0 ||
+        isNaN(dailyBonus) || dailyBonus < 0 ||
+        isNaN(validity) || validity < 1
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Please enter valid values for all fields.",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+        return;
+      }
+
+      try {
+        await setDoc(proSettingsDocRef, {
+          activationCost,
+          dailyBonus,
+          validity
+        });
+        Swal.fire({
+          icon: "success",
+          title: "Updated successfully!",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+      } catch (error) {
+        console.error(error);
+        Swal.fire({
+          icon: "error",
+          title: "Please try again later.",
+          toast: true,
+          position: "top-end",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+      }
+    });
+  </script>
+</body>
+</html>
