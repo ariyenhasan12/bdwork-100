@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deposit History</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -13,7 +12,7 @@
     <div class="text-center mb-6">
       <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
     </div>
-    <h1 class="text-2xl font-bold mb-6 text-center">📜 Deposit History</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">💰 Deposit History</h1>
     <div id="depositHistory" class="space-y-2">
       <p class="text-sm text-gray-500 text-center">Loading deposit history...</p>
     </div>
@@ -40,41 +39,37 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const historyContainer = document.getElementById("depositHistory");
-
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
+      const historyContainer = document.getElementById("depositHistory");
 
       try {
-        const q = query(
+        const depositQuery = query(
           collection(db, "deposits"),
           where("uid", "==", user.uid),
           orderBy("timestamp", "desc")
         );
-        const querySnapshot = await getDocs(q);
+        const depositSnap = await getDocs(depositQuery);
 
-        if (querySnapshot.empty) {
+        if (depositSnap.empty) {
           historyContainer.innerHTML = '<p class="text-sm text-gray-500 text-center">No deposit history found.</p>';
         } else {
           historyContainer.innerHTML = "";
-          querySnapshot.forEach((doc) => {
+          depositSnap.forEach(doc => {
             const data = doc.data();
             const date = data.timestamp?.toDate().toLocaleString() || "N/A";
             const method = data.method || "N/A";
             const address = data.address || "N/A";
-            const amount = data.amount || 0;
-            const status = data.status || "pending";
-
             const item = document.createElement("div");
             item.className = "bg-white p-4 rounded-md shadow-sm text-sm space-y-1 border border-gray-200";
             item.innerHTML = `
               <div class="flex justify-between items-center">
-                <p class="font-medium text-gray-800">৳${amount}</p>
+                <p class="font-medium text-gray-800">৳${data.amount}</p>
                 <span class="text-xs px-2 py-1 rounded-full ${
-                  status === "approved" ? "bg-green-100 text-green-700" :
-                  status === "rejected" ? "bg-red-100 text-red-700" :
+                  data.status === "approved" ? "bg-green-100 text-green-700" :
+                  data.status === "rejected" ? "bg-red-100 text-red-700" :
                   "bg-yellow-100 text-yellow-700"
-                }">${status}</span>
+                }">${data.status}</span>
               </div>
               <p class="text-gray-600"><span class="font-medium">Method:</span> ${method}</p>
               <p class="text-gray-600"><span class="font-medium">Address:</span> ${address}</p>
@@ -83,8 +78,7 @@
             historyContainer.appendChild(item);
           });
         }
-      } catch (error) {
-        console.error("Error loading deposit history:", error);
+      } catch (err) {
         historyContainer.innerHTML = '<p class="text-sm text-red-500 text-center">Error loading deposit history.</p>';
       }
     });
