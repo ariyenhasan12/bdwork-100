@@ -1,197 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <main class="max-w-5xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-center mb-10">👋 Welcome to Your Dashboard</h1>
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold text-center mb-10">👋 Welcome to Your Dashboard</h1>
 
-    <!-- User Info Section -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-        <p class="text-sm text-gray-500 mb-1">Email</p>
-        <p id="userEmail" class="text-lg sm:text-xl font-semibold text-gray-800 break-all">Loading...</p>
+    <!-- User Info Section -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <p class="text-sm text-gray-500 mb-1">Email</p>
+        <p id="userEmail" class="text-lg sm:text-xl font-semibold text-gray-800 break-all">Loading...</p>
 
-        <p class="text-sm text-gray-500 mt-6 mb-1">Balance</p>
-        <p id="userBalance" class="text-lg sm:text-xl font-bold text-green-600">৳0</p>
-      </div>
+        <p class="text-sm text-gray-500 mt-6 mb-1">Balance</p>
+        <p id="userBalance" class="text-lg sm:text-xl font-bold text-green-600">৳0</p>
+      </div>
 
-      <!-- Account Status Section -->
-      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-center">
-        <p id="accountStatus" class="text-lg sm:text-xl font-semibold text-gray-700">🔆</p>
-      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center text-center">
+        <p id="accountStatus" class="text-lg sm:text-xl font-semibold text-gray-700">🔆</p>
+      </div>
 
-      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-        <p class="text-sm text-gray-500 mb-1">Total Refers</p>
-        <p id="totalRefers" class="text-lg sm:text-xl font-semibold text-gray-800">0</p>
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <p class="text-sm text-gray-500 mb-1">Total Refers</p>
+        <p id="totalRefers" class="text-lg sm:text-xl font-semibold text-gray-800">0</p>
 
-        <p class="text-sm text-gray-500 mt-6 mb-2">Your Refer Code</p>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <input id="userReferCode" readonly class="text-base sm:text-lg font-mono font-semibold text-blue-800 bg-blue-50 px-3 py-2 rounded w-full border border-blue-200" />
-          <button onclick="copyReferCode()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm transition w-full sm:w-auto">
-            Copy
-          </button>
-        </div>
-      </div>
-    </section>
+        <p class="text-sm text-gray-500 mt-6 mb-2">Your Refer Code</p>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <input id="userReferCode" readonly class="text-base sm:text-lg font-mono font-semibold text-blue-800 bg-blue-50 px-3 py-2 rounded w-full border border-blue-200" />
+          <button onclick="copyReferCode()" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm transition w-full sm:w-auto">
+            Copy
+          </button>
+        </div>
+      </div>
+    </section>
 
-    <!-- Task Section Button -->
-    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <h2 class="text-xl font-semibold mb-4">🎯 Complete Tasks & Earn ৳5 Each</h2>
-      <a href="job.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
-        Go to Tasks Page →
-      </a>
-    </section>
+    <!-- Task Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">🎯 Complete Tasks & Earn ৳5 Each</h2>
+      <a href="job.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+        Go to Tasks Page →
+      </a>
+    </section>
 
-    <!-- Pro Account Section Button -->
-    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <a href="pro-account.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
-        Go to Pro Account Page →
-      </a>
-    </section>
+    <!-- Pro Account Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <a href="pro-account.html" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+        Go to Pro Account Page →
+      </a>
+    </section>
 
-    <!-- Deposit Form Section -->
-    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <h2 class="text-xl font-semibold mb-4">💰 Deposit Balance Funds</h2>
-      <form id="depositForm" class="space-y-4">
-        <div>
-          <label for="depositMethod" class="block text-sm font-medium text-gray-600 mb-1">Select Method</label>
-          <select id="depositMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700">
-            <option value="bKash">bKash</option>
-            <option value="Nagad">Nagad</option>
-            <option value="USDT">USDT</option>
-          </select>
-        </div>
-        <div>
-          <label for="depositAmount" class="block text-sm font-medium text-gray-600 mb-1">Amount</label>
-          <input type="number" id="depositAmount" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
-        </div>
-        <div>
-          <label for="paymentAddress" class="block text-sm font-medium text-gray-600 mb-1">Payment Address / Sender Number</label>
-          <input type="text" id="paymentAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
-        </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
-          Submit Deposit Request
-        </button>
-      </form>
-    </section>
+    <!-- Deposit Form Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">💰 Deposit Balance Funds</h2>
+      <form id="depositForm" class="space-y-4">
+        <div>
+          <label for="depositMethod" class="block text-sm font-medium text-gray-600 mb-1">Select Method</label>
+          <select id="depositMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700">
+            <option value="bKash">bKash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="USDT">USDT</option>
+          </select>
+        </div>
+        <div>
+          <label for="depositAmount" class="block text-sm font-medium text-gray-600 mb-1">Amount</label>
+          <input type="number" id="depositAmount" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
+        </div>
+        <div>
+          <label for="paymentAddress" class="block text-sm font-medium text-gray-600 mb-1">Payment Address / Sender Number</label>
+          <input type="text" id="paymentAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+          Submit Deposit Request
+        </button>
+      </form>
+    </section>
 
-    <!-- Withdraw Redirect Section -->
-    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <h2 class="text-xl font-semibold mb-4">💸 Withdraw Balance</h2>
-      <a href="withdraw.html" class="text-indigo-600 hover:underline text-center block">Go to Withdraw Page →</a>
-    </section>
+    <!-- Deposit History Section -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">📥 Deposit History</h2>
+      <div id="depositHistory" class="space-y-2 text-sm text-gray-700">
+        <p>Loading deposit history...</p>
+      </div>
+    </section>
 
-    <!-- Withdraw History Redirect -->
-    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <h2 class="text-xl font-semibold mb-4">📜 Withdraw History</h2>
-      <a href="withdraw-history.html" class="text-blue-600 hover:underline text-center block">View Withdraw History →</a>
-    </section>
+    <!-- Withdraw Sections -->
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">💸 Withdraw Balance</h2>
+      <a href="withdraw.html" class="text-indigo-600 hover:underline text-center block">Go to Withdraw Page →</a>
+    </section>
 
-    <!-- Logout -->
-    <div class="text-center mt-8">
-      <button onclick="logout()" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition text-lg">
-        <i class="fas fa-sign-out-alt mr-2"></i> Logout
-      </button>
-    </div>
-  </main>
+    <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
+      <h2 class="text-xl font-semibold mb-4">📜 Withdraw History</h2>
+      <a href="withdraw-history.html" class="text-blue-600 hover:underline text-center block">View Withdraw History →</a>
+    </section>
 
-  <!-- JavaScript: Firebase + Dashboard Logic -->
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    <div class="text-center mt-8">
+      <button onclick="logout()" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition text-lg">
+        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+      </button>
+    </div>
+  </main>
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <!-- Firebase & JS -->
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    let currentUserData = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUserData = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserData = { uid: user.uid, ...userDoc.data() };
+          document.getElementById("userEmail").innerText = currentUserData.email;
+          document.getElementById("userBalance").innerText = `৳${currentUserData.balance || 0}`;
+          document.getElementById("userReferCode").value = currentUserData.uid;
+          document.getElementById("accountStatus").innerText = currentUserData.isPro ? "🌟 Pro Account" : "🔆 Regular Account";
 
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          currentUserData = { uid: user.uid, ...data };
+          const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+          const referSnap = await getDocs(referQuery);
+          document.getElementById("totalRefers").innerText = referSnap.size;
 
-          document.getElementById("userEmail").innerText = data.email;
-          document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
-          document.getElementById("userReferCode").value = user.uid;
+          loadDepositHistory(user.uid);
+        }
+      } catch (err) {
+        alert("Error loading user data: " + err.message);
+      }
+    });
 
-          const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-          const referSnapshot = await getDocs(referQuery);
-          document.getElementById("totalRefers").innerText = referSnapshot.size;
+    async function loadDepositHistory(uid) {
+      const historyContainer = document.getElementById("depositHistory");
+      historyContainer.innerHTML = "";
 
-          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "🔆 Regular Account";
-        }
-      } catch (err) {
-        alert("Failed to load user data: " + err.message);
-      }
-    });
+      const depositQuery = query(
+        collection(db, "deposits"),
+        where("uid", "==", uid),
+        orderBy("timestamp", "desc")
+      );
 
-    window.logout = async function () {
-      await signOut(auth);
-      window.location.href = "login.html";
-    };
+      const snapshot = await getDocs(depositQuery);
+      if (snapshot.empty) {
+        historyContainer.innerHTML = "<p>No deposit history found.</p>";
+        return;
+      }
 
-    window.copyReferCode = function () {
-      const input = document.getElementById("userReferCode");
-      input.select();
-      input.setSelectionRange(0, 99999);
-      navigator.clipboard.writeText(input.value).then(() => alert("Refer code copied!"));
-    };
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const time = data.timestamp.toDate().toLocaleString();
+        const entry = document.createElement("div");
+        entry.className = "border p-3 rounded-lg bg-gray-50";
+        entry.innerHTML = `
+          <strong>৳${data.amount}</strong> via <strong>${data.method}</strong><br>
+          <span class="text-xs text-gray-500">${time}</span><br>
+          <span class="text-sm font-medium">Status: ${data.status}</span>
+        `;
+        historyContainer.appendChild(entry);
+      });
+    }
 
-    // Deposit Form Submit
-    document.getElementById("depositForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const method = document.getElementById("depositMethod").value;
-      const amount = parseFloat(document.getElementById("depositAmount").value);
-      const address = document.getElementById("paymentAddress").value.trim();
+    window.logout = () => signOut(auth).then(() => window.location.href = "login.html");
+    window.copyReferCode = () => {
+      const input = document.getElementById("userReferCode");
+      input.select();
+      input.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(input.value).then(() => alert("Refer code copied!"));
+    };
 
-      if (!method || isNaN(amount) || amount <= 0 || !address) {
-        alert("Please enter a valid method, amount, and payment address.");
-        return;
-      }
+    document.getElementById("depositForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const method = document.getElementById("depositMethod").value;
+      const amount = parseFloat(document.getElementById("depositAmount").value);
+      const address = document.getElementById("paymentAddress").value.trim();
 
-      try {
-        await addDoc(collection(db, "deposits"), {
-          uid: currentUserData.uid,
-          userId: currentUserData.uid,
-          userEmail: currentUserData.email,
-          amount: amount,
-          method: method,
-          address: address,
-          timestamp: Timestamp.now(),
-          status: "pending"
-        });
-        alert("Deposit request submitted successfully!");
-        document.getElementById("depositForm").reset();
-      } catch (err) {
-        alert("Error submitting deposit: " + err.message);
-      }
-    });
-  </script>
+      if (!method || isNaN(amount) || amount <= 0 || !address) {
+        return alert("Please enter valid deposit details.");
+      }
+
+      try {
+        await addDoc(collection(db, "deposits"), {
+          uid: currentUserData.uid,
+          userId: currentUserData.uid,
+          userEmail: currentUserData.email,
+          amount,
+          method,
+          address,
+          timestamp: Timestamp.now(),
+          status: "pending"
+        });
+        alert("Deposit request submitted!");
+        document.getElementById("depositForm").reset();
+        loadDepositHistory(currentUserData.uid);
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
