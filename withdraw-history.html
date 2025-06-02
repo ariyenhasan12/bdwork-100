@@ -7,33 +7,30 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
-<body class="min-h-screen bg-gradient-to-br from-blue-100 via-white to-purple-100 text-gray-800">
+<body class="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen font-sans text-gray-800">
 
-  <!-- Header -->
-  <header class="bg-gradient-to-r from-blue-700 to-purple-700 text-white px-6 py-4 shadow-md flex justify-between items-center">
-    <h1 class="text-xl font-bold">💸 Withdraw History</h1>
-    <a href="dashboard.html" class="bg-white text-blue-700 font-medium px-4 py-2 rounded hover:bg-gray-100 transition">
+  <header class="bg-blue-700 text-white py-4 px-6 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">🏦 Withdraw History</h1>
+    <a href="dashboard.html" class="bg-blue-900 px-4 py-2 rounded hover:bg-blue-950 transition text-sm">
       ← Dashboard
     </a>
   </header>
 
-  <!-- Main -->
-  <main class="max-w-3xl mx-auto px-4 py-8">
-    <h2 class="text-2xl font-semibold mb-6 text-center">Your Withdrawals</h2>
-
-    <div id="withdrawHistory" class="space-y-4">
-      <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-        Loading your history...
+  <main class="p-4 max-w-3xl mx-auto">
+    <section>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Your Withdrawals</h2>
+      <div id="withdrawHistory" class="space-y-4">
+        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+          Loading withdraw history...
+        </div>
       </div>
-    </div>
+    </section>
   </main>
 
-  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm py-6">
     &copy; 2025 BDWork. All rights reserved.
   </footer>
 
-  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -54,6 +51,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+
     const historyContainer = document.getElementById("withdrawHistory");
 
     onAuthStateChanged(auth, async (user) => {
@@ -85,28 +83,28 @@
           const date = data.timestamp?.toDate().toLocaleString() || "N/A";
           const status = data.status || "pending";
 
-          let borderColor = "border-yellow-500";
-          let statusColor = "text-yellow-600 bg-yellow-100 border-yellow-300";
+          let borderColor = "border-yellow-400";
+          let statusColor = "text-yellow-600";
           if (status === "approved") {
             borderColor = "border-green-500";
-            statusColor = "text-green-600 bg-green-100 border-green-300";
+            statusColor = "text-green-600";
           } else if (status === "rejected") {
             borderColor = "border-red-500";
-            statusColor = "text-red-600 bg-red-100 border-red-300";
+            statusColor = "text-red-600";
           }
 
           const card = `
-            <div class="bg-white border-l-4 ${borderColor} rounded-lg shadow-md p-5">
+            <div class="bg-white rounded-lg shadow p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
-                <div class="text-lg font-semibold text-gray-800">৳${amount}</div>
-                <div class="text-xs font-medium px-2 py-1 rounded border ${statusColor}">
+                <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
+                <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
                   ${status.charAt(0).toUpperCase() + status.slice(1)}
-                </div>
+                </span>
               </div>
               <div class="text-sm text-gray-600 space-y-1">
-                <p><i class="fa-solid fa-money-bill-wave mr-1"></i> <strong>Method:</strong> ${method}</p>
-                <p><i class="fa-solid fa-location-dot mr-1"></i> <strong>Address:</strong> ${address}</p>
-                <p class="text-xs text-gray-500"><i class="fa-regular fa-clock mr-1"></i> ${date}</p>
+                <p><strong>Method:</strong> ${method}</p>
+                <p><strong>Address:</strong> ${address}</p>
+                <p class="text-xs text-gray-500"><strong>Date:</strong> ${date}</p>
               </div>
             </div>
           `;
@@ -114,8 +112,8 @@
         });
       } catch (err) {
         historyContainer.innerHTML = `
-          <div class="bg-red-100 text-red-700 p-5 rounded-lg shadow text-center">
-            Error loading withdraw history. Please try again later.
+          <div class="bg-red-100 text-red-600 p-5 rounded-lg shadow text-center">
+            Error loading history.
           </div>
         `;
         console.error(err);
