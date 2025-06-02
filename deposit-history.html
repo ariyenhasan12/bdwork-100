@@ -6,41 +6,27 @@
   <title>Deposit History</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen font-sans">
+<body class="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen font-sans">
 
-  <header class="bg-blue-700 text-white shadow-md py-4 px-6 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">💰 Deposit History</h1>
-    <button id="backBtn" class="bg-blue-900 hover:bg-blue-950 transition px-4 py-2 rounded text-sm font-medium">
-      ⬅ Back to Dashboard
+  <header class="bg-blue-700 text-white py-4 px-6 flex justify-between items-center shadow-md">
+    <h1 class="text-xl font-bold">💳 Deposit History</h1>
+    <button id="backBtn" class="bg-blue-900 px-4 py-2 rounded hover:bg-blue-950 transition text-sm">
+      ← Dashboard
     </button>
   </header>
 
-  <main class="flex-grow px-4 py-8 max-w-6xl mx-auto">
-    <section class="bg-white rounded-xl shadow-lg p-6">
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Your Past Deposits</h2>
-
-      <div class="overflow-x-auto rounded-md border border-gray-200 max-h-[32rem]">
-        <table class="min-w-full text-sm text-left text-gray-700">
-          <thead class="bg-gray-100 sticky top-0 z-10">
-            <tr>
-              <th class="px-4 py-3 border-b font-semibold">Amount (৳)</th>
-              <th class="px-4 py-3 border-b font-semibold">Method</th>
-              <th class="px-4 py-3 border-b font-semibold">Transaction ID</th>
-              <th class="px-4 py-3 border-b font-semibold">Date & Time</th>
-              <th class="px-4 py-3 border-b font-semibold text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody id="historyBody" class="bg-white divide-y divide-gray-100">
-            <tr>
-              <td colspan="5" class="text-center p-5 text-gray-500">Loading deposit history...</td>
-            </tr>
-          </tbody>
-        </table>
+  <main class="p-4 max-w-3xl mx-auto">
+    <section>
+      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Your Deposits</h2>
+      <div id="historyContainer" class="space-y-4">
+        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+          Loading deposit history...
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="text-center text-sm text-gray-500 py-6">
+  <footer class="text-center text-gray-500 text-sm py-6">
     &copy; 2025 BDWork. All rights reserved.
   </footer>
 
@@ -72,11 +58,11 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const historyBody = document.getElementById("historyBody");
+    const historyContainer = document.getElementById("historyContainer");
     const backBtn = document.getElementById("backBtn");
 
     backBtn.addEventListener("click", () => {
-      window.location.href = "dashboard.html"; // Change if needed
+      window.location.href = "dashboard.html"; // Update if needed
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -96,38 +82,52 @@
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          historyBody.innerHTML = `<tr><td colspan="5" class="text-center p-5 text-gray-500">No deposit history found.</td></tr>`;
+          historyContainer.innerHTML = `
+            <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+              No deposit history found.
+            </div>
+          `;
           return;
         }
 
-        let rows = "";
+        let cards = "";
         snapshot.forEach(doc => {
           const d = doc.data();
-          const status = d.status || "pending";
+          const amount = d.amount || 0;
+          const method = d.method || "Unknown";
+          const transactionId = d.transactionId || "N/A";
           const date = d.timestamp?.toDate().toLocaleString() || "N/A";
+          const status = d.status || "pending";
 
-          const statusClass =
-            status === "approved" ? "text-green-600 font-semibold" :
-            status === "rejected" ? "text-red-600 font-semibold" :
-            "text-yellow-600 font-medium";
+          let statusColor = "text-yellow-500";
+          if (status === "approved") statusColor = "text-green-600";
+          if (status === "rejected") statusColor = "text-red-600";
 
-          rows += `
-            <tr class="hover:bg-gray-50 transition">
-              <td class="px-4 py-3 border-b">৳${d.amount || 0}</td>
-              <td class="px-4 py-3 border-b">${d.method || "N/A"}</td>
-              <td class="px-4 py-3 border-b">${d.transactionId || "N/A"}</td>
-              <td class="px-4 py-3 border-b">${date}</td>
-              <td class="px-4 py-3 border-b text-center ${statusClass}">
-                ${status.charAt(0).toUpperCase() + status.slice(1)}
-              </td>
-            </tr>
+          cards += `
+            <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
+              <div class="flex justify-between items-center mb-2">
+                <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
+                <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
+                  ${status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+              </div>
+              <div class="text-sm text-gray-600 space-y-1">
+                <p><strong>Method:</strong> ${method}</p>
+                <p><strong>Transaction ID:</strong> ${transactionId}</p>
+                <p><strong>Date:</strong> ${date}</p>
+              </div>
+            </div>
           `;
         });
 
-        historyBody.innerHTML = rows;
+        historyContainer.innerHTML = cards;
 
       } catch (error) {
-        historyBody.innerHTML = `<tr><td colspan="5" class="text-center p-5 text-red-600">Error loading history: ${error.message}</td></tr>`;
+        historyContainer.innerHTML = `
+          <div class="bg-red-100 text-red-600 p-5 rounded-lg shadow text-center">
+            Error loading history: ${error.message}
+          </div>
+        `;
         console.error(error);
       }
     });
