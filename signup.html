@@ -29,7 +29,6 @@
 
   <!-- Firebase SDK -->
   <script type="module">
-    // Firebase Config
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -44,12 +43,17 @@
       measurementId: "G-FM1YJ8E5GK"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Signup Function
+    // Auto-fill referral code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    if (refCode) {
+      document.getElementById("referCodeInput").value = refCode;
+    }
+
     window.signup = async function () {
       const email = document.getElementById("signupEmail").value.trim();
       const password = document.getElementById("signupPassword").value;
@@ -69,7 +73,6 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
-        // Save user data to Firestore
         await setDoc(doc(db, "users", uid), {
           uid: uid,
           email: email,
@@ -79,7 +82,6 @@
           referredBy: inputReferCode || null
         });
 
-        // If referral code is provided, reward the referrer
         if (inputReferCode && inputReferCode !== uid) {
           const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
           const querySnapshot = await getDocs(q);
