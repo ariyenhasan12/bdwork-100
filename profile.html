@@ -14,13 +14,11 @@
 
     <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
 
-      <!-- Profile Image Upload -->
-      <div class="text-center">
-        <img id="profileImagePreview" src="https://via.placeholder.com/120" alt="Profile" class="w-28 h-28 mx-auto rounded-full object-cover border-2 border-gray-300" />
-        <input type="file" id="profileImageInput" accept="image/*" class="mt-4 block mx-auto text-sm text-gray-600" />
-        <button id="uploadBtn" class="mt-2 px-4 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
-          Upload Photo
-        </button>
+      <!-- Fixed Profile Icon -->
+      <div class="flex justify-center">
+        <div class="w-28 h-28 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
+          <i class="fas fa-user text-4xl text-gray-500"></i>
+        </div>
       </div>
 
       <!-- Profile Info -->
@@ -53,7 +51,6 @@
   </main>
 
   <script type="module">
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
       authDomain: "bdwork-346d3.firebaseapp.com",
@@ -66,28 +63,18 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Init
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const profileImageInput = document.getElementById("profileImageInput");
-    const profileImagePreview = document.getElementById("profileImagePreview");
-    const uploadBtn = document.getElementById("uploadBtn");
-
-    let currentUser;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-      currentUser = user;
 
       try {
-        const userRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(userRef);
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
           const data = docSnap.data();
@@ -96,39 +83,11 @@
           document.getElementById("phone").innerText = data.phone || "N/A";
           document.getElementById("email").innerText = data.email || user.email || "N/A";
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
-
-          if (data.photoURL) {
-            profileImagePreview.src = data.photoURL;
-          }
         } else {
           alert("User data not found.");
         }
       } catch (err) {
         alert("Error loading profile: " + err.message);
-      }
-    });
-
-    uploadBtn.addEventListener("click", async () => {
-      if (!profileImageInput.files[0] || !currentUser) {
-        return alert("Please select a file first.");
-      }
-
-      const file = profileImageInput.files[0];
-      const storageRef = ref(storage, `users/${currentUser.uid}/profile.jpg`);
-
-      try {
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-
-        await updateDoc(doc(db, "users", currentUser.uid), {
-          photoURL: downloadURL
-        });
-
-        profileImagePreview.src = downloadURL;
-        alert("Profile image updated!");
-      } catch (err) {
-        console.error("Upload failed:", err);
-        alert("Upload failed: " + err.message);
       }
     });
   </script>
