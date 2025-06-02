@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <main class="max-w-xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-bold text-center mb-8">👤 Profile Details</h1>
+
+    <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
+      <div>
+        <p class="text-sm text-gray-500">Username</p>
+        <p id="username" class="text-lg font-medium text-gray-900">Loading...</p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-500">Phone Number</p>
+        <p id="phone" class="text-lg font-medium text-gray-900">Loading...</p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-500">Email</p>
+        <p id="email" class="text-lg font-medium text-gray-900">Loading...</p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-500">Account Created</p>
+        <p id="created" class="text-lg font-medium text-gray-900">Loading...</p>
+      </div>
+
+      <div>
+        <p class="text-sm text-gray-500">Account Status</p>
+        <p id="accountStatus" class="text-lg font-medium text-gray-900">Loading...</p>
+      </div>
+    </section>
+
+    <div class="text-center mt-8">
+      <a href="dashboard.html" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
+        ← Back to Dashboard
+      </a>
+    </div>
+  </main>
+
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+
+          document.getElementById("username").innerText = data.username || "N/A";
+          document.getElementById("phone").innerText = data.phone || "N/A";
+          document.getElementById("email").innerText = data.email || user.email || "N/A";
+          
+          if (data.created) {
+            const createdDate = new Date(data.created.seconds * 1000).toLocaleDateString();
+            document.getElementById("created").innerText = createdDate;
+          } else {
+            document.getElementById("created").innerText = "Unknown";
+          }
+
+          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+        } else {
+          alert("User data not found.");
+        }
+      } catch (err) {
+        alert("Error loading profile: " + err.message);
+      }
+    });
+  </script>
+</body>
+</html>
