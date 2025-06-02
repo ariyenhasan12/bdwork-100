@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>User Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
@@ -57,10 +56,30 @@
       </a>
     </section>
 
-    <!-- Deposit Page Redirect -->
+    <!-- Deposit Form Section -->
     <section class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 mb-8">
-      <h2 class="text-xl font-semibold mb-4">💰 Deposit Balance</h2>
-      <a href="deposit.html" class="text-blue-600 hover:underline text-center block">Go to Deposit Page →</a>
+      <h2 class="text-xl font-semibold mb-4">💰 Deposit Balance Funds</h2>
+      <form id="depositForm" class="space-y-4">
+        <div>
+          <label for="depositMethod" class="block text-sm font-medium text-gray-600 mb-1">Select Method</label>
+          <select id="depositMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700">
+            <option value="bKash">bKash</option>
+            <option value="Nagad">Nagad</option>
+            <option value="USDT">USDT</option>
+          </select>
+        </div>
+        <div>
+          <label for="depositAmount" class="block text-sm font-medium text-gray-600 mb-1">Amount</label>
+          <input type="number" id="depositAmount" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
+        </div>
+        <div>
+          <label for="paymentAddress" class="block text-sm font-medium text-gray-600 mb-1">Payment Address / Sender Number</label>
+          <input type="text" id="paymentAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+          Submit Deposit Request
+        </button>
+      </form>
     </section>
 
     <!-- Withdraw Redirect Section -->
@@ -83,7 +102,7 @@
     </div>
   </main>
 
-  <!-- Firebase and JS Logic -->
+  <!-- JavaScript: Firebase + Dashboard Logic -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -98,7 +117,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import {
-      getFirestore, doc, getDoc, collection, query, where, getDocs
+      getFirestore, doc, getDoc, collection, query, where, getDocs, addDoc, Timestamp
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
@@ -143,6 +162,36 @@
       input.setSelectionRange(0, 99999);
       navigator.clipboard.writeText(input.value).then(() => alert("Refer code copied!"));
     };
+
+    // Deposit Form Submit
+    document.getElementById("depositForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const method = document.getElementById("depositMethod").value;
+      const amount = parseFloat(document.getElementById("depositAmount").value);
+      const address = document.getElementById("paymentAddress").value.trim();
+
+      if (!method || isNaN(amount) || amount <= 0 || !address) {
+        alert("Please enter a valid method, amount, and payment address.");
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "deposits"), {
+          uid: currentUserData.uid,
+          userId: currentUserData.uid,
+          userEmail: currentUserData.email,
+          amount: amount,
+          method: method,
+          address: address,
+          timestamp: Timestamp.now(),
+          status: "pending"
+        });
+        alert("Deposit request submitted successfully!");
+        document.getElementById("depositForm").reset();
+      } catch (err) {
+        alert("Error submitting deposit: " + err.message);
+      }
+    });
   </script>
 </body>
 </html>
