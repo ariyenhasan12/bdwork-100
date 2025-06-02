@@ -120,7 +120,10 @@
 
           document.getElementById("userEmail").innerText = data.email;
           document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
-          document.getElementById("referLink").value = `https://yourdomain.com/register.html?ref=${user.uid}`;
+
+          const currentDomain = window.location.origin;
+          const referLink = `${currentDomain}/register.html?ref=${user.uid}`;
+          document.getElementById("referLink").value = referLink;
 
           const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
           const referSnapshot = await getDocs(referQuery);
