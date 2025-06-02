@@ -12,9 +12,9 @@
     <div class="text-center mb-6">
       <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
     </div>
-    <h1 class="text-2xl font-bold mb-6 text-center">💰 Deposit History</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">📜 Deposit History</h1>
     <div id="depositHistory" class="space-y-2">
-      <p class="text-sm text-gray-500 text-center">Loading deposit history...</p>
+      <p class="text-sm text-gray-500 text-center">Loading...</p>
     </div>
   </main>
 
@@ -79,6 +79,7 @@
           });
         }
       } catch (err) {
+        console.error("Error loading deposit history:", err);
         historyContainer.innerHTML = '<p class="text-sm text-red-500 text-center">Error loading deposit history.</p>';
       }
     });
