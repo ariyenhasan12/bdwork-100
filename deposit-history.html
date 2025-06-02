@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deposit History</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -12,7 +13,7 @@
     <div class="text-center mb-6">
       <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
     </div>
-    <h1 class="text-2xl font-bold mb-6 text-center">📜 Deposit History</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center">💰 Deposit History</h1>
     <div id="depositHistory" class="space-y-2">
       <p class="text-sm text-gray-500 text-center">Loading...</p>
     </div>
@@ -60,6 +61,7 @@
             const date = data.timestamp?.toDate().toLocaleString() || "N/A";
             const method = data.method || "N/A";
             const address = data.address || "N/A";
+
             const item = document.createElement("div");
             item.className = "bg-white p-4 rounded-md shadow-sm text-sm space-y-1 border border-gray-200";
             item.innerHTML = `
