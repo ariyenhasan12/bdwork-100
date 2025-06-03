@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pro Account</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <!-- Daily Bonus Popup -->
-  <div id="dailyBonusPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-blue-100 border border-blue-400 text-blue-800 px-6 py-4 rounded-lg shadow-lg hidden">
-    🎁 You have a daily bonus! 
-    <button onclick="claimDailyBonus()" class="ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-      Receive Bonus
-    </button>
+  <!-- Bonus Popup -->
+  <div id="bonusPopup" class="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-40 hidden z-50">
+    <div class="bg-white p-6 rounded-xl shadow-lg text-center max-w-sm w-full">
+      <h3 class="text-xl font-bold text-blue-700 mb-4">🎁 Daily Bonus</h3>
+      <p class="mb-4">You have a bonus of ৳<span id="bonusAmount">0</span> to claim!</p>
+      <button onclick="receiveBonus()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Receive Bonus</button>
+    </div>
   </div>
 
   <main class="max-w-4xl mx-auto px-4 py-8">
@@ -64,7 +64,7 @@
 
     let currentUserData = null;
     let proSettings = null;
-    let pendingBonus = false;
+    let pendingBonus = 0;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
@@ -73,21 +73,17 @@
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
         if (!userDoc.exists()) throw new Error("User data not found");
+
         const data = userDoc.data();
         currentUserData = { uid: user.uid, ...data };
 
-        // Load Pro Account Settings
         const proSettingsDocRef = doc(db, "settings", "proAccount");
         const proSettingsDocSnap = await getDoc(proSettingsDocRef);
-        if (proSettingsDocSnap.exists()) {
-          proSettings = proSettingsDocSnap.data();
+        proSettings = proSettingsDocSnap.exists() ? proSettingsDocSnap.data() : null;
 
-          document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
-          document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
-          document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
-        } else {
-          proSettings = null;
-        }
+        document.getElementById("proActivationCost").innerText = proSettings?.activationCost ?? "-";
+        document.getElementById("proDailyBonus").innerText = proSettings?.dailyBonus ?? "-";
+        document.getElementById("proValidity").innerText = proSettings?.validity ?? "-";
 
         let isProActive = false;
         if (data.isPro === true && data.proExpiryTimestamp) {
@@ -99,26 +95,18 @@
           if (expiryDate > now) {
             isProActive = true;
             document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
-
-            // Just check eligibility — don't give automatically
-            const now = new Date();
-            const lastClaimTimestamp = data.lastBonusClaim 
-              ? (data.lastBonusClaim.toDate ? data.lastBonusClaim.toDate() : new Date(data.lastBonusClaim)) 
-              : null;
-
-            if (!lastClaimTimestamp || !isSameDay(lastClaimTimestamp, now)) {
-              pendingBonus = true;
-              showDailyBonusPopup();
-            }
-
+            await showBonusPopupIfEligible(userDocRef, data, proSettings);
           } else {
             await updateDoc(userDocRef, { isPro: false, proExpiryTimestamp: null });
             document.getElementById("proExpiryDate").innerText = "-";
             currentUserData.isPro = false;
           }
+        } else {
+          document.getElementById("proExpiryDate").innerText = "-";
         }
 
         document.getElementById("isProStatus").innerText = isProActive ? "Yes" : "No";
+
         const activateBtn = document.getElementById("activateProBtn");
         activateBtn.disabled = isProActive;
         activateBtn.innerText = isProActive ? "Pro Account Active" : "Activate Pro Account";
@@ -129,22 +117,14 @@
     });
 
     window.activateProAccount = async function () {
-      if (!currentUserData || !proSettings) return alert("Data not loaded yet. Try again.");
+      if (!currentUserData || !proSettings) return alert("Data not loaded yet.");
 
       const now = new Date();
-      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
-        const expiryDate = currentUserData.proExpiryTimestamp.toDate
-          ? currentUserData.proExpiryTimestamp.toDate()
-          : new Date(currentUserData.proExpiryTimestamp);
-
-        if (expiryDate > now) {
-          alert("You already have an active Pro Account.");
-          return;
-        }
-      }
+      const expiryDate = new Date(now.getTime() + (proSettings.validity || 0) * 24 * 60 * 60 * 1000);
+      const expiryTimestamp = Timestamp.fromDate(expiryDate);
 
       const cost = proSettings.activationCost || 0;
-      const validityDays = proSettings.validity || 0;
+      const bonus = proSettings.dailyBonus || 0;
       const currentBalance = currentUserData.balance || 0;
 
       if (currentBalance < cost) {
@@ -153,21 +133,20 @@
       }
 
       try {
-        const expiryDate = new Date(now.getTime() + validityDays * 24 * 60 * 60 * 1000);
-        const expiryTimestamp = Timestamp.fromDate(expiryDate);
-
         const userDocRef = doc(db, "users", currentUserData.uid);
+
         await updateDoc(userDocRef, {
-          balance: currentBalance - cost + (proSettings.dailyBonus || 0),
+          balance: currentBalance - cost,
           isPro: true,
           proExpiryTimestamp: expiryTimestamp,
-          lastBonusClaim: Timestamp.fromDate(now),
         });
 
-        currentUserData.balance = currentBalance - cost + (proSettings.dailyBonus || 0);
-        currentUserData.isPro = true;
-        currentUserData.proExpiryTimestamp = expiryTimestamp;
-        currentUserData.lastBonusClaim = now;
+        currentUserData = {
+          ...currentUserData,
+          balance: currentBalance - cost,
+          isPro: true,
+          proExpiryTimestamp: expiryTimestamp,
+        };
 
         document.getElementById("isProStatus").innerText = "Yes";
         document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
@@ -176,39 +155,49 @@
         activateBtn.disabled = true;
         activateBtn.innerText = "Pro Account Active";
 
-        alert("Pro Account activated successfully! You also received today's bonus.");
+        // Show bonus popup instead of auto adding
+        pendingBonus = bonus;
+        document.getElementById("bonusAmount").innerText = bonus;
+        document.getElementById("bonusPopup").classList.remove("hidden");
+
       } catch (error) {
         alert("Failed to activate Pro Account: " + error.message);
       }
     };
 
-    // Daily bonus claiming function
-    window.claimDailyBonus = async function () {
-      if (!currentUserData || !proSettings || !pendingBonus) return;
+    window.receiveBonus = async function () {
+      if (!currentUserData || pendingBonus <= 0) return;
 
       try {
         const userDocRef = doc(db, "users", currentUserData.uid);
-        const newBalance = (currentUserData.balance || 0) + proSettings.dailyBonus;
-        const now = new Date();
+        const newBalance = (currentUserData.balance || 0) + pendingBonus;
 
         await updateDoc(userDocRef, {
           balance: newBalance,
-          lastBonusClaim: Timestamp.fromDate(now),
+          lastBonusClaim: Timestamp.fromDate(new Date()),
         });
 
         currentUserData.balance = newBalance;
-        currentUserData.lastBonusClaim = now;
-        pendingBonus = false;
+        currentUserData.lastBonusClaim = new Date();
 
-        document.getElementById("dailyBonusPopup").classList.add("hidden");
-        alert(`You received ৳${proSettings.dailyBonus} daily bonus!`);
+        document.getElementById("bonusPopup").classList.add("hidden");
+        alert(`৳${pendingBonus} bonus received successfully!`);
+        pendingBonus = 0;
       } catch (err) {
-        alert("Failed to claim bonus: " + err.message);
+        alert("Failed to receive bonus: " + err.message);
       }
     };
 
-    function showDailyBonusPopup() {
-      document.getElementById("dailyBonusPopup").classList.remove("hidden");
+    async function showBonusPopupIfEligible(userDocRef, userData, proSettings) {
+      const now = new Date();
+      const lastClaim = userData.lastBonusClaim ? 
+        (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim)) : null;
+
+      if (!lastClaim || !isSameDay(now, lastClaim)) {
+        pendingBonus = proSettings.dailyBonus || 0;
+        document.getElementById("bonusAmount").innerText = pendingBonus;
+        document.getElementById("bonusPopup").classList.remove("hidden");
+      }
     }
 
     function isSameDay(d1, d2) {
