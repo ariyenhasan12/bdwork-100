@@ -10,6 +10,14 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
+  <!-- Daily Bonus Popup -->
+  <div id="dailyBonusPopup" class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-blue-100 border border-blue-400 text-blue-800 px-6 py-4 rounded-lg shadow-lg hidden">
+    🎁 You have a daily bonus! 
+    <button onclick="claimDailyBonus()" class="ml-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+      Receive Bonus
+    </button>
+  </div>
+
   <main class="max-w-4xl mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
       <div>
@@ -56,6 +64,7 @@
 
     let currentUserData = null;
     let proSettings = null;
+    let pendingBonus = false;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
@@ -78,12 +87,8 @@
           document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
         } else {
           proSettings = null;
-          document.getElementById("proActivationCost").innerText = "-";
-          document.getElementById("proDailyBonus").innerText = "-";
-          document.getElementById("proValidity").innerText = "-";
         }
 
-        // Check Pro status & expiry
         let isProActive = false;
         if (data.isPro === true && data.proExpiryTimestamp) {
           const expiryDate = data.proExpiryTimestamp.toDate
@@ -95,29 +100,28 @@
             isProActive = true;
             document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
 
-            // Give daily bonus if not given today yet
-            await giveDailyBonusIfEligible(userDocRef, data, proSettings);
+            // Just check eligibility — don't give automatically
+            const now = new Date();
+            const lastClaimTimestamp = data.lastBonusClaim 
+              ? (data.lastBonusClaim.toDate ? data.lastBonusClaim.toDate() : new Date(data.lastBonusClaim)) 
+              : null;
+
+            if (!lastClaimTimestamp || !isSameDay(lastClaimTimestamp, now)) {
+              pendingBonus = true;
+              showDailyBonusPopup();
+            }
+
           } else {
-            // Expired: deactivate
             await updateDoc(userDocRef, { isPro: false, proExpiryTimestamp: null });
-            isProActive = false;
             document.getElementById("proExpiryDate").innerText = "-";
             currentUserData.isPro = false;
           }
-        } else {
-          document.getElementById("proExpiryDate").innerText = "-";
         }
 
         document.getElementById("isProStatus").innerText = isProActive ? "Yes" : "No";
-
         const activateBtn = document.getElementById("activateProBtn");
-        if (isProActive) {
-          activateBtn.disabled = true;
-          activateBtn.innerText = "Pro Account Active";
-        } else {
-          activateBtn.disabled = false;
-          activateBtn.innerText = "Activate Pro Account";
-        }
+        activateBtn.disabled = isProActive;
+        activateBtn.innerText = isProActive ? "Pro Account Active" : "Activate Pro Account";
 
       } catch (error) {
         alert("Failed to load Pro Account data: " + error.message);
@@ -153,18 +157,17 @@
         const expiryTimestamp = Timestamp.fromDate(expiryDate);
 
         const userDocRef = doc(db, "users", currentUserData.uid);
-        // Update balance, pro status, expiry, and also set lastBonusClaim to now (because bonus given on activation day)
         await updateDoc(userDocRef, {
-          balance: currentBalance - cost + (proSettings.dailyBonus || 0), // add bonus instantly
+          balance: currentBalance - cost + (proSettings.dailyBonus || 0),
           isPro: true,
           proExpiryTimestamp: expiryTimestamp,
-          lastBonusClaim: Timestamp.fromDate(new Date()),
+          lastBonusClaim: Timestamp.fromDate(now),
         });
 
         currentUserData.balance = currentBalance - cost + (proSettings.dailyBonus || 0);
         currentUserData.isPro = true;
         currentUserData.proExpiryTimestamp = expiryTimestamp;
-        currentUserData.lastBonusClaim = new Date();
+        currentUserData.lastBonusClaim = now;
 
         document.getElementById("isProStatus").innerText = "Yes";
         document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
@@ -179,27 +182,15 @@
       }
     };
 
-    // Function to give daily bonus if not given today yet
-    async function giveDailyBonusIfEligible(userDocRef, userData, proSettings) {
+    // Daily bonus claiming function
+    window.claimDailyBonus = async function () {
+      if (!currentUserData || !proSettings || !pendingBonus) return;
+
       try {
-        if (!userData.isPro) return;
-        if (!proSettings || !proSettings.dailyBonus) return;
-
+        const userDocRef = doc(db, "users", currentUserData.uid);
+        const newBalance = (currentUserData.balance || 0) + proSettings.dailyBonus;
         const now = new Date();
-        const lastClaimTimestamp = userData.lastBonusClaim ? 
-          (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim))
-          : null;
 
-        if (lastClaimTimestamp) {
-          // Check if lastBonusClaim is today
-          if (isSameDay(lastClaimTimestamp, now)) {
-            // Already given bonus today
-            return;
-          }
-        }
-
-        // Give bonus now
-        const newBalance = (userData.balance || 0) + proSettings.dailyBonus;
         await updateDoc(userDocRef, {
           balance: newBalance,
           lastBonusClaim: Timestamp.fromDate(now),
@@ -207,15 +198,19 @@
 
         currentUserData.balance = newBalance;
         currentUserData.lastBonusClaim = now;
+        pendingBonus = false;
 
-        console.log("Daily bonus credited:", proSettings.dailyBonus);
-
-      } catch (error) {
-        console.error("Failed to give daily bonus:", error);
+        document.getElementById("dailyBonusPopup").classList.add("hidden");
+        alert(`You received ৳${proSettings.dailyBonus} daily bonus!`);
+      } catch (err) {
+        alert("Failed to claim bonus: " + err.message);
       }
+    };
+
+    function showDailyBonusPopup() {
+      document.getElementById("dailyBonusPopup").classList.remove("hidden");
     }
 
-    // Helper: check if two dates are the same day
     function isSameDay(d1, d2) {
       return d1.getFullYear() === d2.getFullYear() &&
              d1.getMonth() === d2.getMonth() &&
