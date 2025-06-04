@@ -10,7 +10,7 @@
 <body class="bg-gray-50 text-gray-800 font-sans">
 
   <!-- Bonus Banner (Top Fixed) -->
-  <div id="bonusBanner" class="hidden fixed top-0 left-0 w-full text-white z-50 shadow-md"></div>
+  <div id="bonusBanner" class="hidden fixed top-0 left-0 w-full text-white z-50"></div>
 
   <main class="max-w-4xl mx-auto px-4 py-24">
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
@@ -194,7 +194,7 @@
     function showBonusBanner(amount) {
       const banner = document.getElementById("bonusBanner");
       banner.innerHTML = `
-        <div class="flex justify-between items-center w-full px-4 py-4 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white rounded-2xl shadow-md border border-yellow-300">
+        <div class="flex justify-between items-center w-full px-4 py-4 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white shadow-md border border-yellow-300">
   <div class="flex items-center text-sm font-semibold text-yellow-800">
     🎁 <span class="ml-2">You have a bonus of <span class="text-orange-600 font-bold">৳${amount}</span> to claim!</span>
   </div>
