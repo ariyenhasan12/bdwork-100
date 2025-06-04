@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pro Account</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <!-- Bonus Banner (Top Fixed) -->
-  <div id="bonusBanner" class="hidden fixed top-0 left-0 w-full text-white z-50"></div>
-
-  <main class="max-w-4xl mx-auto px-4 py-24">
+  <main class="max-w-4xl mx-auto px-4 py-8">
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
       <div>
         <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
@@ -58,7 +56,6 @@
 
     let currentUserData = null;
     let proSettings = null;
-    let pendingBonus = 0;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
@@ -67,18 +64,26 @@
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
         if (!userDoc.exists()) throw new Error("User data not found");
-
         const data = userDoc.data();
         currentUserData = { uid: user.uid, ...data };
 
+        // Load Pro Account Settings
         const proSettingsDocRef = doc(db, "settings", "proAccount");
         const proSettingsDocSnap = await getDoc(proSettingsDocRef);
-        proSettings = proSettingsDocSnap.exists() ? proSettingsDocSnap.data() : null;
+        if (proSettingsDocSnap.exists()) {
+          proSettings = proSettingsDocSnap.data();
 
-        document.getElementById("proActivationCost").innerText = proSettings?.activationCost ?? "-";
-        document.getElementById("proDailyBonus").innerText = proSettings?.dailyBonus ?? "-";
-        document.getElementById("proValidity").innerText = proSettings?.validity ?? "-";
+          document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
+          document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
+          document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
+        } else {
+          proSettings = null;
+          document.getElementById("proActivationCost").innerText = "-";
+          document.getElementById("proDailyBonus").innerText = "-";
+          document.getElementById("proValidity").innerText = "-";
+        }
 
+        // Check Pro status & expiry
         let isProActive = false;
         if (data.isPro === true && data.proExpiryTimestamp) {
           const expiryDate = data.proExpiryTimestamp.toDate
@@ -89,9 +94,13 @@
           if (expiryDate > now) {
             isProActive = true;
             document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
-            await showBonusBannerIfEligible(userDocRef, data, proSettings);
+
+            // Give daily bonus if not given today yet
+            await giveDailyBonusIfEligible(userDocRef, data, proSettings);
           } else {
+            // Expired: deactivate
             await updateDoc(userDocRef, { isPro: false, proExpiryTimestamp: null });
+            isProActive = false;
             document.getElementById("proExpiryDate").innerText = "-";
             currentUserData.isPro = false;
           }
@@ -102,8 +111,13 @@
         document.getElementById("isProStatus").innerText = isProActive ? "Yes" : "No";
 
         const activateBtn = document.getElementById("activateProBtn");
-        activateBtn.disabled = isProActive;
-        activateBtn.innerText = isProActive ? "Pro Account Active" : "Activate Pro Account";
+        if (isProActive) {
+          activateBtn.disabled = true;
+          activateBtn.innerText = "Pro Account Active";
+        } else {
+          activateBtn.disabled = false;
+          activateBtn.innerText = "Activate Pro Account";
+        }
 
       } catch (error) {
         alert("Failed to load Pro Account data: " + error.message);
@@ -111,14 +125,22 @@
     });
 
     window.activateProAccount = async function () {
-      if (!currentUserData || !proSettings) return alert("Data not loaded yet.");
+      if (!currentUserData || !proSettings) return alert("Data not loaded yet. Try again.");
 
       const now = new Date();
-      const expiryDate = new Date(now.getTime() + (proSettings.validity || 0) * 24 * 60 * 60 * 1000);
-      const expiryTimestamp = Timestamp.fromDate(expiryDate);
+      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
+        const expiryDate = currentUserData.proExpiryTimestamp.toDate
+          ? currentUserData.proExpiryTimestamp.toDate()
+          : new Date(currentUserData.proExpiryTimestamp);
+
+        if (expiryDate > now) {
+          alert("You already have an active Pro Account.");
+          return;
+        }
+      }
 
       const cost = proSettings.activationCost || 0;
-      const bonus = proSettings.dailyBonus || 0;
+      const validityDays = proSettings.validity || 0;
       const currentBalance = currentUserData.balance || 0;
 
       if (currentBalance < cost) {
@@ -127,20 +149,22 @@
       }
 
       try {
-        const userDocRef = doc(db, "users", currentUserData.uid);
+        const expiryDate = new Date(now.getTime() + validityDays * 24 * 60 * 60 * 1000);
+        const expiryTimestamp = Timestamp.fromDate(expiryDate);
 
+        const userDocRef = doc(db, "users", currentUserData.uid);
+        // Update balance, pro status, expiry, and also set lastBonusClaim to now (because bonus given on activation day)
         await updateDoc(userDocRef, {
-          balance: currentBalance - cost,
+          balance: currentBalance - cost + (proSettings.dailyBonus || 0), // add bonus instantly
           isPro: true,
           proExpiryTimestamp: expiryTimestamp,
+          lastBonusClaim: Timestamp.fromDate(new Date()),
         });
 
-        currentUserData = {
-          ...currentUserData,
-          balance: currentBalance - cost,
-          isPro: true,
-          proExpiryTimestamp: expiryTimestamp,
-        };
+        currentUserData.balance = currentBalance - cost + (proSettings.dailyBonus || 0);
+        currentUserData.isPro = true;
+        currentUserData.proExpiryTimestamp = expiryTimestamp;
+        currentUserData.lastBonusClaim = new Date();
 
         document.getElementById("isProStatus").innerText = "Yes";
         document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
@@ -149,77 +173,49 @@
         activateBtn.disabled = true;
         activateBtn.innerText = "Pro Account Active";
 
-        pendingBonus = bonus;
-        showBonusBanner(bonus);
-
+        alert("Pro Account activated successfully! You also received today's bonus.");
       } catch (error) {
         alert("Failed to activate Pro Account: " + error.message);
       }
     };
 
-    window.receiveBonus = async function () {
-      if (!currentUserData || pendingBonus <= 0) return;
-
+    // Function to give daily bonus if not given today yet
+    async function giveDailyBonusIfEligible(userDocRef, userData, proSettings) {
       try {
-        const userDocRef = doc(db, "users", currentUserData.uid);
-        const newBalance = (currentUserData.balance || 0) + pendingBonus;
+        if (!userData.isPro) return;
+        if (!proSettings || !proSettings.dailyBonus) return;
 
+        const now = new Date();
+        const lastClaimTimestamp = userData.lastBonusClaim ? 
+          (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim))
+          : null;
+
+        if (lastClaimTimestamp) {
+          // Check if lastBonusClaim is today
+          if (isSameDay(lastClaimTimestamp, now)) {
+            // Already given bonus today
+            return;
+          }
+        }
+
+        // Give bonus now
+        const newBalance = (userData.balance || 0) + proSettings.dailyBonus;
         await updateDoc(userDocRef, {
           balance: newBalance,
-          lastBonusClaim: Timestamp.fromDate(new Date()),
+          lastBonusClaim: Timestamp.fromDate(now),
         });
 
         currentUserData.balance = newBalance;
-        currentUserData.lastBonusClaim = new Date();
+        currentUserData.lastBonusClaim = now;
 
-        document.getElementById("bonusBanner").classList.add("hidden");
-        alert(`৳${pendingBonus} bonus received successfully!`);
-        pendingBonus = 0;
-      } catch (err) {
-        alert("Failed to receive bonus: " + err.message);
-      }
-    };
+        console.log("Daily bonus credited:", proSettings.dailyBonus);
 
-    async function showBonusBannerIfEligible(userDocRef, userData, proSettings) {
-      const now = new Date();
-      const lastClaim = userData.lastBonusClaim ?
-        (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim)) : null;
-
-      if (!lastClaim || !isSameDay(now, lastClaim)) {
-        pendingBonus = proSettings.dailyBonus || 0;
-        showBonusBanner(pendingBonus);
+      } catch (error) {
+        console.error("Failed to give daily bonus:", error);
       }
     }
 
-    function showBonusBanner(amount) {
-      const banner = document.getElementById("bonusBanner");
-      banner.innerHTML = `
-        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
-          <div class="flex items-center justify-between text-sm sm:text-base font-medium">
-            <div class="flex items-center gap-2">
-              <span class="text-xl">🎉</span>
-              <div>
-                <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
-                <p class="text-xs sm:text-sm text-gray-700">
-                  Pro Account users can claim <span class="text-green-800 font-bold">৳${amount}</span> today!
-                </p>
-              </div>
-            </div>
-            <div class="ml-4">
-              <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
-                <i class="fa-solid fa-gift"></i>
-                <span>Claim Now</span>
-              </button>
-            </div>
-          </div>
-        </section>
-      `;
-      banner.classList.remove("hidden");
-
-      // Attach click event handler to dynamically created button
-      document.getElementById("claimBonusBtn").addEventListener("click", receiveBonus);
-    }
-
+    // Helper: check if two dates are the same day
     function isSameDay(d1, d2) {
       return d1.getFullYear() === d2.getFullYear() &&
              d1.getMonth() === d2.getMonth() &&
