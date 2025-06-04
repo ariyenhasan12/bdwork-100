@@ -30,7 +30,9 @@
         Activate Pro Account
       </button>
 
-      
+      <!-- Claim Bonus Component Container -->
+      <div id="dailyBonusContainer" class="mt-6"></div>
+    </div>
   </main>
 
   <!-- Firebase Pro Logic -->
@@ -38,6 +40,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -90,7 +93,6 @@
       btn.onclick = async () => {
         const balance = currentUserData.balance || 0;
         const cost = proSettings.activationCost;
-        const bonus = proSettings.dailyBonus;
         const validity = proSettings.validity;
 
         if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
@@ -98,12 +100,11 @@
         const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
         await updateDoc(userRef, {
           isPro: true,
-          balance: balance - cost + bonus,
-          proExpiryTimestamp: Timestamp.fromDate(expiry),
-          lastBonusClaim: Timestamp.fromDate(now)
+          balance: balance - cost,
+          proExpiryTimestamp: Timestamp.fromDate(expiry)
         });
 
-        alert("Pro Account Activated! Daily bonus credited.");
+        alert("Pro Account Activated! Now claim your daily bonus.");
         location.reload();
       };
 
