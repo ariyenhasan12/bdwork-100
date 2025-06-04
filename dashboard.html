@@ -5,36 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>User Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <!-- Bonus Banner -->
-  <section id="bonusBanner" class="hidden bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
-    <div class="flex items-center justify-between text-sm sm:text-base font-medium">
-      <div class="flex items-center gap-2">
-        <span class="text-xl">🎉</span>
-        <div>
-          <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
-          <p class="text-xs sm:text-sm text-gray-700">
-            Pro Account users can claim <span class="text-green-800 font-bold">৳5</span> today!
-          </p>
-        </div>
-      </div>
-      <div class="ml-4">
-        <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
-          <i class="fa-solid fa-gift"></i>
-          <span>Claim Now</span>
-        </button>
-      </div>
-    </div>
+  <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
+          <div class="flex items-center justify-between text-sm sm:text-base font-medium">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🎉</span>
+              <div>
+                <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
+                <p class="text-xs sm:text-sm text-gray-700">
+                  Pro Account users can claim <span class="text-green-800 font-bold">৳${amount}</span> today!
+                </p>
+              </div>
+            </div>
+            <div class="ml-4">
+              <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
+                <i class="fa-solid fa-gift"></i>
+                <span>Claim Now</span>
+              </button>
+            </div>
+          </div>
   </section>
-
-  <!-- Dashboard Content -->
+  
   <main class="max-w-5xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-10">👋 Welcome to Your Dashboard</h1>
 
-       <!-- User Info Section -->
+    <!-- User Info Section -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
         <p class="text-sm text-gray-500 mb-1">Username</p>
@@ -103,7 +102,7 @@
       <h2 class="text-xl font-semibold mb-4">📜 Withdraw History</h2>
       <a href="withdraw-history.html" class="text-blue-600 hover:underline text-center block">View Withdraw History →</a>
     </section>
-      
+
     <!-- Logout -->
     <div class="text-center mt-8">
       <button onclick="logout()" class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700 transition text-lg">
@@ -112,7 +111,7 @@
     </div>
   </main>
 
-  <!-- Firebase and Logic -->
+  <!-- Firebase and JS Logic -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -120,85 +119,48 @@
       projectId: "bdwork-346d3",
       storageBucket: "bdwork-346d3.appspot.com",
       messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc"
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      getFirestore, doc, getDoc, collection, query, where, getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const bonusAmount = 5;
-    let currentUser = null;
+    let currentUserData = null;
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-      currentUser = user;
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      const data = userSnap.data();
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          currentUserData = { uid: user.uid, ...data };
 
-      document.getElementById("userName").innerText = data.username || "No username";
-      document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
-      document.getElementById("accountStatus").innerText = data.isPro ? "🌟 Pro Account" : "⚡ Regular Account";
+          document.getElementById("userName").innerText = data.username || "No username set";
+          document.getElementById("userBalance").innerText = `৳${data.balance || 0}`;
 
-      const currentDomain = window.location.origin;
-      document.getElementById("referLink").value = `${currentDomain}/signup.html?ref=${user.uid}`;
+          const currentDomain = window.location.origin;
+          const referLink = `${currentDomain}/signup.html?ref=${user.uid}`;
+          document.getElementById("referLink").value = referLink;
 
-      const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-      const referSnapshot = await getDocs(referQuery);
-      document.getElementById("totalRefers").innerText = referSnapshot.size;
+          const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+          const referSnapshot = await getDocs(referQuery);
+          document.getElementById("totalRefers").innerText = referSnapshot.size;
 
-      // Bonus check
-      if (data.isPro) {
-        const bonusDoc = await getDoc(doc(db, "dailyBonuses", user.uid));
-        const today = new Date().toISOString().split("T")[0];
-        if (!bonusDoc.exists() || bonusDoc.data().date !== today) {
-          document.getElementById("bonusBanner").classList.remove("hidden");
-        } else {
-          document.getElementById("claimBonusBtn").innerText = "Already Claimed";
-          document.getElementById("claimBonusBtn").disabled = true;
+          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
         }
+      } catch (err) {
+        alert("Failed to load user data: " + err.message);
       }
-    });
-
-    document.getElementById("claimBonusBtn").addEventListener("click", async () => {
-      if (!currentUser) return alert("User not logged in");
-
-      const userRef = doc(db, "users", currentUser.uid);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
-
-      if (!userData.isPro) return alert("Only Pro users can claim bonus");
-
-      const bonusRef = doc(db, "dailyBonuses", currentUser.uid);
-      const bonusSnap = await getDoc(bonusRef);
-      const today = new Date().toISOString().split("T")[0];
-
-      if (bonusSnap.exists() && bonusSnap.data().date === today) {
-        return alert("Bonus already claimed today");
-      }
-
-      // Update balance
-      await updateDoc(userRef, {
-        balance: (userData.balance || 0) + bonusAmount
-      });
-
-      // Mark bonus as claimed
-      await setDoc(bonusRef, {
-        uid: currentUser.uid,
-        date: today,
-        amount: bonusAmount
-      });
-
-      document.getElementById("userBalance").innerText = `৳${(userData.balance || 0) + bonusAmount}`;
-      document.getElementById("claimBonusBtn").innerText = "Claimed";
-      document.getElementById("claimBonusBtn").disabled = true;
-      alert("Bonus claimed successfully!");
     });
 
     window.logout = async function () {
@@ -213,5 +175,4 @@
       navigator.clipboard.writeText(input.value).then(() => alert("Refer link copied!"));
     };
   </script>
-</body>
 </html>
