@@ -53,13 +53,11 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const isPro = userData.isPro === true &&
         new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > now;
 
-      // ✅ Pro user না হলে কিছুই দেখাবো না
       if (!isPro) {
         container.innerHTML = "";
         return;
       }
 
-      // ✅ Pro user হলে bonus section দেখাও
       container.innerHTML = `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
@@ -84,7 +82,6 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
 
       const claimBtn = document.getElementById("claimBonusBtn");
 
-      // যদি আজকে ইতোমধ্যেই ক্লেইম করা থাকে, তাহলে disable করে দাও
       if (isSameDay(lastClaimDate, now)) {
         claimBtn.disabled = true;
         return;
@@ -99,8 +96,8 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
             balance: newBalance,
             lastBonusClaim: Timestamp.fromDate(new Date())
           });
-          claimBtn.disabled = true;
           alert(`You received ৳${dailyBonus} as daily bonus.`);
+          container.innerHTML = ""; // Bonus section hide kore dao
         } catch (err) {
           alert("Error claiming bonus: " + err.message);
         }
