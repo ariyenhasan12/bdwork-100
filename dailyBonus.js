@@ -65,7 +65,6 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
         ? ""
         : `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
-        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
             <div class="flex items-center gap-2">
               <span class="text-xl">🎉</span>
