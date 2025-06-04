@@ -42,18 +42,8 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const settings = settingsSnap.data();
 
       const dailyBonus = settings.dailyBonus || 0;
-      const now = new Date();
 
-      const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
-      const isSameDay = (d1, d2) =>
-        d1.getFullYear() === d2.getFullYear() &&
-        d1.getMonth() === d2.getMonth() &&
-        d1.getDate() === d2.getDate();
-
-      const isPro = userData.isPro === true &&
-        new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > now;
-
-      // Show the bonus section in all cases
+      // Show the bonus section
       container.innerHTML = `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
@@ -78,20 +68,7 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
 
       const claimBtn = document.getElementById("claimBonusBtn");
 
-      if (!isPro) {
-        claimBtn.innerText = "Pro Only";
-        claimBtn.disabled = true;
-        return;
-      }
-
-      if (isSameDay(lastClaimDate, now)) {
-        claimBtn.innerText = "Already Claimed";
-        claimBtn.disabled = true;
-        return;
-      }
-
-      // User is Pro and hasn't claimed yet — allow claiming
-      claimBtn.innerText = `Claim ৳${dailyBonus}`;
+      // Bonus button is always enabled, icon only
       claimBtn.disabled = false;
 
       claimBtn.onclick = async () => {
@@ -101,7 +78,6 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
             balance: newBalance,
             lastBonusClaim: Timestamp.fromDate(new Date())
           });
-          claimBtn.innerText = "Bonus Claimed!";
           claimBtn.disabled = true;
           alert(`You received ৳${dailyBonus} as daily bonus.`);
         } catch (err) {
