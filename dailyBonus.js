@@ -73,8 +73,8 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
               </div>
             </div>
             <div class="ml-4">
-              <button id="claimBonusBtn" class="w-10 h-10 p-2 rounded-full font-semibold shadow flex items-center justify-center text-white bg-gradient-to-r from-pink-500 to-purple-600">
-                <i class="fa-solid fa-gift text-lg"></i>
+              <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
+                <i class="fa-solid fa-gift"></i>
                 <span>Claim Now</span>
               </button>
             </div>
