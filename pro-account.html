@@ -194,15 +194,15 @@
     function showBonusBanner(amount) {
       const banner = document.getElementById("bonusBanner");
       banner.innerHTML = `
-        <div class="flex justify-between items-center w-full px-5 py-4 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 rounded-2xl shadow-sm">
-  <div class="text-sm sm:text-base font-medium text-blue-900 flex items-center space-x-2">
-    <span class="text-xl">🎁</span>
-    <span>You have a bonus of <span class="font-bold text-green-600">৳${amount}</span> to claim!</span>
+        <div class="flex justify-between items-center w-full px-4 py-4 bg-gradient-to-r from-yellow-100 via-yellow-50 to-white rounded-2xl shadow-md border border-yellow-300">
+  <div class="flex items-center text-sm font-semibold text-yellow-800">
+    🎁 <span class="ml-2">You have a bonus of <span class="text-orange-600 font-bold">৳${amount}</span> to claim!</span>
   </div>
-  <button onclick="receiveBonus()" class="ml-4 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-semibold px-4 py-2 rounded-xl transition duration-200 shadow-md">
-    Claim Bonus
+  <button onclick="receiveBonus()" class="ml-4 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg shadow">
+    Receive Bonus
   </button>
 </div>
+
       `;
       banner.classList.remove("hidden");
     }
