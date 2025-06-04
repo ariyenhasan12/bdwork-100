@@ -18,14 +18,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Exported function
 export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
   const container = document.getElementById(containerId);
   if (!container) return;
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      container.innerHTML = `<p class="text-red-600 font-semibold">Login to claim daily bonus.</p>`;
+      container.innerHTML = `
+        <section class="bg-yellow-100 text-black mt-4 py-2 px-3 shadow border border-yellow-400 rounded-md">
+          <p class="text-sm font-medium">Login to claim your daily bonus.</p>
+        </section>
+      `;
       return;
     }
 
@@ -42,7 +45,6 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const now = new Date();
 
       const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
-
       const isSameDay = (d1, d2) =>
         d1.getFullYear() === d2.getFullYear() &&
         d1.getMonth() === d2.getMonth() &&
@@ -51,33 +53,23 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const isPro = userData.isPro === true &&
         new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > now;
 
-      if (!isPro) {
-        container.innerHTML = `<p class="text-red-600 font-semibold">Only Pro users can claim the daily bonus.</p>`;
-        return;
-      }
-
-      if (isSameDay(lastClaimDate, now)) {
-        container.innerHTML = `<p class="text-green-600 font-semibold">You've already claimed your bonus today.</p>`;
-        return;
-      }
-
-      // Show the bonus section
+      // Show the bonus section in all cases
       container.innerHTML = `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
             <div class="flex items-center gap-2">
               <span class="text-xl">🎉</span>
               <div>
-                <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
+                <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus</p>
                 <p class="text-xs sm:text-sm text-gray-700">
-                  Pro Account users can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
+                  Pro users can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> once per day!
                 </p>
               </div>
             </div>
             <div class="ml-4">
               <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
                 <i class="fa-solid fa-gift"></i>
-                <span>Claim Now</span>
+                <span>Checking...</span>
               </button>
             </div>
           </div>
@@ -85,6 +77,23 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       `;
 
       const claimBtn = document.getElementById("claimBonusBtn");
+
+      if (!isPro) {
+        claimBtn.innerText = "Pro Only";
+        claimBtn.disabled = true;
+        return;
+      }
+
+      if (isSameDay(lastClaimDate, now)) {
+        claimBtn.innerText = "Already Claimed";
+        claimBtn.disabled = true;
+        return;
+      }
+
+      // User is Pro and hasn't claimed yet — allow claiming
+      claimBtn.innerText = `Claim ৳${dailyBonus}`;
+      claimBtn.disabled = false;
+
       claimBtn.onclick = async () => {
         try {
           const newBalance = (userData.balance || 0) + dailyBonus;
