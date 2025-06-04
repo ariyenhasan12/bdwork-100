@@ -42,8 +42,24 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const settings = settingsSnap.data();
 
       const dailyBonus = settings.dailyBonus || 0;
+      const now = new Date();
 
-      // Show the bonus section
+      const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
+      const isSameDay = (d1, d2) =>
+        d1.getFullYear() === d2.getFullYear() &&
+        d1.getMonth() === d2.getMonth() &&
+        d1.getDate() === d2.getDate();
+
+      const isPro = userData.isPro === true &&
+        new Date(userData.proExpiryTimestamp?.toDate?.() ?? userData.proExpiryTimestamp) > now;
+
+      // ✅ Pro user না হলে কিছুই দেখাবো না
+      if (!isPro) {
+        container.innerHTML = "";
+        return;
+      }
+
+      // ✅ Pro user হলে bonus section দেখাও
       container.innerHTML = `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
@@ -52,14 +68,13 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
               <div>
                 <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
                 <p class="text-xs sm:text-sm text-gray-700">
-                  Pro Account users can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
+                  You can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
                 </p>
               </div>
             </div>
             <div class="ml-4">
-              <button id="claimBonusBtn" class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600">
-                <i class="fa-solid fa-gift"></i>
-                <span>Claim Now</span>
+              <button id="claimBonusBtn" class="w-10 h-10 p-2 rounded-full font-semibold shadow flex items-center justify-center text-white bg-gradient-to-r from-pink-500 to-purple-600">
+                <i class="fa-solid fa-gift text-lg"></i>
               </button>
             </div>
           </div>
@@ -68,7 +83,12 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
 
       const claimBtn = document.getElementById("claimBonusBtn");
 
-      // Bonus button is always enabled, icon only
+      // যদি আজকে ইতোমধ্যেই ক্লেইম করা থাকে, তাহলে disable করে দাও
+      if (isSameDay(lastClaimDate, now)) {
+        claimBtn.disabled = true;
+        return;
+      }
+
       claimBtn.disabled = false;
 
       claimBtn.onclick = async () => {
