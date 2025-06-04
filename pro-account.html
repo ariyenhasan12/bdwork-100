@@ -194,23 +194,25 @@
     function showBonusBanner(amount) {
       const banner = document.getElementById("bonusBanner");
       banner.innerHTML = `
-        <div class="w-full px-4 py-4 bg-gradient-to-r from-yellow-50 via-white to-yellow-100 border border-yellow-300 rounded-xl shadow-lg flex justify-between items-center animate-fade-in">
-  <div class="flex items-center space-x-3 text-yellow-800">
-    <div class="text-2xl">🎁</div>
-    <div class="text-sm sm:text-base font-medium">
-      <span class="block sm:inline">You have a bonus of</span>
-      <span class="text-orange-600 font-extrabold text-base sm:text-lg">৳${amount}</span>
-      <span class="hidden sm:inline">to claim!</span>
+        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
+    <div class="flex items-center justify-between text-sm sm:text-base font-medium">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🎉</span>
+        <div>
+          <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
+          <p class="text-xs sm:text-sm text-gray-700">
+            Pro Account users can claim <span class="text-green-800 font-bold">৳${amount}</span> today!
+          </p>
+        </div>
+      </div>
+      <div class="ml-4">
+        <button class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600">
+          <i class="fa-solid fa-gift"></i>
+          <span>Claim Now</span>
+        </button>
+      </div>
     </div>
-  </div>
-  <button
-    onclick="receiveBonus()"
-    class="ml-6 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-5 py-2.5 rounded-xl shadow transition duration-200 ease-in-out transform hover:scale-105"
-  >
-    🎉 Claim Bonus
-  </button>
-</div>
-
+  </section>
       `;
       banner.classList.remove("hidden");
     }
