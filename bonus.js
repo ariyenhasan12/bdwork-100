@@ -1,16 +1,184 @@
-export function showBonusBanner(amount) {
-  const banner = document.getElementById("bonusBanner");
-  banner.innerHTML = `
-    <div class="flex justify-between items-center w-full px-4 py-3">
-      <div class="text-sm font-medium">🎁 You have a bonus of ৳<span>${amount}</span> to claim!</div>
-      <button onclick="receiveBonus()" class="ml-4 bg-white text-blue-700 font-semibold px-3 py-1 rounded hover:bg-gray-100 transition">
-        Receive Bonus
-      </button>
-    </div>
-  `;
-  banner.classList.remove("hidden");
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-export function hideBonusBanner() {
-  document.getElementById("bonusBanner").classList.add("hidden");
-}
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserData = null;
+    let proSettings = null;
+    let pendingBonus = 0;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) throw new Error("User data not found");
+
+        const data = userDoc.data();
+        currentUserData = { uid: user.uid, ...data };
+
+        const proSettingsDocRef = doc(db, "settings", "proAccount");
+        const proSettingsDocSnap = await getDoc(proSettingsDocRef);
+        proSettings = proSettingsDocSnap.exists() ? proSettingsDocSnap.data() : null;
+
+        document.getElementById("proActivationCost").innerText = proSettings?.activationCost ?? "-";
+        document.getElementById("proDailyBonus").innerText = proSettings?.dailyBonus ?? "-";
+        document.getElementById("proValidity").innerText = proSettings?.validity ?? "-";
+
+        let isProActive = false;
+        if (data.isPro === true && data.proExpiryTimestamp) {
+          const expiryDate = data.proExpiryTimestamp.toDate
+            ? data.proExpiryTimestamp.toDate()
+            : new Date(data.proExpiryTimestamp);
+          const now = new Date();
+
+          if (expiryDate > now) {
+            isProActive = true;
+            document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
+            await showBonusBannerIfEligible(userDocRef, data, proSettings);
+          } else {
+            await updateDoc(userDocRef, { isPro: false, proExpiryTimestamp: null });
+            document.getElementById("proExpiryDate").innerText = "-";
+            currentUserData.isPro = false;
+          }
+        } else {
+          document.getElementById("proExpiryDate").innerText = "-";
+        }
+
+        document.getElementById("isProStatus").innerText = isProActive ? "Yes" : "No";
+
+        const activateBtn = document.getElementById("activateProBtn");
+        activateBtn.disabled = isProActive;
+        activateBtn.innerText = isProActive ? "Pro Account Active" : "Activate Pro Account";
+
+      } catch (error) {
+        alert("Failed to load Pro Account data: " + error.message);
+      }
+    });
+
+    window.activateProAccount = async function () {
+      if (!currentUserData || !proSettings) return alert("Data not loaded yet.");
+
+      const now = new Date();
+      const expiryDate = new Date(now.getTime() + (proSettings.validity || 0) * 24 * 60 * 60 * 1000);
+      const expiryTimestamp = Timestamp.fromDate(expiryDate);
+
+      const cost = proSettings.activationCost || 0;
+      const bonus = proSettings.dailyBonus || 0;
+      const currentBalance = currentUserData.balance || 0;
+
+      if (currentBalance < cost) {
+        alert(`Insufficient balance. You need ৳${cost} to activate Pro Account.`);
+        return;
+      }
+
+      try {
+        const userDocRef = doc(db, "users", currentUserData.uid);
+
+        await updateDoc(userDocRef, {
+          balance: currentBalance - cost,
+          isPro: true,
+          proExpiryTimestamp: expiryTimestamp,
+        });
+
+        currentUserData = {
+          ...currentUserData,
+          balance: currentBalance - cost,
+          isPro: true,
+          proExpiryTimestamp: expiryTimestamp,
+        };
+
+        document.getElementById("isProStatus").innerText = "Yes";
+        document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
+
+        const activateBtn = document.getElementById("activateProBtn");
+        activateBtn.disabled = true;
+        activateBtn.innerText = "Pro Account Active";
+
+        pendingBonus = bonus;
+        showBonusBanner(bonus);
+
+      } catch (error) {
+        alert("Failed to activate Pro Account: " + error.message);
+      }
+    };
+
+    window.receiveBonus = async function () {
+      if (!currentUserData || pendingBonus <= 0) return;
+
+      try {
+        const userDocRef = doc(db, "users", currentUserData.uid);
+        const newBalance = (currentUserData.balance || 0) + pendingBonus;
+
+        await updateDoc(userDocRef, {
+          balance: newBalance,
+          lastBonusClaim: Timestamp.fromDate(new Date()),
+        });
+
+        currentUserData.balance = newBalance;
+        currentUserData.lastBonusClaim = new Date();
+
+        document.getElementById("bonusBanner").classList.add("hidden");
+        alert(`৳${pendingBonus} bonus received successfully!`);
+        pendingBonus = 0;
+      } catch (err) {
+        alert("Failed to receive bonus: " + err.message);
+      }
+    };
+
+    async function showBonusBannerIfEligible(userDocRef, userData, proSettings) {
+      const now = new Date();
+      const lastClaim = userData.lastBonusClaim ?
+        (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim)) : null;
+
+      if (!lastClaim || !isSameDay(now, lastClaim)) {
+        pendingBonus = proSettings.dailyBonus || 0;
+        showBonusBanner(pendingBonus);
+      }
+    }
+
+    function showBonusBanner(amount) {
+      const banner = document.getElementById("bonusBanner");
+      banner.innerHTML = `
+        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
+    <div class="flex items-center justify-between text-sm sm:text-base font-medium">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">🎉</span>
+        <div>
+          <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
+          <p class="text-xs sm:text-sm text-gray-700">
+            Pro Account users can claim <span class="text-green-800 font-bold">৳${amount}</span> today!
+          </p>
+        </div>
+      </div>
+      <div class="ml-4">
+        <button class="w-28 px-1 py-2 rounded-md font-semibold shadow inline-flex items-center justify-center gap-2 text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600">
+          <i class="fa-solid fa-gift"></i>
+          <span>Claim Now</span>
+        </button>
+      </div>
+    </div>
+  </section>
+      `;
+      banner.classList.remove("hidden");
+    }
+
+    function isSameDay(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
