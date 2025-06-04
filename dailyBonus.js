@@ -65,13 +65,14 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
         ? ""
         : `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
+        <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400 rounded-md">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
             <div class="flex items-center gap-2">
               <span class="text-xl">🎉</span>
               <div>
                 <p class="text-sm sm:text-base font-semibold text-purple-800">Daily Bonus Available</p>
                 <p class="text-xs sm:text-sm text-gray-700">
-                  You can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
+                  Pro Account users can claim <span class="text-green-800 font-bold">৳${dailyBonus}</span> today!
                 </p>
               </div>
             </div>
