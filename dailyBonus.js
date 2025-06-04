@@ -58,7 +58,12 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
         return;
       }
 
-      container.innerHTML = `
+      const alreadyClaimed = isSameDay(lastClaimDate, now);
+
+      // Render bonus section
+      container.innerHTML = alreadyClaimed
+        ? ""
+        : `
         <section class="bg-gradient-to-r from-yellow-200 via-yellow-300 to-yellow-400 text-black mt-4 py-2 px-2 shadow-lg border border-yellow-400">
           <div class="flex items-center justify-between text-sm sm:text-base font-medium">
             <div class="flex items-center gap-2">
@@ -80,28 +85,22 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
         </section>
       `;
 
-      const claimBtn = document.getElementById("claimBonusBtn");
-
-      if (isSameDay(lastClaimDate, now)) {
-        claimBtn.disabled = true;
-        return;
+      if (!alreadyClaimed) {
+        const claimBtn = document.getElementById("claimBonusBtn");
+        claimBtn.onclick = async () => {
+          try {
+            const newBalance = (userData.balance || 0) + dailyBonus;
+            await updateDoc(userRef, {
+              balance: newBalance,
+              lastBonusClaim: Timestamp.fromDate(new Date())
+            });
+            alert(`You received ৳${dailyBonus} as daily bonus.`);
+            container.innerHTML = ""; // Immediately hide bonus section after claiming
+          } catch (err) {
+            alert("Error claiming bonus: " + err.message);
+          }
+        };
       }
-
-      claimBtn.disabled = false;
-
-      claimBtn.onclick = async () => {
-        try {
-          const newBalance = (userData.balance || 0) + dailyBonus;
-          await updateDoc(userRef, {
-            balance: newBalance,
-            lastBonusClaim: Timestamp.fromDate(new Date())
-          });
-          alert(`You received ৳${dailyBonus} as daily bonus.`);
-          container.innerHTML = ""; // Bonus section hide kore dao
-        } catch (err) {
-          alert("Error claiming bonus: " + err.message);
-        }
-      };
 
     } catch (error) {
       container.innerHTML = `<p class="text-red-600 font-semibold">Error loading bonus: ${error.message}</p>`;
