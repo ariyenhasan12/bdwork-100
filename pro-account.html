@@ -1,226 +1,118 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pro Account</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pro Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
-      <div>
-        <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
-        <p><strong>Active:</strong> <span id="isProStatus">Loading...</span></p>
-        <p><strong>Expires On:</strong> <span id="proExpiryDate">-</span></p>
-        <hr class="my-3" />
-        <h3 class="font-semibold text-lg text-blue-600 mb-2">Current Pro Account Plan</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
-          <li>Activation Cost: ৳<span id="proActivationCost">...</span></li>
-          <li>Daily Bonus: ৳<span id="proDailyBonus">...</span></li>
-          <li>Validity: <span id="proValidity">...</span> days</li>
-        </ul>
-      </div>
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+      <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
+      <p><strong>Active:</strong> <span id="isProStatus">Loading...</span></p>
+      <p><strong>Expires On:</strong> <span id="proExpiryDate">-</span></p>
 
-      <button
-        id="activateProBtn"
-        onclick="activateProAccount()"
-        class="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Activate Pro Account
-      </button>
-    </div>
-  </main>
+      <hr class="my-4" />
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      <h3 class="text-lg font-semibold text-blue-600 mb-2">Pro Account Plan</h3>
+      <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
+        <li>Activation Cost: ৳<span id="proActivationCost">...</span></li>
+        <li>Daily Bonus: ৳<span id="proDailyBonus">...</span></li>
+        <li>Validity: <span id="proValidity">...</span> days</li>
+      </ul>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+      <button
+        id="activateProBtn"
+        class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Activate Pro Account
+      </button>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+      <!-- Claim Bonus Component Container -->
+      <div id="dailyBonusContainer" class="mt-6"></div>
+    </div>
+  </main>
 
-    let currentUserData = null;
-    let proSettings = null;
+  <!-- Firebase Pro Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { renderDailyBonusButton } from "./dailyBonus.js";
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists()) throw new Error("User data not found");
-        const data = userDoc.data();
-        currentUserData = { uid: user.uid, ...data };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-        // Load Pro Account Settings
-        const proSettingsDocRef = doc(db, "settings", "proAccount");
-        const proSettingsDocSnap = await getDoc(proSettingsDocRef);
-        if (proSettingsDocSnap.exists()) {
-          proSettings = proSettingsDocSnap.data();
+    let currentUserData = null;
+    let proSettings = null;
 
-          document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
-          document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
-          document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
-        } else {
-          proSettings = null;
-          document.getElementById("proActivationCost").innerText = "-";
-          document.getElementById("proDailyBonus").innerText = "-";
-          document.getElementById("proValidity").innerText = "-";
-        }
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
 
-        // Check Pro status & expiry
-        let isProActive = false;
-        if (data.isPro === true && data.proExpiryTimestamp) {
-          const expiryDate = data.proExpiryTimestamp.toDate
-            ? data.proExpiryTimestamp.toDate()
-            : new Date(data.proExpiryTimestamp);
-          const now = new Date();
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      currentUserData = { uid: user.uid, ...userSnap.data() };
 
-          if (expiryDate > now) {
-            isProActive = true;
-            document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
+      const settingsSnap = await getDoc(doc(db, "settings", "proAccount"));
+      proSettings = settingsSnap.data();
 
-            // Give daily bonus if not given today yet
-            await giveDailyBonusIfEligible(userDocRef, data, proSettings);
-          } else {
-            // Expired: deactivate
-            await updateDoc(userDocRef, { isPro: false, proExpiryTimestamp: null });
-            isProActive = false;
-            document.getElementById("proExpiryDate").innerText = "-";
-            currentUserData.isPro = false;
-          }
-        } else {
-          document.getElementById("proExpiryDate").innerText = "-";
-        }
+      document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
+      document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
+      document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
 
-        document.getElementById("isProStatus").innerText = isProActive ? "Yes" : "No";
+      const now = new Date();
+      let isPro = false;
+      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
+        const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
+        if (expiry > now) {
+          isPro = true;
+          document.getElementById("proExpiryDate").innerText = expiry.toLocaleDateString();
+        } else {
+          await updateDoc(userRef, { isPro: false, proExpiryTimestamp: null });
+        }
+      }
 
-        const activateBtn = document.getElementById("activateProBtn");
-        if (isProActive) {
-          activateBtn.disabled = true;
-          activateBtn.innerText = "Pro Account Active";
-        } else {
-          activateBtn.disabled = false;
-          activateBtn.innerText = "Activate Pro Account";
-        }
+      document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
+      const btn = document.getElementById("activateProBtn");
+      btn.disabled = isPro;
+      btn.innerText = isPro ? "Pro Account Active" : "Activate Pro Account";
 
-      } catch (error) {
-        alert("Failed to load Pro Account data: " + error.message);
-      }
-    });
+      btn.onclick = async () => {
+        const balance = currentUserData.balance || 0;
+        const cost = proSettings.activationCost;
+        const bonus = proSettings.dailyBonus;
+        const validity = proSettings.validity;
 
-    window.activateProAccount = async function () {
-      if (!currentUserData || !proSettings) return alert("Data not loaded yet. Try again.");
+        if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
 
-      const now = new Date();
-      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
-        const expiryDate = currentUserData.proExpiryTimestamp.toDate
-          ? currentUserData.proExpiryTimestamp.toDate()
-          : new Date(currentUserData.proExpiryTimestamp);
+        const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
+        await updateDoc(userRef, {
+          isPro: true,
+          balance: balance - cost + bonus,
+          proExpiryTimestamp: Timestamp.fromDate(expiry),
+          lastBonusClaim: Timestamp.fromDate(now)
+        });
 
-        if (expiryDate > now) {
-          alert("You already have an active Pro Account.");
-          return;
-        }
-      }
+        alert("Pro Account Activated! Daily bonus credited.");
+        location.reload();
+      };
 
-      const cost = proSettings.activationCost || 0;
-      const validityDays = proSettings.validity || 0;
-      const currentBalance = currentUserData.balance || 0;
-
-      if (currentBalance < cost) {
-        alert(`Insufficient balance. You need ৳${cost} to activate Pro Account.`);
-        return;
-      }
-
-      try {
-        const expiryDate = new Date(now.getTime() + validityDays * 24 * 60 * 60 * 1000);
-        const expiryTimestamp = Timestamp.fromDate(expiryDate);
-
-        const userDocRef = doc(db, "users", currentUserData.uid);
-        // Update balance, pro status, expiry, and also set lastBonusClaim to now (because bonus given on activation day)
-        await updateDoc(userDocRef, {
-          balance: currentBalance - cost + (proSettings.dailyBonus || 0), // add bonus instantly
-          isPro: true,
-          proExpiryTimestamp: expiryTimestamp,
-          lastBonusClaim: Timestamp.fromDate(new Date()),
-        });
-
-        currentUserData.balance = currentBalance - cost + (proSettings.dailyBonus || 0);
-        currentUserData.isPro = true;
-        currentUserData.proExpiryTimestamp = expiryTimestamp;
-        currentUserData.lastBonusClaim = new Date();
-
-        document.getElementById("isProStatus").innerText = "Yes";
-        document.getElementById("proExpiryDate").innerText = expiryDate.toLocaleDateString();
-
-        const activateBtn = document.getElementById("activateProBtn");
-        activateBtn.disabled = true;
-        activateBtn.innerText = "Pro Account Active";
-
-        alert("Pro Account activated successfully! You also received today's bonus.");
-      } catch (error) {
-        alert("Failed to activate Pro Account: " + error.message);
-      }
-    };
-
-    // Function to give daily bonus if not given today yet
-    async function giveDailyBonusIfEligible(userDocRef, userData, proSettings) {
-      try {
-        if (!userData.isPro) return;
-        if (!proSettings || !proSettings.dailyBonus) return;
-
-        const now = new Date();
-        const lastClaimTimestamp = userData.lastBonusClaim ? 
-          (userData.lastBonusClaim.toDate ? userData.lastBonusClaim.toDate() : new Date(userData.lastBonusClaim))
-          : null;
-
-        if (lastClaimTimestamp) {
-          // Check if lastBonusClaim is today
-          if (isSameDay(lastClaimTimestamp, now)) {
-            // Already given bonus today
-            return;
-          }
-        }
-
-        // Give bonus now
-        const newBalance = (userData.balance || 0) + proSettings.dailyBonus;
-        await updateDoc(userDocRef, {
-          balance: newBalance,
-          lastBonusClaim: Timestamp.fromDate(now),
-        });
-
-        currentUserData.balance = newBalance;
-        currentUserData.lastBonusClaim = now;
-
-        console.log("Daily bonus credited:", proSettings.dailyBonus);
-
-      } catch (error) {
-        console.error("Failed to give daily bonus:", error);
-      }
-    }
-
-    // Helper: check if two dates are the same day
-    function isSameDay(d1, d2) {
-      return d1.getFullYear() === d2.getFullYear() &&
-             d1.getMonth() === d2.getMonth() &&
-             d1.getDate() === d2.getDate();
-    }
-  </script>
+      // Render claim bonus button
+      renderDailyBonusButton("dailyBonusContainer");
+    });
+  </script>
 </body>
 </html>
