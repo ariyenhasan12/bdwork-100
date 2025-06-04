@@ -1,46 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pro Account</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pro Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-      <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
-      <p><strong>Active:</strong> <span id="isProStatus">Loading...</span></p>
-      <p><strong>Expires On:</strong> <span id="proExpiryDate">-</span></p>
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
+      <div>
+        <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
+        <p><strong>Active:</strong> <span id="isProStatus">Loading...</span></p>
+        <p><strong>Expires On:</strong> <span id="proExpiryDate">-</span></p>
+        <hr class="my-3" />
+        <h3 class="font-semibold text-lg text-blue-600 mb-2">Current Pro Account Plan</h3>
+        <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
+          <li>Activation Cost: ৳<span id="proActivationCost">...</span></li>
+          <li>Daily Bonus: ৳<span id="proDailyBonus">...</span></li>
+          <li>Validity: <span id="proValidity">...</span> days</li>
+        </ul>
+      </div>
 
-      <hr class="my-4" />
+      <button
+        id="activateProBtn"
+        onclick="activateProAccount()"
+        class="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Activate Pro Account
+      </button>
+    </div>
+  </main>
 
-      <h3 class="text-lg font-semibold text-blue-600 mb-2">Pro Account Plan</h3>
-      <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
-        <li>Activation Cost: ৳<span id="proActivationCost">...</span></li>
-        <li>Daily Bonus: ৳<span id="proDailyBonus">...</span></li>
-        <li>Validity: <span id="proValidity">...</span> days</li>
-      </ul>
-
-      <button
-        id="activateProBtn"
-        class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Activate Pro Account
-      </button>
-
-      <!-- Claim Bonus Component Container -->
-      <div id="dailyBonusContainer" class="mt-6"></div>
-    </div>
-  </main>
-
-  <!-- Firebase Pro Logic -->
-  <script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -104,13 +102,9 @@
           proExpiryTimestamp: Timestamp.fromDate(expiry)
         });
 
-        alert("Pro Account Activated! Now claim your daily bonus.");
+        alert("Pro Account Activated!");
         location.reload();
       };
-
-      // Render claim bonus button
-      renderDailyBonusButton("dailyBonusContainer");
-    });
   </script>
 </body>
 </html>
