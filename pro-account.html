@@ -9,8 +9,11 @@
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
 
-  <!-- Placeholder for Bonus Banner -->
-  <div id="bonusBannerContainer"></div>
+  <!-- Bonus Banner (Top Fixed) -->
+  <div id="bonusBanner" class="hidden fixed top-0 left-0 w-full bg-blue-600 text-white flex justify-between items-center px-4 py-3 z-50 shadow-md">
+    <div class="text-sm font-medium">🎁 You have a bonus of ৳<span id="bannerBonusAmount">0</span> to claim!</div>
+    <button onclick="receiveBonus()" class="ml-4 bg-white text-blue-700 font-semibold px-3 py-1 rounded hover:bg-gray-100 transition">Receive Bonus</button>
+  </div>
 
   <main class="max-w-4xl mx-auto px-4 py-24">
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
@@ -59,16 +62,6 @@
     let currentUserData = null;
     let proSettings = null;
     let pendingBonus = 0;
-
-    function showBonusBanner(amount) {
-      const bannerContainer = document.getElementById("bonusBannerContainer");
-      bannerContainer.innerHTML = `
-        <div id="bonusBanner" class="fixed top-0 left-0 w-full bg-blue-600 text-white flex justify-between items-center px-4 py-3 z-50 shadow-md">
-          <div class="text-sm font-medium">🎁 You have a bonus of ৳<span id="bannerBonusAmount">${amount}</span> to claim!</div>
-          <button onclick="receiveBonus()" class="ml-4 bg-white text-blue-700 font-semibold px-3 py-1 rounded hover:bg-gray-100 transition">Receive Bonus</button>
-        </div>
-      `;
-    }
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
@@ -160,7 +153,8 @@
         activateBtn.innerText = "Pro Account Active";
 
         pendingBonus = bonus;
-        showBonusBanner(bonus);
+        document.getElementById("bannerBonusAmount").innerText = bonus;
+        document.getElementById("bonusBanner").classList.remove("hidden");
 
       } catch (error) {
         alert("Failed to activate Pro Account: " + error.message);
@@ -182,7 +176,7 @@
         currentUserData.balance = newBalance;
         currentUserData.lastBonusClaim = new Date();
 
-        document.getElementById("bonusBannerContainer").innerHTML = "";
+        document.getElementById("bonusBanner").classList.add("hidden");
         alert(`৳${pendingBonus} bonus received successfully!`);
         pendingBonus = 0;
       } catch (err) {
@@ -197,7 +191,8 @@
 
       if (!lastClaim || !isSameDay(now, lastClaim)) {
         pendingBonus = proSettings.dailyBonus || 0;
-        showBonusBanner(pendingBonus);
+        document.getElementById("bannerBonusAmount").innerText = pendingBonus;
+        document.getElementById("bonusBanner").classList.remove("hidden");
       }
     }
 
