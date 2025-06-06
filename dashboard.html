@@ -232,7 +232,7 @@
       modal.classList.toggle("hidden");
     };
 
-    function copyReferralLink() {
+    window.copyReferralLink = function () {
       const input = document.getElementById("referLink");
       navigator.clipboard.writeText(input.value).then(() => {
         Swal.fire({
@@ -249,7 +249,7 @@
       }).catch((err) => {
         console.error('Could not copy text: ', err);
       });
-    }
+    };
   </script>
 </body>
 </html>
