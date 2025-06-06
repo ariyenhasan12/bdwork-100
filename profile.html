@@ -2,53 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>User Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Uaer Profile</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 font-sans">
+<body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
 
-  <main class="max-w-xl mx-auto px-4 py-10">
-    <h1 class="text-3xl font-bold text-center mb-8">👤 Profile Details</h1>
-
-    <section class="bg-white p-6 rounded-2xl shadow-md space-y-5 border border-gray-200">
-
-      <!-- Fixed Profile Icon -->
-      <div class="flex justify-center">
-        <div class="w-28 h-28 rounded-full bg-gray-200 border-2 border-gray-300 flex items-center justify-center">
-          <i class="fas fa-user text-4xl text-gray-500"></i>
-        </div>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
       </div>
-
-      <!-- Profile Info -->
-      <div>
-        <p class="text-sm text-gray-500">Username</p>
-        <p id="username" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-
-      <div>
-        <p class="text-sm text-gray-500">Phone Number</p>
-        <p id="phone" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-
-      <div>
-        <p class="text-sm text-gray-500">Email</p>
-        <p id="email" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-
-      <div>
-        <p class="text-sm text-gray-500">Account Status</p>
-        <p id="accountStatus" class="text-lg font-medium text-gray-900">Loading...</p>
-      </div>
-    </section>
-
-    <div class="text-center mt-8">
-      <a href="dashboard.html" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition">
-        ← Back to Dashboard
-      </a>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
-  </main>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Modal Backdrop -->
+  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
+    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6"></div>
+  </div>
 
   <script type="module">
     const firebaseConfig = {
@@ -62,7 +56,7 @@
     };
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
@@ -78,8 +72,8 @@
 
         if (docSnap.exists()) {
           const data = docSnap.data();
-
-          document.getElementById("username").innerText = data.username || "N/A";
+          document.getElementById("usernameProfile").innerText = data.username || "N/A";
+          document.getElementById("fullName").innerText = data.username || "N/A";
           document.getElementById("phone").innerText = data.phone || "N/A";
           document.getElementById("email").innerText = data.email || user.email || "N/A";
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
@@ -90,6 +84,77 @@
         alert("Error loading profile: " + err.message);
       }
     });
+
+    function toggleProfile() {
+      const modal = document.getElementById("profileModal");
+      const container = document.getElementById("profileContainer");
+      setProfileHeader(container);
+      modal.classList.toggle("hidden");
+    }
+
+    function logout() {
+      const auth = getAuth();
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      }).catch((error) => {
+        alert("Logout failed: " + error.message);
+      });
+    }
+
+    function setProfileHeader(container) {
+      container.innerHTML = `
+        <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
+          <button type="button" onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+            <i class="fa-solid fa-times"></i>
+          </button>
+          <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
+              <i class="fas fa-user text-4xl text-white"></i>
+            </div>
+            <div class="text-center">
+              <h2 id="usernameProfile" class="text-lg font-semibold"></h2>
+              <p class="text-sm text-gray-400">Member since: 2025</p>
+            </div>
+            <div><span id="accountStatus" class="text-sm text-yellow-400 font-semibold"></span></div>
+          </div>
+          <div class="w-full rounded-lg p-4 space-y-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+                <i class="fa-solid fa-user text-xl text-yellow-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Full Name</p>
+                <p id="fullName" class="text-sm font-medium text-white"></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+                <i class="fa-solid fa-phone text-xl text-blue-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Phone</p>
+                <p id="phone" class="text-sm font-medium text-white"></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+                <i class="fa-solid fa-envelope text-xl text-red-400"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-400">Email</p>
+                <p id="email" class="text-sm font-medium text-white"></p>
+              </div>
+            </div>
+            <div class="flex justify-center">
+              <button type="button" onclick="logout()" class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </section>
+      `;
+    }
   </script>
 </body>
 </html>
