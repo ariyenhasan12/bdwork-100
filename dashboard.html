@@ -1,4 +1,3 @@
-<!-- FULL UPDATED HTML -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -229,27 +228,6 @@
     window.logout = async function () {
       await signOut(auth);
       window.location.href = "login.html";
-    };
-
-    window.toggleProfile = function () {
-      const modal = document.getElementById("profileModal");
-      modal.classList.toggle("hidden");
-    };
-
-    window.copyReferralLink = function () {
-      const input = document.getElementById("referLink");
-      input.select();
-      input.setSelectionRange(0, 99999); 
-      document.execCommand("copy");
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Referral link copied!',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true
-      });
     };
   </script>
 </body>
