@@ -24,7 +24,6 @@
 
     <h2 class="text-md font-semibold text-white mb-6">Please Login to Your Account</h2>
 
-    <!-- FIX: add onsubmit="login(event)" to prevent default form submission -->
     <form onsubmit="login(event)">
       <div class="mb-4">
         <label for="loginEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
@@ -52,7 +51,6 @@
         <a href="#" class="text-sm text-blue-300">Forgot password?</a>
       </div>
 
-      <!-- FIX: type="submit" will work now that form submission is handled properly -->
       <button type="submit" 
         class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 font-extrabold py-2 rounded-sm">
         Login
@@ -67,77 +65,107 @@
   </div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.login = async function (event) {
-      event.preventDefault();
+    window.login = async function (event) {
+      event.preventDefault();
 
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value.trim();
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
 
-      if (!email || !password) {
-        Swal.fire("Error", "Please enter both email and password.", "error");
-        return;
-      }
+      if (!email || !password) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please enter both email and password.',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+        return;
+      }
 
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
 
-        const userDocRef = doc(db, "users", uid);
-        const userDocSnap = await getDoc(userDocRef);
+        const userDocRef = doc(db, "users", uid);
+        const userDocSnap = await getDoc(userDocRef);
 
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: 'Login Successful!',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            background: '#1a202c',
-            color: '#fff'
-          }).then(() => {
-            if (userData.role === "admin") {
-              window.location.href = "admin.html";
-            } else {
-              window.location.href = "dashboard.html";
-            }
-          });
-        } else {
-          Swal.fire("Error", "User data not found in database.", "error");
-        }
+        if (userDocSnap.exists()) {
+          const userData = userDocSnap.data();
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Login Successful!',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: '#1a202c',
+            color: '#fff'
+          }).then(() => {
+            if (userData.role === "admin") {
+              window.location.href = "admin.html";
+            } else {
+              window.location.href = "dashboard.html";
+            }
+          });
+        } else {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: 'User data not found in database.',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            background: '#1a202c',
+            color: '#fff'
+          });
+        }
 
-      } catch (error) {
-        let msg = "Login failed.";
-        if (error.code === "auth/user-not-found") {
-          msg = "No user found with this email.";
-        } else if (error.code === "auth/wrong-password") {
-          msg = "Incorrect password.";
-        } else if (error.code === "auth/invalid-email") {
-          msg = "Invalid email format.";
-        }
-        Swal.fire("Error", msg, "error");
-      }
-    };
+      } catch (error) {
+        let msg = "Login failed.";
+        if (error.code === "auth/user-not-found") {
+          msg = "No user found with this email.";
+        } else if (error.code === "auth/wrong-password") {
+          msg = "Incorrect password.";
+        } else if (error.code === "auth/invalid-email") {
+          msg = "Invalid email format.";
+        }
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: msg,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }
+    };
   </script>
 </body>
 </html>
