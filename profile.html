@@ -23,8 +23,76 @@
 </head>
 <body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
 
-  <!-- Dynamic Content Wrapper -->
-  <div id="dynamicContent"></div>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Profile Modal -->
+  <div id="profileContainer" class="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center hidden">
+    <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative max-w-md w-full mx-4">
+      <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+        <i class="fa-solid fa-times"></i>
+      </button>
+      <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
+          <i class="fas fa-user text-4xl text-white"></i>
+        </div>
+        <div class="text-center">
+          <h2 id="usernameTop" class="text-lg font-semibold"></h2>
+          <p class="text-sm text-gray-400">Member since: 2025</p>
+        </div>
+        <div><span id="accountStatus"></span></div>
+      </div>
+
+      <div class="w-full rounded-lg p-4 space-y-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+            <i class="fa-solid fa-user text-xl text-yellow-400"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-400">Full Name</p>
+            <p id="username" class="text-sm font-medium text-white"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+            <i class="fa-solid fa-phone text-xl text-blue-400"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-400">Phone</p>
+            <p id="phone" class="text-sm font-medium text-white"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+            <i class="fa-solid fa-envelope text-xl text-red-400"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-400">Email</p>
+            <p id="email" class="text-sm font-medium text-white"></p>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 cursor-pointer" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- Firebase Script -->
   <script type="module">
@@ -46,92 +114,28 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const dynamicContent = document.getElementById("dynamicContent");
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "index.html";
 
-    // Render Header and Profile Modal
-    function renderUI() {
-      dynamicContent.innerHTML = `
-        <!-- Header -->
-        <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-              GJ
-            </div>
-            <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
-          </div>
-          <div class="flex items-center gap-6 text-2xl text-gray-100">
-            <i class="fa-solid fa-headset font-bold text-1xl"></i>
-            <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
-              <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
-          </div>
-        </header>
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-        <!-- Profile Modal -->
-        <div id="profileContainer" class="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center hidden">
-          <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative max-w-md w-full mx-4">
-            <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
-              <i class="fa-solid fa-times"></i>
-            </button>
-            <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
-              <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
-                <i class="fas fa-user text-4xl text-white"></i>
-              </div>
-              <div class="text-center">
-                <h2 id="usernameTop" class="text-lg font-semibold"></h2>
-                <p class="text-sm text-gray-400">Member since: 2025</p>
-              </div>
-              <div><span id="accountStatus"></span></div>
-            </div>
-
-            <div class="w-full rounded-lg p-4 space-y-6">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-user text-xl text-yellow-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Full Name</p>
-                  <p id="username" class="text-sm font-medium text-white"></p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-phone text-xl text-blue-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Phone</p>
-                  <p id="phone" class="text-sm font-medium text-white"></p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-envelope text-xl text-red-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Email</p>
-                  <p id="email" class="text-sm font-medium text-white"></p>
-                </div>
-              </div>
-              <div class="flex justify-center">
-                <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 cursor-pointer" onclick="logout()">
-                  <i class="fas fa-sign-out-alt"></i>
-                  Logout
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-      `;
-    }
-
-    // Run UI render first
-    renderUI();
-
-    // Toggle profile modal
-    window.toggleProfile = () => {
-      const profile = document.getElementById("profileContainer");
-      profile.classList.toggle("hidden");
-    };
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const username = data.username || "N/A";
+          document.getElementById("username").innerText = username;
+          document.getElementById("usernameTop").innerText = username;
+          document.getElementById("phone").innerText = data.phone || "N/A";
+          document.getElementById("email").innerText = data.email || user.email || "N/A";
+          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+        } else {
+          alert("User data not found.");
+        }
+      } catch (err) {
+        alert("Error loading profile: " + err.message);
+      }
+    });
 
     // Logout function
     window.logout = async () => {
@@ -143,28 +147,11 @@
       }
     };
 
-    // Auth and load data
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "index.html";
-
-      try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          document.getElementById("username").innerText = data.username || "N/A";
-          document.getElementById("usernameTop").innerText = data.username || "N/A";
-          document.getElementById("phone").innerText = data.phone || "N/A";
-          document.getElementById("email").innerText = data.email || user.email || "N/A";
-          document.getElementById("accountStatus").innerText = data.isPro ? "🌟 Pro Account" : "⚡ Regular Account";
-        } else {
-          alert("User data not found.");
-        }
-      } catch (err) {
-        alert("Error loading profile: " + err.message);
-      }
-    });
+    // Toggle profile modal
+    window.toggleProfile = () => {
+      const profile = document.getElementById("profileContainer");
+      profile.classList.toggle("hidden");
+    };
   </script>
 </body>
 </html>
