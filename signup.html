@@ -116,16 +116,18 @@
 
     const showError = (msg) => {
       Swal.fire({
+        toast: true,
+        position: 'top-end',
         icon: 'error',
-        title: 'Oops...',
-        text: msg,
+        title: msg,
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
         background: '#1a202c',
-        color: '#fff',
-        confirmButtonColor: '#facc15'
+        color: '#fff'
       });
     };
 
-    // Auto-fill referral
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get("ref");
     if (refCode) {
