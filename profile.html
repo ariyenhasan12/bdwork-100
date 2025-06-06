@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Uaer Profile</title>
+  <title>Good Job</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -63,20 +62,21 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    let currentUserData = null;
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
-
       try {
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const data = docSnap.data();
-          document.getElementById("usernameProfile").innerText = data.username || "N/A";
-          document.getElementById("fullName").innerText = data.username || "N/A";
-          document.getElementById("phone").innerText = data.phone || "N/A";
-          document.getElementById("email").innerText = data.email || user.email || "N/A";
-          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+          currentUserData = {
+            username: data.username || "N/A",
+            phone: data.phone || "N/A",
+            email: data.email || user.email || "N/A",
+            isPro: data.isPro === true
+          };
         } else {
           alert("User data not found.");
         }
@@ -88,23 +88,14 @@
     function toggleProfile() {
       const modal = document.getElementById("profileModal");
       const container = document.getElementById("profileContainer");
-      setProfileHeader(container);
+      if (currentUserData) setProfileHeader(container, currentUserData);
       modal.classList.toggle("hidden");
     }
 
-    function logout() {
-      const auth = getAuth();
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      }).catch((error) => {
-        alert("Logout failed: " + error.message);
-      });
-    }
-
-    function setProfileHeader(container) {
+    function setProfileHeader(container, data) {
       container.innerHTML = `
         <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
-          <button type="button" onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+          <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
             <i class="fa-solid fa-times"></i>
           </button>
           <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
@@ -112,10 +103,10 @@
               <i class="fas fa-user text-4xl text-white"></i>
             </div>
             <div class="text-center">
-              <h2 id="usernameProfile" class="text-lg font-semibold"></h2>
+              <h2 class="text-lg font-semibold">${data.username}</h2>
               <p class="text-sm text-gray-400">Member since: 2025</p>
             </div>
-            <div><span id="accountStatus" class="text-sm text-yellow-400 font-semibold"></span></div>
+            <div><span class="text-sm text-yellow-400 font-semibold">${data.isPro ? "🌟 Pro Account" : "⚡ Regular Account"}</span></div>
           </div>
           <div class="w-full rounded-lg p-4 space-y-6">
             <div class="flex items-center gap-3">
@@ -124,7 +115,7 @@
               </div>
               <div>
                 <p class="text-sm text-gray-400">Full Name</p>
-                <p id="fullName" class="text-sm font-medium text-white"></p>
+                <p class="text-sm font-medium text-white">${data.username}</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -133,7 +124,7 @@
               </div>
               <div>
                 <p class="text-sm text-gray-400">Phone</p>
-                <p id="phone" class="text-sm font-medium text-white"></p>
+                <p class="text-sm font-medium text-white">${data.phone}</p>
               </div>
             </div>
             <div class="flex items-center gap-3">
@@ -142,7 +133,7 @@
               </div>
               <div>
                 <p class="text-sm text-gray-400">Email</p>
-                <p id="email" class="text-sm font-medium text-white"></p>
+                <p class="text-sm font-medium text-white">${data.email}</p>
               </div>
             </div>
             <div class="flex justify-center">
@@ -155,6 +146,14 @@
         </section>
       `;
     }
+
+    window.logout = function () {
+      signOut(auth).then(() => {
+        window.location.href = "login.html";
+      }).catch((error) => {
+        alert("Logout error: " + error.message);
+      });
+    };
   </script>
 </body>
 </html>
