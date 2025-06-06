@@ -114,6 +114,17 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const showError = (msg) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: msg,
+        background: '#1a202c',
+        color: '#fff',
+        confirmButtonColor: '#facc15'
+      });
+    };
+
     // Auto-fill referral
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get("ref");
@@ -131,17 +142,17 @@
       const inputReferCode = document.getElementById("referCodeInput").value.trim();
 
       if (!username || !phone || !email || !password) {
-        alert("Please fill in all required fields.");
+        showError("Please fill in all required fields.");
         return;
       }
 
       if (phone.length < 7) {
-        alert("Please enter a valid phone number.");
+        showError("Please enter a valid phone number.");
         return;
       }
 
       if (password.length < 6) {
-        alert("Password must be at least 6 characters long.");
+        showError("Password must be at least 6 characters long.");
         return;
       }
 
@@ -160,7 +171,6 @@
           referredBy: inputReferCode || null,
         });
 
-        // Give referrer bonus
         if (inputReferCode && inputReferCode !== uid) {
           const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
           const querySnapshot = await getDocs(q);
@@ -173,7 +183,6 @@
           }
         }
 
-        // Show success toast
         Swal.fire({
           toast: true,
           position: 'top-end',
@@ -186,13 +195,12 @@
           color: '#fff'
         });
 
-        // Redirect after delay
         setTimeout(() => {
           window.location.href = "index.html";
         }, 2000);
 
       } catch (error) {
-        alert("Signup failed: " + error.message);
+        showError("Signup failed: " + error.message);
       }
     };
   </script>
