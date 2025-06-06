@@ -1,157 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Good Job</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-    .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-    }
-    .user-icon-glow {
-      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Good Job</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+  </style>
 </head>
 <body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
 
-  <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        GJ
-      </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
-    </div>
-    <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </div>
-    </div>
-  </header>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-  <!-- Profile Modal Backdrop -->
-  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
-    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6"></div>
-  </div>
+    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
+      <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
+        <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
+            <i class="fas fa-user text-4xl text-white"></i>
+          </div>
+          <div class="text-center">
+            <h2 id="usernameTop" class="text-lg font-semibold"></h2>
+            <p class="text-sm text-gray-400">Member since: 2025</p>
+          </div>
+          <div><span id="acconutStatus"></span></div>
+        </div>
 
-  <!-- Firebase SDK -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        <div class="w-full rounded-lg p-4 space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-user text-xl text-yellow-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Full Name</p>
+              <p id="username" class="text-sm font-medium text-white"></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-phone text-xl text-blue-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Phone</p>
+              <p id="phone" class="text-sm font-medium text-white"></p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-envelope text-xl text-red-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Email</p>
+              <p id="email" class="text-sm font-medium text-white"></p>
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    
+    <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    let currentUser = null;
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) return window.location.href = "login.html";
-      currentUser = user;
-    });
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-    async function toggleProfile() {
-      const modal = document.getElementById("profileModal");
-      const container = document.getElementById("profileContainer");
-      if (!currentUser) return;
+        if (docSnap.exists()) {
+          const data = docSnap.data();
 
-      try {
-        const docRef = doc(db, "users", currentUser.uid);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-
-          container.innerHTML = `
-          <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
-            <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
-              <i class="fa-solid fa-times"></i>
-            </button>
-            <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
-              <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
-                <i class="fas fa-user text-4xl text-white"></i>
-              </div>
-              <div class="text-center">
-                <h2 class="text-lg font-semibold">${data.username || "N/A"}</h2>
-                <p class="text-sm text-gray-400">Member since: 2025</p>
-              </div>
-              <div><span id="accountStatus">${data.isPro ? "🌟 Pro Account" : "⚡ Regular Account"}</span></div>
-            </div>
-            <div class="w-full rounded-lg p-4 space-y-6">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-user text-xl text-yellow-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Full Name</p>
-                  <p class="text-sm font-medium text-white">${data.username || "N/A"}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-phone text-xl text-blue-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Phone</p>
-                  <p class="text-sm font-medium text-white">${data.phone || "N/A"}</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                  <i class="fa-solid fa-envelope text-xl text-red-400"></i>
-                </div>
-                <div>
-                  <p class="text-sm text-gray-400">Email</p>
-                  <p class="text-sm font-medium text-white">${data.email || currentUser.email || "N/A"}</p>
-                </div>
-              </div>
-              <div class="flex justify-center">
-                <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 cursor-pointer" onclick="logout()">
-                  <i class="fas fa-sign-out-alt"></i>
-                  Logout
-                </div>
-              </div>
-            </div>
-          </section>
-          `;
-
-          modal.classList.remove("hidden");
-        } else {
-          alert("User data not found.");
-        }
-      } catch (err) {
-        alert("Error loading profile: " + err.message);
-      }
-    }
-
-    function logout() {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      }).catch((error) => {
-        alert("Logout failed: " + error.message);
-      });
-    }
-  </script>
+          document.getElementById("username").innerText = data.username || "N/A";
+          document.getElementById("phone").innerText = data.phone || "N/A";
+          document.getElementById("email").innerText = data.email || user.email || "N/A";
+          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+        } else {
+          alert("User data not found.");
+        }
+      } catch (err) {
+        alert("Error loading profile: " + err.message);
+      }
+    });
+  </script>
 </body>
 </html>
