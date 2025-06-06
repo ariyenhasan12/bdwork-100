@@ -1,70 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+  </style>
 </head>
 <body class="bg-gray-900 flex items-center justify-center min-h-screen px-5">
 
-  <div class="bg-gradient-to-tl from-gray-900 via-gray-900 p-4 rounded-sm shadow-lg w-full max-w-sm border border-gray-600 shadow-2xl">
-    <div class="flex flex-col items-center justify-center mb-4">
-      <h1 style="font-family: 'Audiowide', cursive;" class="text-2xl font-bold text-yellow-400">Good Job</h1>
-    </div>
+  <div class="bg-gradient-to-tl from-gray-900 via-gray-900 p-4 rounded-sm shadow-lg w-full max-w-sm border border-gray-600 shadow-2xl">
+    <div class="flex flex-col items-center justify-center mb-4">
+      <h1 style="font-family: 'Audiowide', cursive;" class="text-2xl font-bold text-yellow-400">Good Job</h1>
+    </div>
 
-    <h2 class="text-md font-semibold text-white mb-6">Please Login to Your Account</h2>
+    <h2 class="text-md font-semibold text-white mb-6">Please Login to Your Account</h2>
 
-    <form onsubmit="login(event)">
-      <div class="mb-4">
-        <label for="loginEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
-        <div class="relative">
-          <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
-        </div>
-      </div>
+    <!-- FIX: add onsubmit="login(event)" to prevent default form submission -->
+    <form onsubmit="login(event)">
+      <div class="mb-4">
+        <label for="loginEmail" class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+        <div class="relative">
+          <i class="fas fa-envelope absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input type="email" id="loginEmail" name="loginEmail" placeholder="Enter your email" required 
+            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
+        </div>
+      </div>
 
-      <div class="mb-6">
-        <label for="loginPassword" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-        <div class="relative">
-          <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-          <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required
-            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
-        </div>
-      </div>
+      <div class="mb-6">
+        <label for="loginPassword" class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+        <div class="relative">
+          <i class="fas fa-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input type="password" id="loginPassword" name="loginPassword" placeholder="Enter your password" required 
+            class="w-full px-4 py-2 border border-gray-600 rounded-sm outline-none text-white bg-gray-800 pl-10 text-sm">
+        </div>
+      </div>
 
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center">
-          <input type="checkbox" id="remember" name="remember" class="text-blue-300 focus:ring-blue-500 border-gray-600 rounded-sm">
-          <label for="remember" class="text-sm text-gray-300 ml-2">Remember me</label>
-        </div>
-        <a href="#" class="text-sm text-blue-300">Forgot password?</a>
-      </div>
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center">
+          <input type="checkbox" id="remember" name="remember" class="text-blue-300 focus:ring-blue-500 border-gray-600 rounded-sm">
+          <label for="remember" class="text-sm text-gray-300 ml-2">Remember me</label>
+        </div>
+        <a href="#" class="text-sm text-blue-300">Forgot password?</a>
+      </div>
 
-      <button type="submit"
-        class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 font-extrabold py-2 rounded-sm">
-        Login
-      </button>
-    </form>
+      <!-- FIX: type="submit" will work now that form submission is handled properly -->
+      <button type="submit" 
+        class="w-full text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 font-extrabold py-2 rounded-sm">
+        Login
+      </button>
+    </form>
 
-    <div class="mt-2 text-center">
-      <p class="text-base text-gray-300">Don't have an account?
-        <a href="signup.html" class="text-blue-300 text-lg font-medium">Sign up</a>
-      </p>
-    </div>
-  </div>
+    <div class="mt-2 text-center">
+      <p class="text-base text-gray-300">Don't have an account? 
+        <a href="signup.html" class="text-blue-300 text-lg font-medium">Sign up</a>
+      </p>
+    </div>
+  </div>
 
-  <script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -136,6 +138,6 @@
         Swal.fire("Error", msg, "error");
       }
     };
-  </script>
+  </script>
 </body>
 </html>
