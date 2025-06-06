@@ -5,46 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Good Job</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
     .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.7);
     }
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
   </style>
 </head>
-<body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
+<body class="bg-black text-white flex flex-col min-h-screen">
 
   <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+  <header class="bg-black w-full max-w-md mx-auto py-3 px-4 border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+      <div class="bg-purple-600 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
         GJ
       </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+      <h2 class="text-xl font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
+      <i class="fa-solid fa-headset"></i>
+      <div id="ProfileBtn" class="w-6 h-6 hover:text-purple-400 flex items-center justify-center cursor-pointer">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
   </header>
 
-  <!-- Profile Modal Backdrop -->
+  <!-- Profile Modal -->
   <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
-    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6"></div>
+    <div id="profileContainer" class="w-full max-w-md"></div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase and Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -64,100 +60,74 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    function toggleProfile() {
-      const modal = document.getElementById("profileModal");
-      const container = document.getElementById("profileContainer");
-      modal.classList.toggle("hidden");
+    const profileBtn = document.getElementById("ProfileBtn");
+    const profileModal = document.getElementById("profileModal");
+    const profileContainer = document.getElementById("profileContainer");
 
-      if (!modal.classList.contains("hidden")) {
-        setProfileHeader(container);
-      }
-    }
+    profileBtn.addEventListener("click", () => {
+      profileModal.classList.remove("hidden");
+      loadUserProfile();
+    });
 
-    function setProfileHeader(container) {
-      container.innerHTML = `
-        <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
-          <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
-            <i class="fa-solid fa-times"></i>
-          </button>
-          <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
-            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shadow-lg user-icon-glow">
-              <i class="fas fa-user text-4xl text-white"></i>
-            </div>
-            <div class="text-center">
-              <h2 id="usernameTop" class="text-lg font-semibold">Loading...</h2>
-              <p class="text-sm text-gray-400">Member since: 2025</p>
-            </div>
-            <div><span id="accountStatus" class="text-sm text-yellow-400"></span></div>
-          </div>
-          <div class="w-full rounded-lg p-4 space-y-6">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                <i class="fa-solid fa-user text-xl text-yellow-400"></i>
-              </div>
-              <div>
-                <p class="text-sm text-gray-400">Full Name</p>
-                <p id="username" class="text-sm font-medium text-white">Loading...</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                <i class="fa-solid fa-phone text-xl text-blue-400"></i>
-              </div>
-              <div>
-                <p class="text-sm text-gray-400">Phone</p>
-                <p id="phone" class="text-sm font-medium text-white">Loading...</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
-                <i class="fa-solid fa-envelope text-xl text-red-400"></i>
-              </div>
-              <div>
-                <p class="text-sm text-gray-400">Email</p>
-                <p id="email" class="text-sm font-medium text-white">Loading...</p>
-              </div>
-            </div>
-            <div class="flex justify-center">
-              <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 cursor-pointer" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i>
-                Logout
-              </div>
-            </div>
-          </div>
-        </section>
-      `;
-
+    function loadUserProfile() {
       onAuthStateChanged(auth, async (user) => {
-        if (user) {
-          try {
-            const docRef = doc(db, "users", user.uid);
-            const docSnap = await getDoc(docRef);
+        if (!user) return window.location.href = "login.html";
 
-            if (docSnap.exists()) {
-              const data = docSnap.data();
-              document.getElementById("usernameTop").innerText = data.username || "User";
-              document.getElementById("username").innerText = data.username || "N/A";
-              document.getElementById("phone").innerText = data.phone || "N/A";
-              document.getElementById("email").innerText = data.email || user.email || "N/A";
-              document.getElementById("accountStatus").innerText = data.isPro ? "🌟 Pro Account" : "⚡ Regular Account";
-            } else {
-              Swal.fire("User data not found", "", "warning");
-            }
-          } catch (err) {
-            Swal.fire("Error", err.message, "error");
-          }
-        } else {
-          window.location.href = "login.html";
+        try {
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (!docSnap.exists()) return Swal.fire("No user data found");
+
+          const data = docSnap.data();
+
+          profileContainer.innerHTML = `
+            <section class="bg-black border border-gray-700 rounded-lg p-6 text-white w-full space-y-6 relative glow-yellow">
+              <button onclick="document.getElementById('profileModal').classList.add('hidden')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-xl">
+                <i class="fa-solid fa-times"></i>
+              </button>
+
+              <div class="flex flex-col items-center gap-2 border-b border-gray-700 pb-4">
+                <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center user-icon-glow">
+                  <i class="fas fa-user text-4xl text-white"></i>
+                </div>
+                <div class="text-center">
+                  <h2 class="text-lg font-semibold">${data.username || "User"}</h2>
+                  <p class="text-sm text-gray-400">${data.isPro ? "🌟 Pro Account" : "⚡ Regular Account"}</p>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <div>
+                  <p class="text-sm text-gray-400">Username</p>
+                  <p class="text-md font-medium">${data.username || "N/A"}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-400">Phone</p>
+                  <p class="text-md font-medium">${data.phone || "N/A"}</p>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-400">Email</p>
+                  <p class="text-md font-medium">${data.email || user.email || "N/A"}</p>
+                </div>
+              </div>
+
+              <div class="flex justify-center">
+                <button onclick="logout()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded-md flex items-center gap-2">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+              </div>
+            </section>
+          `;
+        } catch (err) {
+          Swal.fire("Error", err.message, "error");
         }
       });
     }
 
-    function logout() {
-      signOut(auth).then(() => {
-        window.location.href = "login.html";
-      });
-    }
+    window.logout = () => {
+      signOut(auth).then(() => window.location.href = "login.html");
+    };
   </script>
 </body>
 </html>
