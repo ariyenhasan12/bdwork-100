@@ -173,8 +173,24 @@
           }
         }
 
-        alert("Signup successful!");
-        window.location.href = "index.html";
+        // Show success toast
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Sign-up Successful!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+
+        // Redirect after delay
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 2000);
+
       } catch (error) {
         alert("Signup failed: " + error.message);
       }
