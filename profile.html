@@ -39,8 +39,9 @@
     </div>
   </header>
 
-  <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6 hidden">
-    <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
+  <!-- Profile Modal -->
+  <div id="profileContainer" class="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center hidden">
+    <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative max-w-md w-full mx-4">
       <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
         <i class="fa-solid fa-times"></i>
       </button>
@@ -93,6 +94,7 @@
     </section>
   </div>
 
+  <!-- Firebase Script -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -145,7 +147,7 @@
       }
     };
 
-    // Toggle profile section
+    // Toggle profile modal
     window.toggleProfile = () => {
       const profile = document.getElementById("profileContainer");
       profile.classList.toggle("hidden");
