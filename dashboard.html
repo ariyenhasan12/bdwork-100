@@ -232,21 +232,24 @@
       modal.classList.toggle("hidden");
     };
 
-    window.copyReferralLink = function () {
+    function copyReferralLink() {
       const input = document.getElementById("referLink");
-      input.select();
-      input.setSelectionRange(0, 99999); 
-      document.execCommand("copy");
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Referral link copied!',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true
+      navigator.clipboard.writeText(input.value).then(() => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Referral link copied!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }).catch((err) => {
+        console.error('Could not copy text: ', err);
       });
-    };
+    }
   </script>
 </body>
 </html>
