@@ -35,7 +35,7 @@
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer" onclick="toggleProfile()">
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
@@ -45,7 +45,7 @@
     <section id="dailyBonusContainer" class="mb-8"></section>
 
   <!-- Profile Modal Backdrop -->
-  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
+  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50  flex justify-center items-center p-4">
     <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
       <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
         <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
@@ -59,7 +59,10 @@
             <h2 id="userName" class="text-lg font-semibold">Loading...</h2>
             <p class="text-sm text-gray-400">Member since: 2025</p>
           </div>
-          <div><span id="accountStatus">Account</span></div>
+          <div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-1 rounded-full border border-purple-500">
+          <i class="fas fa-user text-sm"></i>
+          <p id="accountStatus"></p>
+        </div>
         </div>
 
         <div class="w-full rounded-lg p-4 space-y-6">
