@@ -1,41 +1,169 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pro Account</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good Job</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+
+    @keyframes borderGlow {
+      0%, 100% {
+        border-color: #facc15;
+        box-shadow: 0 0 20px #facc15;
+      }
+      50% {
+        border-color: #5f27cd;
+        box-shadow: 0 0 20px #5f27cd;
+      }
+    }
+
+    .animate-borderGlow {
+      animation: borderGlow 5s ease-in-out infinite;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
 
-  <main class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col justify-between">
-      <div>
-        <h2 class="text-xl font-semibold mb-4 text-blue-700">💎 Pro Account Status</h2>
-        <p><strong>Active:</strong> <span id="isProStatus">Loading...</span></p>
-        <p><strong>Expires On:</strong> <span id="proExpiryDate">-</span></p>
-        <hr class="my-3" />
-        <h3 class="font-semibold text-lg text-blue-600 mb-2">Current Pro Account Plan</h3>
-        <ul class="list-disc list-inside space-y-1 text-gray-700 mb-6">
-          <li>Activation Cost: ৳<span id="proActivationCost">...</span></li>
-          <li>Daily Bonus: ৳<span id="proDailyBonus">...</span></li>
-          <li>Validity: <span id="proValidity">...</span> days</li>
-        </ul>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
       </div>
-
-      <button
-        id="activateProBtn"
-        onclick="activateProAccount()"
-        class="bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Activate Pro Account
-      </button>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
-  </main>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-  <!-- Firebase -->
+
+
+  <!-- Main Content -->
+  <main class="px-3">
+       <!-- PRO ACCOUNT -->
+    <div class="space-y-6 mt-8 mb-20 m-auto px-3">
+    <section class="relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 overflow-hidden animate-borderGlow">
+      
+          <!-- Glow Background -->
+          <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
+
+          <div class="relative z-10 text-center mb-5">
+            <h2 class="text-xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">Pro Membership</h2>
+            <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
+          </div>
+             
+          <div class="relative z-10 space-y-6 gap-8 bg-gray-900 bg-opacity-50 rounded-2xl p-4 border border-gray-700">
+            
+            <!-- Pricing -->
+            <div class="text-center">
+              <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
+              <h3 id="proActivationCost" class="text-5xl font-black text-yellow-400 leading-tight">৳</h3>
+              <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
+            </div>
+
+            <!-- Features -->
+            <ul class="text-sm space-y-3 text-gray-200 md:col-span-1 col-span-2">
+              <li class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                  <i class="fa-solid fa-bolt"></i>
+                </span> 
+                Earn up to 5x faster
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                  <i class="fa-solid fa-percent"></i>
+                </span> 
+                Daily return of 3.33%
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                  <i class="fa-solid fa-crown"></i>
+                </span> 
+                Premium income tasks unlocked
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                  <i class="fa-solid fa-headset"></i>
+                </span> 
+                VIP customer support
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                  <i class="fa-solid fa-coins"></i>
+                </span> 
+                Instant withdrawal anytime
+              </li>
+            </ul>
+
+            <!-- CTA Button -->
+<div class="flex flex-col items-center gap-3">
+  <button id="activateProBtn"
+        onclick="activateProAccount()"
+    class="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg transition duration-600 text-lg
+           transform hover:scale-105 hover:brightness-110 active:scale-95
+            hover:animate-none">
+    Activate Pro
+  </button>
+
+          </div>
+        </div>
+  </main>
+  
+            <p id="isProStatus" class="hidden"></p>
+             <p id="proExpiryDate" class="hidden"></p>
+             <p id="proDailyBonus"></p>
+  
+  <!-- Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </div>
+    <div class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Job
+    </div>
+    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Pro
+    </div>
+    <div class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Earning
+    </div>
+    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div> 
+      Profile
+    </div>
+  </nav>
+ 
+ <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
