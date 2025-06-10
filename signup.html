@@ -94,11 +94,11 @@
     </div>
   </div>
 
-  <!-- Firebase Logic -->
+  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, collection, query, where, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -162,6 +162,16 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const uid = userCredential.user.uid;
 
+        let referBonus = 0;
+        try {
+          const rewardsDoc = await getDoc(doc(db, "referSettings", "rewards"));
+          if (rewardsDoc.exists()) {
+            referBonus = rewardsDoc.data().referBonus || 0;
+          }
+        } catch (e) {
+          console.error("Failed to fetch refer bonus config:", e);
+        }
+
         await setDoc(doc(db, "users", uid), {
           uid,
           username,
@@ -173,7 +183,7 @@
           referredBy: inputReferCode || null,
         });
 
-        if (inputReferCode && inputReferCode !== uid) {
+        if (inputReferCode && inputReferCode !== uid && referBonus > 0) {
           const q = query(collection(db, "users"), where("uid", "==", inputReferCode));
           const querySnapshot = await getDocs(q);
 
@@ -181,7 +191,7 @@
             const referrerDoc = querySnapshot.docs[0];
             const referrerRef = doc(db, "users", referrerDoc.id);
             const currentBalance = referrerDoc.data().balance || 0;
-            await updateDoc(referrerRef, { balance: currentBalance + 10 });
+            await updateDoc(referrerRef, { balance: currentBalance + referBonus });
           }
         }
 
