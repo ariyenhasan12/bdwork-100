@@ -200,7 +200,9 @@
           const username = data.username || "N/A";
           document.getElementById("username").innerText = username;
           document.getElementById("email").innerText = data.email || user.email || "N/A";
-          document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
+          document.getElementById("accountStatus").innerHTML = data.isPro
+  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full border border-yellow-400">🌟 Pro Account</div>`
+  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-1 rounded-full border border-purple-500">⚡ Regular Account</div>`;
         } else {
           alert("User data not found.");
         }
