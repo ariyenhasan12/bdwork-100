@@ -9,6 +9,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+  </style>
 </head>
 <body class="bg-black min-h-screen font-sans text-white">
 
@@ -101,7 +107,7 @@
           }
 
           const card = `
-            <div class="bg-black rounded-lg shadow p-5 border-l-4 ${borderColor}">
+            <div class="glow-yellow bg-black rounded-lg shadow p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
                 <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
