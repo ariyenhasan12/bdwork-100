@@ -73,7 +73,7 @@
             <!-- Pricing -->
             <div class="text-center">
               <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
-              <h3 id="proActivationCost" class="text-5xl font-black text-yellow-400 leading-tight">৳</h3>
+              <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳<span id="proActivationCost"></span></h3>
               <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
             </div>
 
@@ -127,7 +127,7 @@
   
             <p id="isProStatus" class="hidden"></p>
              <p id="proExpiryDate" class="hidden"></p>
-             <p id="proDailyBonus"></p>
+             <p id="proDailyBonus" class="hidden"></p>
   
   <!-- Bottom Navigation Bar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
@@ -216,7 +216,7 @@
       document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
       const btn = document.getElementById("activateProBtn");
       btn.disabled = isPro;
-      btn.innerText = isPro ? "Pro Account Active" : "Activate Pro Account";
+      btn.innerText = isPro ? "Already Activated" : "Upgrade Now";
 
       btn.onclick = async () => {
         const balance = currentUserData.balance || 0;
@@ -241,4 +241,4 @@
     });
   </script>
 </body>
-</html>
+    </html>
