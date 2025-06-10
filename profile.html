@@ -13,7 +13,6 @@
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
-
     @keyframes borderGlow {
       0%, 100% {
         border-color: #facc15;
@@ -24,7 +23,6 @@
         box-shadow: 0 0 20px #5f27cd;
       }
     }
-
     .animate-borderGlow {
       animation: borderGlow 5s ease-in-out infinite;
     }
@@ -49,7 +47,6 @@
   </header>
 
   <main class="px-4">
-
     <!-- User Info Card -->
     <div class="bg-black rounded-xl p-6 w-full max-w-md mb-6 mx-auto border border-gray-700 animate-borderGlow">
       <div class="flex items-start justify-between">
@@ -64,20 +61,16 @@
           </div>
         </div>
       </div>
-
       <div class="mt-2 mb-4">
         <p id="username" class="text-xl font-semibold text-white mb-2">Loading...</p>
         <p id="email" class="text-sm text-gray-400">Loading...</p>
-        <p id="phone" class="hidden"></p>
       </div>
-
       <!-- Membership Badge -->
       <div class="mt-2 space-x-4">
         <div class="inline-flex items-center gap-1 bg-green-600 bg-opacity-40 text-green-400 text-xs font-medium px-3 py-1 rounded-full border border-green-500">
           <i class="fas fa-check-circle text-sm"></i> Verified
         </div>
-
-        <div><span id="accountStatus"></span></div>
+        <p id="accountStatus"></p>
       </div>
     </div>
 
@@ -115,7 +108,6 @@
             <p style="font-size: 10px;" class="text-gray-400">View History</p>
           </div>
         </div>
-
         <div class="flex-1 h-12 bg-gray-900 text-white p-2 rounded-lg border border-gray-700 hover:border-purple-500 transition flex items-center gap-3">
           <div class="w-8 h-8 flex items-center justify-center bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 rounded-md">
             <i class="fas fa-coins text-sm animate-pulse"></i>
@@ -134,7 +126,6 @@
         <i class="fas fa-cog text-yellow-400 text-lg"></i>
         <h2 class="text-lg font-semibold text-white">Quick Settings</h2>
       </div>
-
       <ul class="space-y-6 text-sm">
         <!-- Payment Method -->
         <li class="flex flex-col gap-2 border border-gray-700 p-3 rounded-lg bg-gray-900">
@@ -175,10 +166,9 @@
         </li>
       </ul>
     </div>
-
   </main>
 
-<!-- Firebase Script -->
+  <!-- Firebase Script -->
   <script type="module">
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -209,8 +199,6 @@
           const data = docSnap.data();
           const username = data.username || "N/A";
           document.getElementById("username").innerText = username;
-          document.getElementById("usernameTop").innerText = username;
-          document.getElementById("phone").innerText = data.phone || "N/A";
           document.getElementById("email").innerText = data.email || user.email || "N/A";
           document.getElementById("accountStatus").innerText = data.isPro === true ? "🌟 Pro Account" : "⚡ Regular Account";
         } else {
