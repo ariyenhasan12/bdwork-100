@@ -201,8 +201,13 @@
           document.getElementById("username").innerText = username;
           document.getElementById("email").innerText = data.email || user.email || "N/A";
           document.getElementById("accountStatus").innerHTML = data.isPro
-  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full border border-yellow-400">🌟 Pro Account</div>`
-  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-1 rounded-full border border-purple-500">⚡ Regular Account</div>`;
+  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full border border-yellow-400">
+      <i class="fas fa-star"></i> Pro Account
+    </div>`
+  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-1 rounded-full border border-purple-500">
+      <i class="fas fa-bolt"></i> Regular Account
+    </div>`;
+
         } else {
           alert("User data not found.");
         }
