@@ -95,7 +95,7 @@
 
         if (snapshot.empty) {
           historyContainer.innerHTML = `
-            <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+            <div class="bg-black p-6 rounded-lg shadow text-center text-gray-100">
               No deposit history found.
             </div>
           `;
@@ -122,7 +122,7 @@
           }
 
           cards += `
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 ${borderColor}">
+            <div class="glow-yellow bg-black rounded-lg p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
                 <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
                 <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
