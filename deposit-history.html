@@ -120,15 +120,15 @@
           cards += `
             <div class="glow-yellow bg-black rounded-lg p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
-                <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
+                <h3 class="text-lg font-semibold text-yellow-400">৳${amount}</h3>
                 <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
                   ${status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
               </div>
-              <div class="text-sm text-gray-600 space-y-1">
+              <div class="text-sm text-gray-300 space-y-1">
                 <p><strong>Method:</strong> ${method}</p>
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
-                <p><strong>Date:</strong> ${date}</p>
+                <p class="text-xs text-gray-400"><strong>Date:</strong> ${date}</p>
               </div>
             </div>
           `;
