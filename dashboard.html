@@ -221,9 +221,12 @@
         document.getElementById("userEmail").innerText = data.email || "N/A";
         document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
         document.getElementById("accountStatus").innerHTML = data.isPro
-  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-1 rounded-full border border-yellow-400">🌟 Pro Account</div>`
-  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-1 rounded-full border border-purple-500">⚡ Regular Account</div>`;
-
+  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
+      <i class="fas fa-star text-sm"></i> Pro Member
+    </div>`
+  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
+      <i class="fas fa-bolt text-sm"></i> Regular Member
+    </div>`;
         // Referral
         const currentDomain = window.location.origin;
         const referLink = `${currentDomain}/signup.html?ref=${user.uid}`;
