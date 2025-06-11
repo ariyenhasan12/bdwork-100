@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Referral Settings</title>
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    // Firebase config (replace with yours)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // Load Referral Bonus
+    async function loadReferralBonus() {
+      const docRef = doc(db, "referSettings", "rewards");
+      try {
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const bonus = docSnap.data().referBonus || 0;
+          document.getElementById("referralBonusInput").value = bonus;
+        } else {
+          document.getElementById("referralBonusStatus").textContent = "Referral bonus setting not found.";
+        }
+      } catch (error) {
+        console.error("Error loading referral bonus:", error);
+        document.getElementById("referralBonusStatus").textContent = "Error loading referral bonus.";
+      }
+    }
+
+    // Update Referral Bonus
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("updateReferralBonusBtn").addEventListener("click", async () => {
+        const newBonus = parseFloat(document.getElementById("referralBonusInput").value);
+        if (isNaN(newBonus) || newBonus < 0) {
+          alert("Please enter a valid non-negative number.");
+          return;
+        }
+
+        const docRef = doc(db, "referSettings", "rewards");
+        try {
+          await updateDoc(docRef, { referBonus: newBonus });
+          document.getElementById("referralBonusStatus").textContent = "Referral bonus updated successfully.";
+        } catch (error) {
+          console.error("Error updating referral bonus:", error);
+          document.getElementById("referralBonusStatus").textContent = "Failed to update referral bonus.";
+        }
+      });
+    });
+
+    // Auth check and init
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loadReferralBonus();
+      } else {
+        document.getElementById("referralBonusStatus").textContent = "Please log in as admin.";
+      }
+    });
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+    <h1 class="text-2xl font-bold text-blue-700 mb-4">Referral Bonus Settings</h1>
+    <div class="flex items-center space-x-4 mb-4">
+      <label for="referralBonusInput" class="text-sm font-medium">Referral Bonus (৳):</label>
+      <input id="referralBonusInput" type="number" min="0" step="0.01" class="border px-3 py-2 rounded w-32 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+    </div>
+    <button id="updateReferralBonusBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition w-full">
+      Update Bonus
+    </button>
+    <p id="referralBonusStatus" class="text-sm mt-3 text-gray-700"></p>
+  </div>
+</body>
+</html>
