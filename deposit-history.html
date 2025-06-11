@@ -5,30 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Deposit History</title>
   <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-b from-blue-50 to-blue-100 min-h-screen font-sans">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <header class="bg-blue-700 text-white py-4 px-6 flex justify-between items-center shadow-md">
-    <h1 class="text-xl font-bold">💳 Deposit History</h1>
-    <button id="backBtn" class="bg-blue-900 px-4 py-2 rounded hover:bg-blue-950 transition text-sm">
-      ← Dashboard
-    </button>
+  <style>
+    .glow-yellow {
+      box-shadow: 0 0 5px rgb(246,201,0);
+    }
+  </style>
+</head>
+<body class="bg-black min-h-screen font-sans text-white">
+
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center  rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
   </header>
 
   <main class="p-4 max-w-3xl mx-auto">
     <section>
-      <h2 class="text-2xl font-semibold text-gray-800 mb-6">Your Deposits</h2>
       <div id="historyContainer" class="space-y-4">
-        <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
-          Loading deposit history...
+        <div class="bg-black p-6 rounded-lg shadow text-center text-white">
+          Loading...
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="text-center text-gray-500 text-sm py-6">
-    &copy; 2025 BDWork. All rights reserved.
-  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -83,7 +97,7 @@
 
         if (snapshot.empty) {
           historyContainer.innerHTML = `
-            <div class="bg-white p-6 rounded-lg shadow text-center text-gray-500">
+            <div class="bg-black p-6 rounded-lg shadow text-center text-gray-100">
               No deposit history found.
             </div>
           `;
@@ -110,14 +124,14 @@
           }
 
           cards += `
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 ${borderColor}">
+            <div class="glow-yellow bg-black rounded-lg p-5 border-l-4 ${borderColor}">
               <div class="flex justify-between items-center mb-2">
-                <h3 class="text-lg font-semibold text-gray-800">৳${amount}</h3>
+                <h3 class="text-lg font-semibold text-yellow-400">৳${amount}</h3>
                 <span class="text-xs px-2 py-1 rounded ${statusColor} bg-opacity-10 border ${statusColor.replace('text', 'border')}">
                   ${status.charAt(0).toUpperCase() + status.slice(1)}
                 </span>
               </div>
-              <div class="text-sm text-gray-600 space-y-1">
+              <div class="text-sm text-gray-300 space-y-1">
                 <p><strong>Method:</strong> ${method}</p>
                 <p><strong>Transaction ID:</strong> ${transactionId}</p>
                 <p><strong>Date:</strong> ${date}</p>
