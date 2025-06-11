@@ -58,24 +58,25 @@
     </header>
 
     <main class="p-4 md:p-6 space-y-6 overflow-auto flex-grow">
+      <!-- Total Users Section -->
       <div class="bg-white shadow rounded p-4">
         <div class="text-xl font-semibold text-blue-700 mb-2" id="totalUsersCount">Total Users: ...</div>
       </div>
 
+      <!-- Users Table Section -->
       <div class="bg-white shadow rounded p-4">
         <div class="overflow-x-auto max-h-[600px]">
-          <table class="w-full text-sm border border-gray-300 rounded overflow-hidden min-w-[700px]">
+          <table class="w-full text-sm border border-gray-300 rounded overflow-hidden min-w-[600px]">
             <thead class="bg-gray-100 sticky top-0 z-10">
               <tr>
                 <th class="p-3 border border-gray-300 text-left">Email</th>
                 <th class="p-3 border border-gray-300 text-left">Balance (৳)</th>
-                <th class="p-3 border border-gray-300 text-left">Refer Bonus</th>
                 <th class="p-3 border border-gray-300 text-left">Role</th>
                 <th class="p-3 border border-gray-300 text-center">Actions</th>
               </tr>
             </thead>
             <tbody id="usersTableBody">
-              <tr><td colspan="5" class="p-4 text-center text-gray-500">Loading users...</td></tr>
+              <tr><td colspan="4" class="p-4 text-center text-gray-500">Loading users...</td></tr>
             </tbody>
           </table>
         </div>
@@ -83,12 +84,31 @@
     </main>
   </div>
 
+  <!-- Firebase and Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      doc,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = { /* your config here */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -113,71 +133,78 @@
     });
 
     async function loadTotalUsersCount() {
-      const usersCol = collection(db, "users");
-      const usersSnapshot = await getDocs(usersCol);
-      totalUsersCountElem.textContent = `Total Users: ${usersSnapshot.size}`;
+      try {
+        const usersCol = collection(db, "users");
+        const usersSnapshot = await getDocs(usersCol);
+        totalUsersCountElem.textContent = `Total Users: ${usersSnapshot.size}`;
+      } catch (err) {
+        totalUsersCountElem.textContent = "Total Users: Error";
+        console.error("Error loading user count:", err);
+      }
     }
 
     async function loadUsers() {
-      const usersCol = collection(db, "users");
-      const usersSnapshot = await getDocs(usersCol);
-      if (usersSnapshot.empty) {
-        usersTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center">No users found.</td></tr>`;
-        return;
-      }
+      try {
+        const usersCol = collection(db, "users");
+        const usersSnapshot = await getDocs(usersCol);
 
-      let rowsHtml = "";
-      usersSnapshot.forEach(docSnap => {
-        const user = docSnap.data();
-        rowsHtml += `
-          <tr class="hover:bg-gray-50 border-t">
-            <td class="p-3 border border-gray-300 break-words max-w-xs">${user.email || "N/A"}</td>
-            <td class="p-3 border border-gray-300">
-              <input type="number" min="0" step="0.01" value="${user.balance || 0}" class="balance-input border rounded px-2 py-1 w-28" data-uid="${docSnap.id}" />
-            </td>
-            <td class="p-3 border border-gray-300">
-              <input type="number" min="0" step="0.01" value="${user.referBonus || 0}" class="refer-input border rounded px-2 py-1 w-28" data-uid="${docSnap.id}" />
-            </td>
-            <td class="p-3 border border-gray-300">
-              <select class="role-select border rounded px-2 py-1 w-28" data-uid="${docSnap.id}">
-                <option value="user" ${user.role === "user" ? "selected" : ""}>User</option>
-                <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
-              </select>
-            </td>
-            <td class="p-3 border border-gray-300 text-center">
-              <button class="update-balance-btn bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded" data-uid="${docSnap.id}">Update</button>
-            </td>
-          </tr>
-        `;
-      });
+        if (usersSnapshot.empty) {
+          usersTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center">No users found.</td></tr>`;
+          return;
+        }
 
-      usersTableBody.innerHTML = rowsHtml;
-
-      document.querySelectorAll(".update-balance-btn").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
-          const uid = e.target.getAttribute("data-uid");
-          const input = document.querySelector(`.balance-input[data-uid="${uid}"]`);
-          const select = document.querySelector(`.role-select[data-uid="${uid}"]`);
-          const referInput = document.querySelector(`.refer-input[data-uid="${uid}"]`);
-
-          const newBalance = parseFloat(input.value);
-          const newRole = select.value;
-          const newReferBonus = parseFloat(referInput.value);
-
-          if (isNaN(newBalance) || newBalance < 0 || isNaN(newReferBonus) || newReferBonus < 0) {
-            alert("Please enter valid non-negative values.");
-            return;
-          }
-
-          await updateDoc(doc(db, "users", uid), {
-            balance: newBalance,
-            role: newRole,
-            referBonus: newReferBonus
-          });
-
-          alert("Updated successfully.");
+        let rowsHtml = "";
+        usersSnapshot.forEach((docSnap) => {
+          const user = docSnap.data();
+          rowsHtml += `
+            <tr class="hover:bg-gray-50 border-t">
+              <td class="p-3 border border-gray-300 break-words max-w-xs">${user.email || "N/A"}</td>
+              <td class="p-3 border border-gray-300">
+                <input type="number" min="0" step="0.01" value="${user.balance || 0}" class="balance-input border rounded px-2 py-1 w-28 focus:outline-none focus:ring-2 focus:ring-blue-400" data-uid="${docSnap.id}" />
+              </td>
+              <td class="p-3 border border-gray-300">
+                <select class="role-select border rounded px-2 py-1 w-28 focus:outline-none focus:ring-2 focus:ring-blue-400" data-uid="${docSnap.id}">
+                  <option value="user" ${user.role === "user" ? "selected" : ""}>User</option>
+                  <option value="admin" ${user.role === "admin" ? "selected" : ""}>Admin</option>
+                </select>
+              </td>
+              <td class="p-3 border border-gray-300 text-center">
+                <button class="update-balance-btn bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded transition" data-uid="${docSnap.id}">
+                  Update
+                </button>
+              </td>
+            </tr>
+          `;
         });
-      });
+
+        usersTableBody.innerHTML = rowsHtml;
+
+        document.querySelectorAll(".update-balance-btn").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const uid = e.target.getAttribute("data-uid");
+            const input = document.querySelector(`.balance-input[data-uid="${uid}"]`);
+            const select = document.querySelector(`.role-select[data-uid="${uid}"]`);
+            const newBalance = parseFloat(input.value);
+            const newRole = select.value;
+
+            if (isNaN(newBalance) || newBalance < 0) {
+              alert("Please enter a valid non-negative balance.");
+              return;
+            }
+
+            await updateDoc(doc(db, "users", uid), {
+              balance: newBalance,
+              role: newRole
+            });
+
+            alert("Updated successfully.");
+          });
+        });
+
+      } catch (error) {
+        usersTableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Error loading users: ${error.message}</td></tr>`;
+        console.error("Error loading users:", error);
+      }
     }
 
     // Sidebar toggle
