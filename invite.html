@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Invite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+  </style>
+</head>
+<body class="bg-black text-white flex items-center justify-center min-h-screen p-4">
+
+  <div class="bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md text-center">
+    <h1 class="text-xl font-bold text-yellow-400 mb-4">Your Referral Link</h1>
+    
+    <div class="relative mb-4">
+      <div class="absolute left-3 top-0 bottom-0 flex items-center">
+        <i class="fas fa-link text-gray-400"></i>
+      </div>
+      <input id="referLink" type="text" 
+             class="w-full pl-10 p-2 border border-gray-600 bg-gray-800 rounded-md text-gray-300" 
+             value="Loading..." disabled>
+      <button onclick="copyReferralLink()" 
+              class="absolute top-0 right-0 bottom-0 px-3 bg-yellow-500 hover:bg-yellow-400 text-black text-sm rounded-r-md">
+        Copy
+      </button>
+    </div>
+    
+    <p class="text-sm text-gray-400">Share this link to invite friends and earn rewards!</p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) return window.location.href = "login.html";
+      const currentDomain = window.location.origin;
+      const referralLink = `${currentDomain}/signup.html?ref=${user.uid}`;
+      document.getElementById("referLink").value = referralLink;
+    });
+
+    window.copyReferralLink = function () {
+      const input = document.getElementById("referLink");
+      navigator.clipboard.writeText(input.value).then(() => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Referral link copied!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      });
+    };
+  </script>
+</body>
+</html>
