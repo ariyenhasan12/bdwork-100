@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
+<body class="bg-black text-white min-h-screen flex flex-col">
   <!-- Header -->
   <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -120,7 +120,7 @@
           const task = { id: docSnap.id, ...docSnap.data() };
 
           const taskDiv = document.createElement("div");
-          taskDiv.className = "p-6 bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300";
+          taskDiv.className = "p-4 bg-black rounded-xl shadow-6xl";
 
           const completed = userData.completedTasks?.includes(task.id);
 
