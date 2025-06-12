@@ -11,12 +11,13 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-     .glow-yellow {
+    .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-     }
+    }
 
     .swal2-timer-progress-bar {
       background: #facc15 !important;
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -43,8 +44,6 @@
       </div>
     </section>
   </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -80,6 +79,8 @@
       showConfirmButton: false,
       timer: 3000,
       timerProgressBar: true,
+      background: '#1a202c',
+      color: '#fff',
       didOpen: (toast) => {
         toast.addEventListener('mouseenter', Swal.stopTimer)
         toast.addEventListener('mouseleave', Swal.resumeTimer)
@@ -134,11 +135,11 @@
           let taskHtml = `
             <p class="font-semibold text-2xl text-indigo-400 mb-3"><i class="fas fa-briefcase text-yellow-400 text-2xl mr-1"></i>${task.name}</p>
             <div class="border border-gray-700 p-2 mb-5 rounded">
-             <h3 class="flex items-center gap-1 text-yellow-400 font-semibold tracking-wide text-lg mb-1 drop-shadow-neon">
-              <i class="fas fa-info-circle text-1xl"></i>
-               Job Description
-             </h3>
-            <p class="text-gray-200 mb-1">${task.description || ""}</p>
+              <h3 class="flex items-center gap-1 text-yellow-400 font-semibold tracking-wide text-lg mb-1 drop-shadow-neon">
+                <i class="fas fa-info-circle text-1xl"></i>
+                Job Description
+              </h3>
+              <p class="text-gray-200 mb-1">${task.description || ""}</p>
             </div>
             <div class="flex justify-between items-center flex-wrap gap-4 mb-4">
               ${task.view ? `<a href="${task.view}" target="_blank" class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition whitespace-nowrap">Open Job <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>` : ""}
@@ -224,9 +225,17 @@
       userData.balance = newBalance;
       userData.completedTasks = data.completedTasks ? [...data.completedTasks, task.id] : [task.id];
 
-      toast.fire({
+      // ✅ SUCCESSFUL TASK COMPLETION TOAST
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
         icon: 'success',
-        title: `Task "${task.name}" completed! You earned ৳${(task.reward || 0).toFixed(2)}`
+        title: 'Successful!',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: '#1a202c',
+        color: '#fff'
       });
 
       loadTasks();
