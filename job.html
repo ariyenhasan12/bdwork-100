@@ -178,14 +178,16 @@
 
               if (!(input1.files.length && input2.files.length)) {
                 Swal.fire({
-                  icon: 'warning',
-                  title: 'Please upload both screenshots before completing the task.',
-                  position: 'top-end',
-                  toast: true,
-                  showConfirmButton: false,
-                  timer: 3000,
-                  timerProgressBar: true
-                });
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'Please upload both screenshots before completing the task.',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                background: '#1a202c',
+                color: '#fff'
+              });
                 return;
               }
 
@@ -230,7 +232,7 @@
         toast: true,
         position: 'top-end',
         icon: 'success',
-        title: 'Successful!',
+        title: 'Job Submit Successful!',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,
