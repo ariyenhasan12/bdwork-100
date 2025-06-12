@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Balance Transfer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+  <h1 class="text-yellow-400 text-2xl font-bold mb-6">Balance Transfer by Email</h1>
+
+  <form id="transferForm" class="bg-gray-900 p-6 rounded-lg w-full max-w-md space-y-4">
+    <div>
+      <label class="block text-gray-300 mb-1" for="recipientEmail">Recipient Email</label>
+      <input type="email" id="recipientEmail" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Enter recipient's email" required />
+    </div>
+    <div>
+      <label class="block text-gray-300 mb-1" for="transferAmount">Amount to Transfer (৳)</label>
+      <input type="number" id="transferAmount" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Amount" min="1" step="0.01" required />
+    </div>
+    <button type="submit" class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold w-full hover:bg-yellow-300 transition">
+      Transfer
+    </button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserUid = null;
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUserUid = user.uid;
+      }
+    });
+
+    const form = document.getElementById("transferForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!currentUserUid) {
+        Swal.fire('Error', 'User not logged in.', 'error');
+        return;
+      }
+
+      const recipientEmail = document.getElementById("recipientEmail").value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById("transferAmount").value);
+
+      if (!recipientEmail) {
+        Swal.fire('Error', 'Please enter recipient email.', 'error');
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        Swal.fire('Error', 'Please enter a valid amount greater than zero.', 'error');
+        return;
+      }
+
+      try {
+        // Find recipient by email
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", recipientEmail));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          throw new Error("Recipient email not found");
+        }
+
+        let recipientDoc = null;
+        querySnapshot.forEach(docSnap => {
+          recipientDoc = docSnap; // get first match
+        });
+
+        if (!recipientDoc) {
+          throw new Error("Recipient not found");
+        }
+
+        const recipientUid = recipientDoc.id;
+
+        if (recipientUid === currentUserUid) {
+          throw new Error("You cannot transfer balance to yourself.");
+        }
+
+        // Run transaction for balance transfer
+        await runTransaction(db, async (transaction) => {
+          const senderRef = doc(db, "users", currentUserUid);
+          const recipientRef = doc(db, "users", recipientUid);
+
+          const senderDoc = await transaction.get(senderRef);
+          const recipientDocTxn = await transaction.get(recipientRef);
+
+          if (!senderDoc.exists()) throw new Error("Sender data not found");
+          if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
+
+          const senderBalance = senderDoc.data().balance || 0;
+          const recipientBalance = recipientDocTxn.data().balance || 0;
+
+          if (senderBalance < amount) {
+            throw new Error("Insufficient balance");
+          }
+
+          transaction.update(senderRef, {
+            balance: senderBalance - amount
+          });
+
+          transaction.update(recipientRef, {
+            balance: recipientBalance + amount
+          });
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Transfer Successful',
+          text: `৳${amount.toFixed(2)} has been transferred to ${recipientEmail}`,
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+
+        form.reset();
+
+      } catch (error) {
+        Swal.fire('Error', error.message || 'Transfer failed', 'error');
+      }
+    });
+  </script>
+
+</body>
+</html>
