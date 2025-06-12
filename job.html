@@ -9,6 +9,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+     .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+     }
+  </style>
 </head>
 <body class="bg-black text-white">
   <!-- Header -->
@@ -118,7 +124,7 @@
           const task = { id: docSnap.id, ...docSnap.data() };
 
           const taskDiv = document.createElement("div");
-          taskDiv.className = "p-4 bg-black rounded-md shadow-6xl border border-gray-700";
+          taskDiv.className = "glow-yellow p-4 bg-black rounded-md border border-gray-700";
 
           const completed = userData.completedTasks?.includes(task.id);
 
