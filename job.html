@@ -118,7 +118,7 @@
           const task = { id: docSnap.id, ...docSnap.data() };
 
           const taskDiv = document.createElement("div");
-          taskDiv.className = "p-4 bg-black rounded-xl shadow-6xl border border-gray-700";
+          taskDiv.className = "p-4 bg-black rounded-md shadow-6xl border border-gray-700";
 
           const completed = userData.completedTasks?.includes(task.id);
 
