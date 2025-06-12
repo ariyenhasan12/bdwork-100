@@ -28,14 +28,7 @@
   </header>
 
   <main class="max-w-4xl mx-auto p-6 flex-grow">
-
     <h1 class="text-4xl font-extrabold mb-8 text-center text-indigo-700 select-none">📝 Available Tasks</h1>
-
-    <section class="mb-10 p-6 bg-white rounded-xl shadow-md text-center">
-      <p class="text-xl font-semibold text-gray-800">
-        Your Balance: <span class="text-indigo-600">৳</span><span id="userBalance">0.00</span>
-      </p>
-    </section>
 
     <section>
       <div id="tasksList" class="space-y-6">
@@ -43,10 +36,6 @@
       </div>
     </section>
   </main>
-
-  <footer class="bg-white text-center py-4 text-gray-500 select-none">
-    &copy; 2025 Your Company
-  </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
 
@@ -74,7 +63,6 @@
     const auth = getAuth(app);
 
     const tasksList = document.getElementById("tasksList");
-    const userBalanceSpan = document.getElementById("userBalance");
 
     let currentUser = null;
     let userData = null;
@@ -111,9 +99,7 @@
       const userSnap = await getDoc(userDocRef);
       if (userSnap.exists()) {
         userData = userSnap.data();
-        userBalanceSpan.textContent = (userData.balance || 0).toFixed(2);
       } else {
-        userBalanceSpan.textContent = "0.00";
         userData = { balance: 0, completedTasks: [] };
       }
 
@@ -225,7 +211,6 @@
 
       userData.balance = newBalance;
       userData.completedTasks = data.completedTasks ? [...data.completedTasks, task.id] : [task.id];
-      userBalanceSpan.textContent = newBalance.toFixed(2);
 
       toast.fire({
         icon: 'success',
