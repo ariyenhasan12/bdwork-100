@@ -28,8 +28,6 @@
   </header>
 
   <main class="max-w-4xl mx-auto p-6 flex-grow">
-    <h1 class="text-4xl font-extrabold mb-8 text-center text-indigo-700 select-none">📝 Available Tasks</h1>
-
     <section>
       <div id="tasksList" class="space-y-6">
         <p class="text-center text-gray-100 text-lg">Loading...</p>
@@ -111,7 +109,7 @@
 
       onSnapshot(tasksCol, (snapshot) => {
         if (snapshot.empty) {
-          tasksList.innerHTML = "<p class='text-center text-gray-500 text-lg'>No tasks available right now.</p>";
+          tasksList.innerHTML = "<p class='text-center text-gray-200 text-lg'>No tasks available right now.</p>";
           return;
         }
 
@@ -120,7 +118,7 @@
           const task = { id: docSnap.id, ...docSnap.data() };
 
           const taskDiv = document.createElement("div");
-          taskDiv.className = "p-4 bg-black rounded-xl shadow-6xl";
+          taskDiv.className = "p-4 bg-black rounded-xl shadow-6xl border border-gray-700";
 
           const completed = userData.completedTasks?.includes(task.id);
 
