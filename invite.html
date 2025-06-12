@@ -5,7 +5,9 @@
   <title>Invite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
@@ -17,28 +19,100 @@
     }
   </style>
 </head>
-<body class="bg-black text-white flex items-center justify-center min-h-screen p-4">
+<body class="bg-black text-white">
 
-  <div class="bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md text-center">
-    <h1 class="text-xl font-bold text-yellow-400 mb-4">Your Referral Link</h1>
-    
-    <div class="relative mb-4">
-      <div class="absolute left-3 top-0 bottom-0 flex items-center">
-        <i class="fas fa-link text-gray-400"></i>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
       </div>
-      <input id="referLink" type="text" 
-             class="w-full pl-10 p-2 border border-gray-600 bg-gray-800 rounded-md text-gray-300" 
-             value="Loading..." disabled>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+  
+  <main class="px-4">
+    <h1 class="text-xl text-yellow-300 font-bold mb-6">
+      <i class="fa-solid fa-user-plus text-white text-xl text-yellow-300 mr-2"></i>Invite & Earn
+    </h1>
+
+    <!-- Referral Link -->
+    <div class="bg-black border border-gray-700 rounded-lg p-4 w-full max-w-md glow-yellow">
+      <p class="text-sm text-gray-400 mb-1">Your Referral Link</p>
+      
+      <div class="relative mb-4">
+        <div class="absolute left-3 top-0 bottom-0 flex items-center">
+          <i class="fas fa-link text-gray-400"></i>
+        </div>
+        <input id="referLink" type="text" 
+               class="w-full pl-10 p-1.5 border border-gray-600 bg-black rounded-md text-gray-300 shadow-6xl" 
+               value="Loading..." disabled>
+      </div>
       <button onclick="copyReferralLink()" 
-              class="absolute top-0 right-0 bottom-0 px-3 bg-yellow-500 hover:bg-yellow-400 text-black text-sm rounded-r-md">
-        Copy
+              class="w-full mt-2 py-2 bg-yellow-300 hover:bg-yellow-400 text-black text-sm rounded-md font-bold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-copy"></i> Copy Link
       </button>
     </div>
-    
-    <p class="text-sm text-gray-400">Share this link to invite friends and earn rewards!</p>
-  </div>
 
-  <script type="module">
+    <!-- Share with Friends -->
+    <div class="glow-yellow bg-black border border-gray-700 rounded-lg p-4 mt-10 w-full max-w-md">
+      <h2 class="text-md text-yellow-300 font-semibold mb-3">Share with Friends</h2>
+      <div class="flex items-center justify-center gap-4">
+        <a href="#" class="w-12 h-12 flex items-center justify-center bg-blue-600 rounded-full text-white text-xl hover:opacity-80">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="#" class="w-12 h-12 flex items-center justify-center bg-green-500 rounded-full text-white text-xl hover:opacity-80">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+        <a href="#" class="w-12 h-12 flex items-center justify-center bg-blue-400 rounded-full text-white text-xl hover:opacity-80">
+          <i class="fab fa-telegram"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- How to Invite & Earn -->
+    <div class="glow-yellow bg-black border border-gray-700 rounded-lg p-4 mt-10 mb-10 w-full max-w-md">
+      <h2 class="text-md text-purple-400 font-semibold mb-3">How to Invite & Earn</h2>
+      <div class="space-y-4">
+        <div class="bg-gray-900 p-2 rounded-md flex items-center gap-4">
+          <div class="w-10 h-10 px-4 flex items-center justify-center bg-yellow-400 bg-opacity-30 text-yellow-300 rounded-full">
+            <i class="fa-solid fa-link"></i>
+          </div>
+          <div>
+            <h3 class="text-yellow-300 font-semibold">1. Copy Your Link</h3>
+            <p style="font-size: 12px;" class="text-gray-400">Get your unique referral link above.</p>
+          </div>
+        </div>
+        <div class="bg-gray-900 p-2 rounded-md flex items-center gap-4">
+          <div class="w-10 h-10 px-4 flex items-center justify-center bg-green-600 bg-opacity-30 text-green-400 rounded-full">
+            <i class="fa-solid fa-share-nodes text-xl"></i>
+          </div>
+          <div>
+            <h3 class="text-yellow-300 font-semibold">2. Share with Friends</h3>
+            <p style="font-size: 12px;" class="text-gray-400">Send your link via social media or chat.</p>
+          </div>
+        </div>
+        <div class="bg-gray-900 p-2 rounded-md flex items-center gap-4">
+          <div class="w-10 h-10 px-4 flex items-center justify-center bg-purple-700 bg-opacity-40 text-purple-500 rounded-full">
+            <i class="fa-solid fa-gift text-lg"></i>
+          </div>
+          <div>
+            <h3 class="text-yellow-300 font-semibold">3. Earn Rewards</h3>
+            <p style="font-size: 13px;" class="text-gray-400">Get bonuses when your friends join and work.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+ <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -79,5 +153,6 @@
       });
     };
   </script>
+
 </body>
 </html>
