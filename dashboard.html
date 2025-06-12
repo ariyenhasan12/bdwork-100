@@ -13,11 +13,9 @@
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
-    
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
-
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
@@ -42,9 +40,9 @@
   </header>
 
   <!-- Daily Bonus Claim Button -->
-    <section id="dailyBonusContainer" class="mb-8"></section>
+  <section id="dailyBonusContainer" class="mb-8"></section>
 
-  <!-- Profile Modal Backdrop -->
+  <!-- Profile Modal -->
   <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
     <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
       <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
@@ -61,7 +59,6 @@
           </div>
           <div><span id="accountStatus">Account</span></div>
         </div>
-
         <div class="w-full rounded-lg p-4 space-y-6">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
@@ -101,9 +98,9 @@
     </div>
   </div>
 
-   <!-- Main Content -->
+  <!-- Main Content -->
   <main class="px-3 space-y-4">
-    <!-- MAIN BALANCE SECTION-->
+    <!-- Main Balance Section -->
     <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
       <div class="text-white">
         <h2 class="text-sm font-semibold">Total Asset</h2>
@@ -121,34 +118,17 @@
       </button>
     </div>
 
-    <!-- REFERRAL SECTION -->
+    <!-- Referral Section -->
     <div class="bg-black rounded-md p-4 mt-4 border border-gray-700 space-y-3 glow-yellow">
       <h2 class="text-sm font-semibold text-white">Total Referral</h2>
       <div class="text-lg text-green-300 font-bold flex items-center">
         <i class="fa-solid fa-user-group mr-2 text-yellow-400"></i>
-         <span id="totalRefers">0</span>
-      </div>
-
-      <!-- Referral Link Section -->
-      <div>
-        <p class="text-sm text-gray-400 mb-1">Your Referral Link</p>
-        <div class="relative mb-2">
-          <div class="absolute left-3 top-0 bottom-0 flex items-center">
-            <i class="fas fa-link text-gray-400"></i>
-          </div>
-          <input id="referLink" type="text" value="" 
-                 class="w-full pl-10 p-1.5 border border-gray-600 bg-gray-900 rounded-md outline-none text-gray-300 shadow-2xl" disabled>
-          <!-- Copy Button -->
-          <button onclick="copyReferralLink()" 
-               class="flex items-center justify-center absolute top-0 right-0 bottom-0 px-3 bg-gray-900 shadow-2xl border border-gray-600 text-white text-sm rounded-md">
-            Copy
-          </button>
-        </div>
+        <span id="totalRefers">0</span>
       </div>
     </div>
   </main>
 
-  <!-- Bottom Navigation Bar -->
+  <!-- Bottom Navigation -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
     <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
@@ -172,17 +152,17 @@
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
-        Transfer
+      Transfer
     </div>
     <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
-      </div> 
+      </div>
       Profile
     </div>
   </nav>
-  
-  <!-- Firebase and JS Logic -->
+
+  <!-- Firebase and JS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -214,29 +194,23 @@
         const data = userDoc.data();
         currentUserData = { uid: user.uid, ...data };
 
-        // Update fields
         document.getElementById("userName").innerText = data.username || "No username";
         document.getElementById("userNameDisplay").innerText = data.username || "No username";
         document.getElementById("userPhone").innerText = data.phone || "N/A";
         document.getElementById("userEmail").innerText = data.email || "N/A";
         document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
         document.getElementById("accountStatus").innerHTML = data.isPro
-  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
-      <i class="fas fa-star text-sm"></i> Pro Member
-    </div>`
-  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
-      <i class="fas fa-bolt text-sm"></i> Regular Member
-    </div>`;
-        // Referral
-        const currentDomain = window.location.origin;
-        const referLink = `${currentDomain}/signup.html?ref=${user.uid}`;
-        document.getElementById("referLink").value = referLink;
+          ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
+              <i class="fas fa-star text-sm"></i> Pro Member
+            </div>`
+          : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
+              <i class="fas fa-bolt text-sm"></i> Regular Member
+            </div>`;
 
         const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
         const referSnapshot = await getDocs(referQuery);
         document.getElementById("totalRefers").innerText = referSnapshot.size;
 
-        // Bonus if Pro
         if (data.isPro === true) {
           renderDailyBonusButton("dailyBonusContainer");
         }
@@ -251,25 +225,6 @@
     window.toggleProfile = function () {
       const modal = document.getElementById("profileModal");
       modal.classList.toggle("hidden");
-    };
-
-    window.copyReferralLink = function () {
-      const input = document.getElementById("referLink");
-      navigator.clipboard.writeText(input.value).then(() => {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: 'Referral link copied!',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
-        });
-      }).catch((err) => {
-        console.error('Could not copy text: ', err);
-      });
     };
   </script>
 </body>
