@@ -117,15 +117,6 @@
         Finance
       </button>
     </div>
-
-    <!-- Referral Section -->
-    <div class="bg-black rounded-md p-4 mt-4 border border-gray-700 space-y-3 glow-yellow">
-      <h2 class="text-sm font-semibold text-white">Total Referral</h2>
-      <div class="text-lg text-green-300 font-bold flex items-center">
-        <i class="fa-solid fa-user-group mr-2 text-yellow-400"></i>
-        <span id="totalRefers">0</span>
-      </div>
-    </div>
   </main>
 
   <!-- Bottom Navigation -->
@@ -166,7 +157,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { renderDailyBonusButton } from "./dailyBonus.js";
 
     const firebaseConfig = {
@@ -183,17 +174,12 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentUserData = null;
-
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
 
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
+      const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const data = userDoc.data();
-        currentUserData = { uid: user.uid, ...data };
-
         document.getElementById("userName").innerText = data.username || "No username";
         document.getElementById("userNameDisplay").innerText = data.username || "No username";
         document.getElementById("userPhone").innerText = data.phone || "N/A";
@@ -207,10 +193,6 @@
               <i class="fas fa-bolt text-sm"></i> Regular Member
             </div>`;
 
-        const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-        const referSnapshot = await getDocs(referQuery);
-        document.getElementById("totalRefers").innerText = referSnapshot.size;
-
         if (data.isPro === true) {
           renderDailyBonusButton("dailyBonusContainer");
         }
@@ -223,8 +205,7 @@
     };
 
     window.toggleProfile = function () {
-      const modal = document.getElementById("profileModal");
-      modal.classList.toggle("hidden");
+      document.getElementById("profileModal").classList.toggle("hidden");
     };
   </script>
 </body>
