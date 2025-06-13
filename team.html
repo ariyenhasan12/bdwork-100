@@ -94,14 +94,14 @@
         } else {
           referSnapshot.forEach((doc) => {
             const data = doc.data();
-            const name = data.name || "Unnamed";
+            const username = data.username || "Unnamed";
             const email = data.email || "No email";
             const joined = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "Unknown";
 
             const li = document.createElement("li");
             li.innerHTML = `
               <div class="border border-gray-600 rounded-md p-2 bg-gray-900">
-                <strong>${name}</strong><br>
+                <strong>${username}</strong><br>
                 <span class="text-xs text-gray-400">${email}</span><br>
                 <span class="text-xs text-yellow-400">Joined: ${joined}</span>
               </div>
