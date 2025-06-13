@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Total Referral</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
@@ -30,6 +31,12 @@
       <i class="fa-solid fa-coins mr-2 text-yellow-400"></i>
       ৳<span id="totalReferEarnings">0.00</span>
     </div>
+  </div>
+
+  <!-- Monthly Referral Earnings Chart -->
+  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow mb-4">
+    <h2 class="text-sm font-semibold text-white mb-2">Monthly Referral Earnings</h2>
+    <canvas id="monthlyEarningsChart" class="w-full max-w-3xl" height="150"></canvas>
   </div>
 
   <!-- Referral History Section -->
@@ -60,6 +67,8 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    let monthlyChart;
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
@@ -83,13 +92,13 @@
         // Step 3: Calculate total earnings
         const totalEarnings = totalRefers * referBonus;
 
-        // Step 4: Update UI for total counts
+        // Step 4: Update UI totals
         document.getElementById("totalRefers").innerText = totalRefers;
         document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
 
-        // Step 5: Referral History with earnings per user
+        // Step 5: Referral History UI
         const referralList = document.getElementById("referralHistoryList");
-        referralList.innerHTML = ""; // clear before adding
+        referralList.innerHTML = ""; // Clear list
 
         if (totalRefers === 0) {
           referralList.innerHTML = "<li>No referrals yet.</li>";
@@ -98,29 +107,97 @@
             const data = doc.data();
             const username = data.username || "Unnamed";
             const email = data.email || "No email";
-            const joined = data.createdAt 
-              ? new Date(data.createdAt.seconds * 1000).toLocaleString()
-              : "Unknown";
-
-            // Each referred user's earning is the referBonus amount
-            const userEarning = referBonus;
+            const joined = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : "Unknown";
 
             const li = document.createElement("li");
             li.innerHTML = `
-              <div class="border border-gray-600 rounded-md p-2 bg-gray-900 flex justify-between items-center">
-                <div>
-                  <strong>${username}</strong><br>
-                  <span class="text-xs text-gray-400">${email}</span><br>
-                  <span class="text-xs text-yellow-400">Joined: ${joined}</span>
-                </div>
-                <div class="text-green-400 font-bold">
-                  ৳${userEarning.toFixed(2)}
-                </div>
+              <div class="border border-gray-600 rounded-md p-2 bg-gray-900">
+                <strong>${username}</strong><br>
+                <span class="text-xs text-gray-400">${email}</span><br>
+                <span class="text-xs text-yellow-400">Joined: ${joined}</span>
               </div>
             `;
             referralList.appendChild(li);
           });
         }
+
+        // --- Monthly Earnings Chart Data Preparation ---
+        // Group referral join dates by month-year and multiply count by referBonus
+
+        // Create a map { 'YYYY-MM': totalEarningsForThatMonth }
+        const earningsByMonth = {};
+
+        referSnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (!data.createdAt) return;
+          const date = new Date(data.createdAt.seconds * 1000);
+          const monthKey = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
+
+          if (!earningsByMonth[monthKey]) earningsByMonth[monthKey] = 0;
+          earningsByMonth[monthKey] += referBonus;
+        });
+
+        // Get last 6 months labels
+        function getLastMonths(n) {
+          const months = [];
+          const now = new Date();
+          for (let i = n - 1; i >= 0; i--) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            months.push(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"));
+          }
+          return months;
+        }
+
+        const last6Months = getLastMonths(6);
+        const chartLabels = last6Months.map(m => {
+          const [y, mm] = m.split("-");
+          const date = new Date(y, Number(mm) - 1);
+          return date.toLocaleString("default", { month: "short", year: "numeric" });
+        });
+
+        const chartData = last6Months.map(m => earningsByMonth[m] || 0);
+
+        // Render Chart
+        const ctx = document.getElementById("monthlyEarningsChart").getContext("2d");
+        if (monthlyChart) {
+          monthlyChart.destroy();
+        }
+        monthlyChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: chartLabels,
+            datasets: [{
+              label: "Referral Earnings (৳)",
+              data: chartData,
+              backgroundColor: "rgba(234, 179, 8, 0.7)",
+              borderColor: "rgba(234, 179, 8, 1)",
+              borderWidth: 1,
+              borderRadius: 4
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { color: "white" }
+              },
+              x: {
+                ticks: { color: "white" }
+              }
+            },
+            plugins: {
+              legend: {
+                labels: { color: "white" }
+              },
+              tooltip: {
+                enabled: true,
+                backgroundColor: "#222",
+                titleColor: "#f9d71c",
+                bodyColor: "white"
+              }
+            }
+          }
+        });
 
       } catch (err) {
         console.error("Error loading referrals:", err);
