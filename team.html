@@ -15,11 +15,17 @@
 <body class="bg-black text-white p-4">
 
   <!-- Referral Section -->
-  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow">
+  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-4 glow-yellow">
     <h2 class="text-sm font-semibold text-white">Total Referral</h2>
-    <div class="text-lg text-green-300 font-bold flex items-center">
-      <i class="fa-solid fa-user-group mr-2 text-yellow-400"></i>
-      <span id="totalRefers">0</span>
+    <div class="flex justify-between items-center">
+      <div class="text-lg text-green-300 font-bold flex items-center">
+        <i class="fa-solid fa-user-group mr-2 text-yellow-400"></i>
+        <span id="totalRefers">0</span>
+      </div>
+      <div class="text-sm text-yellow-300 font-medium flex items-center gap-1">
+        <i class="fa-solid fa-coins"></i>
+        <span id="totalReferEarnings">৳0.00</span>
+      </div>
     </div>
   </div>
 
@@ -44,9 +50,23 @@
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "login.html";
+
       const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
       const referSnapshot = await getDocs(referQuery);
-      document.getElementById("totalRefers").innerText = referSnapshot.size;
+
+      let totalIncome = 0;
+      let totalReferrals = 0;
+
+      referSnapshot.forEach(doc => {
+        totalReferrals++;
+        const data = doc.data();
+        const income = parseFloat(data.income) || 0; // যদি income না থাকে তাহলে 0 ধরবে
+        totalIncome += income;
+      });
+
+      // Update UI
+      document.getElementById("totalRefers").innerText = totalReferrals;
+      document.getElementById("totalReferEarnings").innerText = `৳${totalIncome.toFixed(2)}`;
     });
   </script>
 </body>
