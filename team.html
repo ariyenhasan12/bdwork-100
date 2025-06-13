@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Total Referral</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
@@ -98,17 +95,12 @@
         const li = document.createElement("li");
         li.innerHTML = `
           <div class="border border-gray-600 rounded-md p-2 bg-gray-900 flex justify-between items-center">
-            <div class="flex items-start space-x-3">
-              <div class="bg-yellow-500 text-black rounded-full p-2">
-                <i class="fa-solid fa-user"></i>
-              </div>
-              <div>
-                <strong>${username}</strong><br>
-                <span class="text-xs text-gray-400">${email}</span><br>
-                <span class="text-xs text-yellow-400">Joined: ${joined}</span>
-              </div>
+            <div>
+              <strong>${username}</strong><br>
+              <span class="text-xs text-gray-400">${email}</span><br>
+              <span class="text-xs text-yellow-400">Joined: ${joined}</span>
             </div>
-            <div class="text-green-400 font-bold whitespace-nowrap">
+            <div class="text-green-400 font-bold">
               ৳${referBonus}
             </div>
           </div>
@@ -116,7 +108,10 @@
         referralList.appendChild(li);
       });
 
+      // Update page indicator
       document.getElementById("pageIndicator").innerText = `Page ${currentPage} of ${Math.ceil(allReferrals.length / pageSize)}`;
+
+      // Enable/disable buttons
       document.getElementById("prevBtn").disabled = currentPage === 1;
       document.getElementById("nextBtn").disabled = end >= allReferrals.length;
     }
@@ -128,24 +123,30 @@
       }
 
       try {
+        // Step 1: Get referred users
         const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
         const referSnapshot = await getDocs(referQuery);
         allReferrals = referSnapshot.docs.map(doc => doc.data());
         const totalRefers = allReferrals.length;
 
+        // Step 2: Get referBonus
         const rewardDocRef = doc(db, "referSettings", "rewards");
         const rewardSnap = await getDoc(rewardDocRef);
         if (rewardSnap.exists()) {
           referBonus = Number(rewardSnap.data().referBonus || 0);
         }
 
+        // Step 3: Calculate total earnings
         const totalEarnings = totalRefers * referBonus;
 
+        // Step 4: Update UI
         document.getElementById("totalRefers").innerText = totalRefers;
         document.getElementById("totalReferEarnings").innerText = totalEarnings;
 
+        // Step 5: Render first page
         renderPage(currentPage);
 
+        // Pagination buttons
         document.getElementById("prevBtn").addEventListener("click", () => {
           if (currentPage > 1) {
             currentPage--;
