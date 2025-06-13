@@ -37,24 +37,23 @@
     </div>
   </header>
   
-  <div class="bg-gray-900 border border-gray-700 rounded-lg shadow-xl p-6 w-full max-w-md text-center">
-    <h1 class="text-xl font-bold text-yellow-400 mb-4">Your Referral Link</h1>
-    
-    <div class="relative mb-4">
-      <div class="absolute left-3 top-0 bottom-0 flex items-center">
-        <i class="fas fa-link text-gray-400"></i>
+  <!-- Referral Link -->
+    <div class="bg-black border border-gray-700 rounded-lg p-4 w-full max-w-md glow-yellow">
+      <p class="text-sm text-gray-400 mb-1">Your Referral Link</p>
+      
+      <div class="relative mb-4">
+        <div class="absolute left-3 top-0 bottom-0 flex items-center">
+          <i class="fas fa-link text-gray-400"></i>
+        </div>
+        <input id="referLink" type="text" 
+               class="w-full pl-10 p-1.5 border border-gray-600 bg-black rounded-md text-gray-300 shadow-6xl" 
+               value="Loading..." disabled>
       </div>
-      <input id="referLink" type="text" 
-             class="w-full pl-10 p-2 border border-gray-600 bg-gray-800 rounded-md text-gray-300" 
-             value="Loading..." disabled>
       <button onclick="copyReferralLink()" 
-              class="absolute top-0 right-0 bottom-0 px-3 bg-yellow-500 hover:bg-yellow-400 text-black text-sm rounded-r-md">
-        Copy
+              class="w-full mt-2 py-2 bg-yellow-300 hover:bg-yellow-400 text-black text-sm rounded-md font-bold flex items-center justify-center gap-2">
+        <i class="fa-solid fa-copy"></i> Copy Link
       </button>
     </div>
-    
-    <p class="text-sm text-gray-400">Share this link to invite friends and earn rewards!</p>
-  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
