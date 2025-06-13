@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Total Referral</title>
+  <meta charset="UTF-8">
+  <title>My Team</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
@@ -16,28 +21,75 @@
 </head>
 <body class="bg-black text-white">
 
-  <main class="flex-grow px-4 md:px-6 lg:px-8 max-w-3xl mx-auto w-full">
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-    <!-- Total Referral Section -->
-    <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow mb-4">
-      <h2 class="text-sm font-semibold text-white">Total Referral</h2>
-      <div class="text-lg text-green-300 font-bold flex items-center">
-        <i class="fa-solid fa-user-group mr-2 text-yellow-400"></i>
-        <span id="totalRefers">0</span>
+  <!-- Main Content -->
+  <main class="px-3 max-w-md mx-auto">
+    <h1 class="text-xl text-yellow-300 font-bold mb-6">
+      <i class="fa-solid fa-users text-white text-xl text-yellow-300 mr-2"></i>My Team
+    </h1>
+
+    <div class="grid grid-cols-2 gap-6">
+      <!-- Total Team Card -->
+      <div class="glow-yellow bg-black rounded-lg p-3 border border-gray-700">
+        <p class="text-sm text-gray-300">Total Team</p>
+        <h1 id="totalRefers" class="text-2xl font-bold text-yellow-300">0</h1>
+        <p class="text-sm text-gray-400">Direct referrals</p>
+      </div>
+
+      <!-- Total Earnings Card -->
+      <div class="glow-yellow bg-black rounded-lg p-3 border border-gray-700">
+        <p class="text-sm text-gray-300">Total Earnings</p>
+        <h1 id="totalReferEarnings" class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+        <p class="text-sm text-gray-400">All referral earnings</p>
       </div>
     </div>
 
-    <!-- Total Referral Earnings Section -->
-    <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow mb-4">
-      <h2 class="text-sm font-semibold text-white">Total Referral Earnings</h2>
-      <div class="text-lg text-green-300 font-bold flex items-center">
-        <i class="fa-solid fa-coins mr-2 text-yellow-400"></i>
-        ৳<span id="totalReferEarnings">0</span>
+    <!-- Referral Earnings Breakdown -->
+    <div class="glow-yellow bg-black mt-10 rounded-lg p-2 px-4">
+      <h2 class="text-md text-purple-400 font-semibold mb-4">Your Referral Earnings</h2>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Direct Referrals</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Direct commission</p>
+        </div>
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 1</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 1 earnings</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-2">
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 2</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 2 earnings</p>
+        </div>
+        <div class="bg-black rounded-lg p-3 border border-gray-700 shadow-6xl">
+          <p class="text-sm text-gray-300">Level 3</p>
+          <h1 class="text-2xl font-bold text-yellow-300">৳0.00</h1>
+          <p class="text-sm text-gray-400">Level 3 earnings</p>
+        </div>
       </div>
     </div>
 
     <!-- Referral History Section -->
-    <div class="bg-black rounded-md border border-gray-700 space-y-3 glow-yellow mb-4">
+    <div class="bg-black rounded-md border border-gray-700 space-y-3 glow-yellow mb-4 mt-10">
       <div class="p-4">
       <ul id="referralHistoryList" class="space-y-4 text-sm text-gray-200">
         <!-- Referred users will appear here -->
@@ -52,8 +104,9 @@
       </div>
     </div>
 
+    </div>
   </main>
-
+  
   <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
