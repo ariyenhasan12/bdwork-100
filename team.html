@@ -28,7 +28,7 @@
     <h2 class="text-sm font-semibold text-white">Total Referral Earnings</h2>
     <div class="text-lg text-green-300 font-bold flex items-center">
       <i class="fa-solid fa-coins mr-2 text-yellow-400"></i>
-      ৳<span id="totalReferEarnings">0.00</span>
+      ৳<span id="totalReferEarnings">0</span>
     </div>
   </div>
 
@@ -85,7 +85,7 @@
 
         // Step 4: Update UI for total counts
         document.getElementById("totalRefers").innerText = totalRefers;
-        document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
+        document.getElementById("totalReferEarnings").innerText = totalEarnings;
 
         // Step 5: Referral History with earnings per user
         const referralList = document.getElementById("referralHistoryList");
@@ -114,7 +114,7 @@
                   <span class="text-xs text-yellow-400">Joined: ${joined}</span>
                 </div>
                 <div class="text-green-400 font-bold">
-                  ৳${userEarning.toFixed(2)}
+                  ৳${userEarning}
                 </div>
               </div>
             `;
