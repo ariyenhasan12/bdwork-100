@@ -24,7 +24,7 @@
   </div>
 
   <!-- Total Referral Earnings Section -->
-  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow">
+  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow mb-4">
     <h2 class="text-sm font-semibold text-white">Total Referral Earnings</h2>
     <div class="text-lg text-green-300 font-bold flex items-center">
       <i class="fa-solid fa-coins mr-2 text-yellow-400"></i>
@@ -32,6 +32,15 @@
     </div>
   </div>
 
+  <!-- Referral History Section -->
+  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow">
+    <h2 class="text-sm font-semibold text-white mb-2">Referral History</h2>
+    <ul id="referralHistoryList" class="space-y-2 text-sm text-gray-200">
+      <!-- Referred users will appear here -->
+    </ul>
+  </div>
+
+  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -58,19 +67,17 @@
       }
 
       try {
-        // Step 1: Get total referred users
+        // Step 1: Get referred users
         const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
         const referSnapshot = await getDocs(referQuery);
         const totalRefers = referSnapshot.size;
 
-        // Step 2: Get global referBonus value from referSettings/rewards
+        // Step 2: Get referBonus from Firestore
         const rewardDocRef = doc(db, "referSettings", "rewards");
-        const rewardDocSnap = await getDoc(rewardDocRef);
-
+        const rewardSnap = await getDoc(rewardDocRef);
         let referBonus = 0;
-        if (rewardDocSnap.exists()) {
-          const data = rewardDocSnap.data();
-          referBonus = Number(data.referBonus || 0);
+        if (rewardSnap.exists()) {
+          referBonus = Number(rewardSnap.data().referBonus || 0);
         }
 
         // Step 3: Calculate total earnings
@@ -80,8 +87,31 @@
         document.getElementById("totalRefers").innerText = totalRefers;
         document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
 
-      } catch (error) {
-        console.error("Error loading referral data:", error);
+        // Step 5: Referral History
+        const referralList = document.getElementById("referralHistoryList");
+        if (totalRefers === 0) {
+          referralList.innerHTML = "<li>No referrals yet.</li>";
+        } else {
+          referSnapshot.forEach((doc) => {
+            const data = doc.data();
+            const name = data.name || "Unnamed";
+            const email = data.email || "No email";
+            const joined = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "Unknown";
+
+            const li = document.createElement("li");
+            li.innerHTML = `
+              <div class="border border-gray-600 rounded-md p-2 bg-gray-900">
+                <strong>${name}</strong><br>
+                <span class="text-xs text-gray-400">${email}</span><br>
+                <span class="text-xs text-yellow-400">Joined: ${joined}</span>
+              </div>
+            `;
+            referralList.appendChild(li);
+          });
+        }
+
+      } catch (err) {
+        console.error("Error loading referrals:", err);
       }
     });
   </script>
