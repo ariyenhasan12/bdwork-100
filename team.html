@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Total Referral</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
@@ -33,30 +32,15 @@
     </div>
   </div>
 
-  <!-- Chart Type Selector -->
-  <div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow mb-4 max-w-md">
-    <label for="chartType" class="block mb-2 font-semibold text-white">Select Chart Type</label>
-    <select id="chartType" class="w-full p-2 rounded bg-gray-800 text-white border border-gray-600">
-      <option value="weekly">Weekly</option>
-      <option value="monthly" selected>Monthly</option>
-      <option value="yearly">Yearly</option>
-    </select>
-  </div>
-
-  <!-- Referral Earnings Chart -->
-  <div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow mb-4">
-    <h2 id="chartTitle" class="text-sm font-semibold text-white mb-2">Monthly Referral Earnings</h2>
-    <canvas id="earningsChart" class="w-full max-w-3xl" height="150"></canvas>
-  </div>
-
   <!-- Referral History Section -->
-  <div class="bg-black rounded-md p-4 border border-gray-700 glow-yellow">
+  <div class="bg-black rounded-md p-4 border border-gray-700 space-y-3 glow-yellow">
     <h2 class="text-sm font-semibold text-white mb-2">Referral History</h2>
     <ul id="referralHistoryList" class="space-y-2 text-sm text-gray-200">
       <!-- Referred users will appear here -->
     </ul>
   </div>
 
+  <!-- Firebase Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -76,76 +60,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let earningsChart;
-
-    // Helpers for date keys and formatting
-    function getWeekKey(date) {
-      // Get ISO week number (year-week)
-      const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-      const dayNum = d.getUTCDay() || 7;
-      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-      const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-      return d.getUTCFullYear() + "-W" + String(weekNo).padStart(2,"0");
-    }
-
-    function getMonthKey(date) {
-      return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0");
-    }
-
-    function getYearKey(date) {
-      return String(date.getFullYear());
-    }
-
-    // Get last N weeks (year-week), last N months (year-month), last N years
-    function getLastWeeks(n) {
-      const weeks = [];
-      const now = new Date();
-      for(let i = n -1; i >= 0; i--) {
-        const d = new Date(now);
-        d.setDate(d.getDate() - (i * 7));
-        weeks.push(getWeekKey(d));
-      }
-      return weeks;
-    }
-
-    function getLastMonths(n) {
-      const months = [];
-      const now = new Date();
-      for(let i = n -1; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push(getMonthKey(d));
-      }
-      return months;
-    }
-
-    function getLastYears(n) {
-      const years = [];
-      const now = new Date();
-      for(let i = n -1; i >= 0; i--) {
-        years.push(String(now.getFullYear() - i));
-      }
-      return years;
-    }
-
-    // Format label for week like "W23 2025"
-    function formatWeekLabel(weekKey) {
-      const [year, week] = weekKey.split("-W");
-      return `W${week} ${year}`;
-    }
-
-    // Format label for month like "Jun 2025"
-    function formatMonthLabel(monthKey) {
-      const [year, month] = monthKey.split("-");
-      const d = new Date(year, Number(month) - 1);
-      return d.toLocaleString("default", { month: "short", year: "numeric" });
-    }
-
-    // Format label for year
-    function formatYearLabel(yearKey) {
-      return yearKey;
-    }
-
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         window.location.href = "login.html";
@@ -153,12 +67,12 @@
       }
 
       try {
-        // Get referred users
+        // Step 1: Get referred users
         const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
         const referSnapshot = await getDocs(referQuery);
         const totalRefers = referSnapshot.size;
 
-        // Get referBonus
+        // Step 2: Get referBonus from Firestore
         const rewardDocRef = doc(db, "referSettings", "rewards");
         const rewardSnap = await getDoc(rewardDocRef);
         let referBonus = 0;
@@ -166,14 +80,17 @@
           referBonus = Number(rewardSnap.data().referBonus || 0);
         }
 
-        // Update total UI
+        // Step 3: Calculate total earnings
         const totalEarnings = totalRefers * referBonus;
+
+        // Step 4: Update UI for total counts
         document.getElementById("totalRefers").innerText = totalRefers;
         document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
 
-        // Referral history UI
+        // Step 5: Referral History with earnings per user
         const referralList = document.getElementById("referralHistoryList");
-        referralList.innerHTML = "";
+        referralList.innerHTML = ""; // clear before adding
+
         if (totalRefers === 0) {
           referralList.innerHTML = "<li>No referrals yet.</li>";
         } else {
@@ -181,124 +98,29 @@
             const data = doc.data();
             const username = data.username || "Unnamed";
             const email = data.email || "No email";
-            const joined = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString() : "Unknown";
+            const joined = data.createdAt 
+              ? new Date(data.createdAt.seconds * 1000).toLocaleString()
+              : "Unknown";
+
+            // Each referred user's earning is the referBonus amount
+            const userEarning = referBonus;
 
             const li = document.createElement("li");
             li.innerHTML = `
-              <div class="border border-gray-600 rounded-md p-2 bg-gray-900">
-                <strong>${username}</strong><br>
-                <span class="text-xs text-gray-400">${email}</span><br>
-                <span class="text-xs text-yellow-400">Joined: ${joined}</span>
+              <div class="border border-gray-600 rounded-md p-2 bg-gray-900 flex justify-between items-center">
+                <div>
+                  <strong>${username}</strong><br>
+                  <span class="text-xs text-gray-400">${email}</span><br>
+                  <span class="text-xs text-yellow-400">Joined: ${joined}</span>
+                </div>
+                <div class="text-green-400 font-bold">
+                  ৳${userEarning.toFixed(2)}
+                </div>
               </div>
             `;
             referralList.appendChild(li);
           });
         }
-
-        // Prepare earnings data for all referred users
-        const referralsData = [];
-        referSnapshot.forEach((doc) => {
-          const data = doc.data();
-          if (data.createdAt) {
-            referralsData.push({
-              createdAt: new Date(data.createdAt.seconds * 1000),
-            });
-          }
-        });
-
-        // Chart update function
-        function updateChart(type) {
-          let labels = [];
-          let keys = [];
-          let earningsMap = {};
-
-          if(type === "weekly") {
-            keys = getLastWeeks(12); // last 12 weeks
-            labels = keys.map(formatWeekLabel);
-            earningsMap = {};
-            keys.forEach(k => earningsMap[k] = 0);
-
-            referralsData.forEach(r => {
-              const key = getWeekKey(r.createdAt);
-              if (key in earningsMap) earningsMap[key] += referBonus;
-            });
-
-          } else if(type === "monthly") {
-            keys = getLastMonths(12); // last 12 months
-            labels = keys.map(formatMonthLabel);
-            earningsMap = {};
-            keys.forEach(k => earningsMap[k] = 0);
-
-            referralsData.forEach(r => {
-              const key = getMonthKey(r.createdAt);
-              if (key in earningsMap) earningsMap[key] += referBonus;
-            });
-
-          } else if(type === "yearly") {
-            keys = getLastYears(5); // last 5 years
-            labels = keys.map(formatYearLabel);
-            earningsMap = {};
-            keys.forEach(k => earningsMap[k] = 0);
-
-            referralsData.forEach(r => {
-              const key = getYearKey(r.createdAt);
-              if (key in earningsMap) earningsMap[key] += referBonus;
-            });
-          }
-
-          const dataPoints = keys.map(k => earningsMap[k] || 0);
-
-          const ctx = document.getElementById("earningsChart").getContext("2d");
-          if(earningsChart) earningsChart.destroy();
-
-          earningsChart = new Chart(ctx, {
-            type: "bar",
-            data: {
-              labels: labels,
-              datasets: [{
-                label: `Referral Earnings (৳) - ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-                data: dataPoints,
-                backgroundColor: "rgba(234, 179, 8, 0.7)",
-                borderColor: "rgba(234, 179, 8, 1)",
-                borderWidth: 1,
-                borderRadius: 4
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: { color: "white" }
-                },
-                x: {
-                  ticks: { color: "white" }
-                }
-              },
-              plugins: {
-                legend: {
-                  labels: { color: "white" }
-                },
-                tooltip: {
-                  enabled: true,
-                  backgroundColor: "#222",
-                  titleColor: "#f9d71c",
-                  bodyColor: "white"
-                }
-              }
-            }
-          });
-
-          // Update chart title
-          document.getElementById("chartTitle").innerText = `${type.charAt(0).toUpperCase() + type.slice(1)} Referral Earnings`;
-        }
-
-        // Initial load monthly
-        updateChart("monthly");
-
-        // Handle chartType selector
-        document.getElementById("chartType").addEventListener("change", (e) => {
-          updateChart(e.target.value);
-        });
 
       } catch (err) {
         console.error("Error loading referrals:", err);
