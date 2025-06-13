@@ -52,25 +52,34 @@
     const db = getFirestore(app);
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-      // Get referred users
-      const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
-      const referSnapshot = await getDocs(referQuery);
+      try {
+        const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
+        const referSnapshot = await getDocs(referQuery);
 
-      // Show total referral count
-      document.getElementById("totalRefers").innerText = referSnapshot.size;
+        let totalRefers = 0;
+        let totalEarnings = 0;
 
-      // Calculate total refer bonus from each referred user
-      let totalEarnings = 0;
-      referSnapshot.forEach(doc => {
-        const data = doc.data();
-        const bonus = parseFloat(data.referBonus || 0);
-        totalEarnings += bonus;
-      });
+        referSnapshot.forEach(doc => {
+          totalRefers++;
+          const data = doc.data();
 
-      // Show earnings
-      document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
+          // referBonus field check
+          const bonus = Number(data.referBonus || 0);
+          totalEarnings += bonus;
+        });
+
+        // Update UI
+        document.getElementById("totalRefers").innerText = totalRefers;
+        document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
+
+      } catch (error) {
+        console.error("Error fetching referral data:", error);
+      }
     });
   </script>
 </body>
