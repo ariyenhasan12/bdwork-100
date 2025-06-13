@@ -35,7 +35,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -58,27 +58,30 @@
       }
 
       try {
+        // Step 1: Get total referred users
         const referQuery = query(collection(db, "users"), where("referredBy", "==", user.uid));
         const referSnapshot = await getDocs(referQuery);
+        const totalRefers = referSnapshot.size;
 
-        let totalRefers = 0;
-        let totalEarnings = 0;
+        // Step 2: Get global referBonus value from referSettings/rewards
+        const rewardDocRef = doc(db, "referSettings", "rewards");
+        const rewardDocSnap = await getDoc(rewardDocRef);
 
-        referSnapshot.forEach(doc => {
-          totalRefers++;
-          const data = doc.data();
+        let referBonus = 0;
+        if (rewardDocSnap.exists()) {
+          const data = rewardDocSnap.data();
+          referBonus = Number(data.referBonus || 0);
+        }
 
-          // referBonus field check
-          const bonus = Number(data.referBonus || 0);
-          totalEarnings += bonus;
-        });
+        // Step 3: Calculate total earnings
+        const totalEarnings = totalRefers * referBonus;
 
-        // Update UI
+        // Step 4: Update UI
         document.getElementById("totalRefers").innerText = totalRefers;
         document.getElementById("totalReferEarnings").innerText = totalEarnings.toFixed(2);
 
       } catch (error) {
-        console.error("Error fetching referral data:", error);
+        console.error("Error loading referral data:", error);
       }
     });
   </script>
