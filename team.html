@@ -89,6 +89,8 @@
 
         // Step 5: Referral History
         const referralList = document.getElementById("referralHistoryList");
+        referralList.innerHTML = ""; // clear before adding
+
         if (totalRefers === 0) {
           referralList.innerHTML = "<li>No referrals yet.</li>";
         } else {
@@ -96,7 +98,9 @@
             const data = doc.data();
             const username = data.username || "Unnamed";
             const email = data.email || "No email";
-            const joined = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleDateString() : "Unknown";
+            const joined = data.createdAt 
+              ? new Date(data.createdAt.seconds * 1000).toLocaleString()  // date + time here
+              : "Unknown";
 
             const li = document.createElement("li");
             li.innerHTML = `
