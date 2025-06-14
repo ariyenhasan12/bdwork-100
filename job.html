@@ -40,6 +40,7 @@
 <body class="bg-black text-white">
 
   <!-- Loading Overlay -->
+
   <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div class="text-center">
       <div class="loader mx-auto mb-4"></div>
@@ -58,7 +59,7 @@
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center  rounded-sm border border-gray-700">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
@@ -146,8 +147,6 @@
         userData = { balance: 0, completedTasks: [] };
       }
 
-      hideLoader();  // এখানে লোডার লুকিয়ে দেওয়া হবে
-
       loadTasks();
     });
 
@@ -157,6 +156,7 @@
       onSnapshot(tasksCol, (snapshot) => {
         if (snapshot.empty) {
           tasksList.innerHTML = "<p class='text-center text-gray-200 text-lg'>No tasks available right now.</p>";
+          hideLoader(); // Hide loader even if no tasks
           return;
         }
 
@@ -232,6 +232,7 @@
             });
           }
         });
+        hideLoader(); // Hide loader after tasks loaded and rendered
       });
     }
 
