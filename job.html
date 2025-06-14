@@ -96,6 +96,14 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // Hide loader when page and user data fully loaded
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if(loader){
+        loader.style.display = 'none';
+      }
+    }
+
     const tasksList = document.getElementById("tasksList");
 
     let currentUser = null;
