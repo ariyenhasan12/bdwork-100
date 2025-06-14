@@ -1,164 +1,247 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Balance Transfer - Good Job</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Good Job</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+    /* Improved Loading Spinner */
+    .loader {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 2s ease-in-out infinite;
+      box-shadow:
+        0 0 8px #facc15,
+        inset 0 0 8px #facc15;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col">
+<body class="bg-black text-white">
 
-  <header class="bg-black shadow-md py-3 px-5 flex items-center justify-between border-b border-gray-700">
-    <h1 class="text-yellow-400 font-bold text-2xl" style="font-family: 'Audiowide', cursive;">Balance Transfer</h1>
-    <button onclick="window.location.href='dashboard.html'" class="text-gray-400 hover:text-yellow-400">
-      <i class="fa-solid fa-arrow-left"></i> Back
-    </button>
-  </header>
+  <!-- Loading Overlay -->
 
-  <main class="flex-grow max-w-md mx-auto p-5">
-    <div class="mb-6 border border-gray-700 rounded-md p-4 bg-gray-900 glow-yellow">
-      <h2 class="text-lg font-semibold mb-2">Your Current Balance</h2>
-      <p id="userBalance" class="text-yellow-400 text-3xl font-bold flex items-center">
-        <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
-      </p>
-    </div>
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="loader mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
 
-    <form id="transferForm" class="bg-gray-900 p-6 rounded-md border border-gray-700 space-y-4">
-      <div>
-        <label for="recipientEmail" class="block mb-1 text-gray-300 font-medium">Recipient Email</label>
-        <input
-          type="email"
-          id="recipientEmail"
-          required
-          class="w-full rounded-md p-2 text-black"
-          placeholder="Enter recipient email"
-        />
-      </div>
-      <div>
-        <label for="transferAmount" class="block mb-1 text-gray-300 font-medium">Amount to Transfer</label>
-        <input
-          type="number"
-          id="transferAmount"
-          min="1"
-          step="0.01"
-          required
-          class="w-full rounded-md p-2 text-black"
-          placeholder="Enter amount"
-        />
-      </div>
+  <!-- Header -->
 
-      <button
-        type="submit"
-        class="w-full bg-yellow-400 text-black font-semibold py-2 rounded-md hover:bg-yellow-500 transition"
-      >
-        Transfer
-      </button>
-    </form>
-  </main>
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <!-- Daily Bonus Claim Button -->
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  <section id="dailyBonusContainer" class="mb-8"></section>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  <!-- Profile Modal -->
 
-    let currentUserData = null;
-    let currentUserId = null;
+  <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
+    <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
+      <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
+        <button onclick="toggleProfile()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">
+          <i class="fa-solid fa-times"></i>
+        </button>
+        <div class="flex flex-col items-center gap-2 border-b border-gray-700 w-full py-2 mt-2">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center user-icon-glow">
+            <i class="fas fa-user text-4xl text-white"></i>
+          </div>
+          <div class="text-center">
+            <h2 id="userName" class="text-lg font-semibold">Loading...</h2>
+            <p class="text-sm text-gray-400">Member since: 2025</p>
+          </div>
+          <div><span id="accountStatus">Account</span></div>
+        </div>
+        <div class="w-full rounded-lg p-4 space-y-6">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-yellow-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-user text-xl text-yellow-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Full Name</p>
+              <p id="userNameDisplay" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-phone text-xl text-blue-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Phone</p>
+              <p id="userPhone" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-400 bg-opacity-30 rounded-full flex items-center justify-center shadow">
+              <i class="fa-solid fa-envelope text-xl text-red-400"></i>
+            </div>
+            <div>
+              <p class="text-sm text-gray-400">Email</p>
+              <p id="userEmail" class="text-sm font-medium text-white">Loading...</p>
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
 
-    const userBalanceEl = document.getElementById("userBalance");
-    const transferForm = document.getElementById("transferForm");
+  <!-- Main Content -->
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+  <main class="px-3 space-y-4">
+    <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
+      <div class="text-white">
+        <h2 class="text-sm font-semibold">Total Asset</h2>
+        <p id="mainBalance" class="text-xl text-yellow-400 font-bold mt-1 flex items-center">
+          <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
+        </p>
+        <p class="mt-2 text-xs">Pro Earning
+          <span id="totalproEarnings" class="text-yellow-400">
+            <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
+          </span>
+        </p>
+      </div>
+      <button onclick="window.location.href='deposit.html'" class="bg-yellow-300 text-black text-sm font-semibold px-5 py-1.5 rounded-full shadow-6xl">
+        Finance
+      </button>
+    </div>
+  </main>
 
-      currentUserId = user.uid;
+  <!-- Bottom Navigation -->
 
-      const userDoc = await getDoc(doc(db, "users", currentUserId));
-      if (!userDoc.exists()) {
-        Swal.fire("Error", "User data not found", "error");
-        return;
-      }
-      currentUserData = userDoc.data();
-      updateBalanceUI(currentUserData.balance || 0);
-    });
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </div>
+    <div onclick="window.location.href='job.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Job
+    </div>
+    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Pro
+    </div>
+    <div onclick="window.location.href='transfer.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Transfer
+    </div>
+    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div>
+      Profile
+    </div>
+  </nav>
 
-    function updateBalanceUI(balance) {
-      userBalanceEl.innerHTML = `<i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>${parseFloat(balance).toFixed(2)}`;
-    }
+  <!-- Firebase and JS -->
 
-    transferForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { renderDailyBonusButton } from "./dailyBonus.js";
 
-      if (!currentUserData) return;
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-      const recipientEmail = transferForm.recipientEmail.value.trim();
-      const amount = parseFloat(transferForm.transferAmount.value);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-      if (!recipientEmail || isNaN(amount) || amount <= 0) {
-        Swal.fire("Invalid Input", "Please enter valid recipient email and amount.", "warning");
-        return;
-      }
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
 
-      if (amount > currentUserData.balance) {
-        Swal.fire("Insufficient Balance", "You do not have enough balance to transfer.", "error");
-        return;
-      }
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        document.getElementById("userName").innerText = data.username || "No username";
+        document.getElementById("userNameDisplay").innerText = data.username || "No username";
+        document.getElementById("userPhone").innerText = data.phone || "N/A";
+        document.getElementById("userEmail").innerText = data.email || "N/A";
+        document.getElementById("mainBalance").innerText = `৳${data.balance || 0}`;
+        document.getElementById("accountStatus").innerHTML = data.isPro
+          ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
+              <i class="fas fa-star text-sm"></i> Pro Member
+            </div>`
+          : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
+              <i class="fas fa-bolt text-sm"></i> Regular Member
+            </div>`;
 
-      try {
-        // Find recipient by email
-        const q = query(collection(db, "users"), where("email", "==", recipientEmail));
-        const querySnapshot = await getDocs(q);
+        if (data.isPro === true) {
+          renderDailyBonusButton("dailyBonusContainer");
+        }
+        document.getElementById("loadingOverlay").style.display = "none";
+      }
+    });
 
-        if (querySnapshot.empty) {
-          Swal.fire("Not Found", "Recipient email not found.", "error");
-          return;
-        }
+    window.logout = async function () {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
 
-        // Assuming first match is the recipient
-        const recipientDoc = querySnapshot.docs[0];
-        const recipientData = recipientDoc.data();
-
-        // Update sender balance
-        const senderRef = doc(db, "users", currentUserId);
-        await updateDoc(senderRef, {
-          balance: currentUserData.balance - amount
-        });
-
-        // Update recipient balance
-        const recipientRef = doc(db, "users", recipientDoc.id);
-        await updateDoc(recipientRef, {
-          balance: (recipientData.balance || 0) + amount
-        });
-
-        // Update local data and UI
-        currentUserData.balance -= amount;
-        updateBalanceUI(currentUserData.balance);
-
-        Swal.fire("Success", `৳${amount.toFixed(2)} transferred to ${recipientEmail}`, "success");
-
-        transferForm.reset();
-
-      } catch (error) {
-        console.error("Transfer Error:", error);
-        Swal.fire("Error", "Something went wrong during the transfer.", "error");
-      }
-    });
-  </script>
+    window.toggleProfile = function () {
+      document.getElementById("profileModal").classList.toggle("hidden");
+    };
+  </script>
 
 </body>
 </html>
