@@ -8,12 +8,6 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-  </style>
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
 
@@ -66,27 +60,13 @@
       }
     });
 
-    const toast = (icon, title) => {
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: icon,
-        title: title,
-        showConfirmButton: false,
-        timer: 1000, // 1 second
-        timerProgressBar: true,
-        background: '#1a202c',
-        color: '#fff'
-      });
-    };
-
     const form = document.getElementById("transferForm");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       if (!currentUser) {
-        toast('error', 'User not logged in.');
+        alert('User not logged in.');
         return;
       }
 
@@ -95,7 +75,7 @@
       const password = document.getElementById("password").value;
 
       if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
-        toast('error', 'Please fill out all fields correctly.');
+        alert('Please fill out all fields correctly.');
         return;
       }
 
@@ -151,14 +131,14 @@
           });
         });
 
-        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        alert(`৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
         form.reset();
 
       } catch (error) {
-        toast('error', error.message || 'Transfer failed');
+        alert(error.message || 'Transfer failed');
       }
     });
   </script>
 
 </body>
-</html>b
+</html>
