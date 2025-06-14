@@ -148,7 +148,29 @@
       }
 
       try {
-        // Show loading spinner
+        // Step 1: Get sender's balance FIRST before showing loading spinner or reauth
+        const senderDocRef = doc(db, "users", currentUser.uid);
+        const senderDocSnap = await getDocs(query(collection(db, "users"), where("__name__", "==", currentUser.uid)));
+
+        // Using getDoc instead of getDocs for single doc:
+        // Update: Let's do getDoc directly for better usage
+        import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        const senderDocSnap2 = await getDoc(senderDocRef);
+
+        if (!senderDocSnap2.exists()) {
+          toast('error', 'Sender data not found');
+          return;
+        }
+
+        const senderBalance = senderDocSnap2.data().balance || 0;
+
+        if (senderBalance < amount) {
+          // Insufficient balance - show error WITHOUT loading spinner
+          toast('error', 'Insufficient balance');
+          return;
+        }
+
+        // If balance is enough, proceed to show loading spinner
         Swal.fire({
           title: 'Processing...',
           allowOutsideClick: false,
@@ -195,19 +217,19 @@
           if (!senderDoc.exists()) throw new Error("Sender data not found");
           if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
 
-          const senderBalance = senderDoc.data().balance || 0;
-          const recipientBalance = recipientDocTxn.data().balance || 0;
+          const senderBalanceTxn = senderDoc.data().balance || 0;
+          const recipientBalanceTxn = recipientDocTxn.data().balance || 0;
 
-          if (senderBalance < amount) {
+          if (senderBalanceTxn < amount) {
             throw new Error("Insufficient balance");
           }
 
           transaction.update(senderRef, {
-            balance: senderBalance - amount
+            balance: senderBalanceTxn - amount
           });
 
           transaction.update(recipientRef, {
-            balance: recipientBalance + amount
+            balance: recipientBalanceTxn + amount
           });
         });
 
