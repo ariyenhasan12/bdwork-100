@@ -9,12 +9,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
-    
+
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
@@ -30,6 +30,7 @@
         0 0 8px #facc15,
         inset 0 0 8px #facc15;
     }
+
     @keyframes spin {
       to {
         transform: rotate(360deg);
@@ -39,7 +40,7 @@
 </head>
 <body class="bg-black text-white">
 
-  <!-- Loader Screen -->
+  <!-- Loader -->
   <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div class="text-center">
       <div class="loader mx-auto mb-4"></div>
@@ -64,11 +65,10 @@
     </div>
   </header>
 
-  <!-- Transfer Form -->
+  <!-- Main Form -->
   <main class="max-w-xl mx-auto mt-10 px-4 mb-6">
     <div class="glow-yellow bg-black p-6 rounded-lg border border-solid border-gray-700">
 
-      <!-- Info Text -->
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">How Balance Transfer Works</h2>
         <p class="text-gray-300 text-sm leading-relaxed">
@@ -79,7 +79,6 @@
         </p>
       </div>
 
-      <!-- Form Title -->
       <h2 class="text-xl font-semibold mb-4">Transfer Your Balance</h2>
 
       <form id="transferForm">
@@ -111,24 +110,25 @@
     </div>
   </main>
 
+  <!-- Firebase & Script -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
     function hideLoadingOverlay() {
       const overlay = document.getElementById('loadingOverlay');
@@ -137,127 +137,106 @@
       }
     }
 
-    let currentUser = null;
+    let currentUser = null;
 
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        currentUser = user;
-      }
-    });
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
+        hideLoadingOverlay();
+      }
+    });
 
-    const toast = (icon, title) => {
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: icon,
-        title: title,
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-        background: '#1a202c',
-        color: '#fff'
-      });
-    };
+    const toast = (icon, title) => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: icon,
+        title: title,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: '#1a202c',
+        color: '#fff'
+      });
+    };
 
-    const form = document.getElementById("transferForm");
+    const form = document.getElementById("transferForm");
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      if (!currentUser) {
-        toast('error', 'User not logged in.');
-        return;
-      }
+      if (!currentUser) {
+        toast('error', 'User not logged in.');
+        return;
+      }
 
-      const recipientEmail = document.getElementById("recipientEmail").value.trim().toLowerCase();
-      const amount = parseFloat(document.getElementById("transferAmount").value);
-      const password = document.getElementById("password").value;
+      const recipientEmail = document.getElementById("recipientEmail").value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById("transferAmount").value);
+      const password = document.getElementById("password").value;
 
-      if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
-        toast('error', 'Please fill out all fields correctly.');
-        return;
-      }
+      if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
+        toast('error', 'Please fill out all fields correctly.');
+        return;
+      }
 
-      try {
-        // Show loading spinner with bg-gray-900 and text-gray-100
-        Swal.fire({
-          title: 'Processing...',
-          background: '#1a202c', // fallback bg
-          customClass: {
-            popup: 'bg-gray-900 text-gray-100',
-            title: 'text-gray-100'
-          },
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
-        });
+      try {
+        Swal.fire({
+          title: 'Processing...',
+          background: '#1a202c',
+          customClass: {
+            popup: 'bg-gray-900 text-gray-100',
+            title: 'text-gray-100'
+          },
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
-        // Re-authenticate user with password
-        const credential = EmailAuthProvider.credential(currentUser.email, password);
-        await reauthenticateWithCredential(currentUser, credential);
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
 
-        // Query recipient user document
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("email", "==", recipientEmail));
-        const querySnapshot = await getDocs(q);
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", recipientEmail));
+        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.empty) {
-          throw new Error("Recipient email not found");
-        }
+        if (querySnapshot.empty) throw new Error("Recipient email not found");
 
-        let recipientDoc = null;
-        querySnapshot.forEach(docSnap => {
-          recipientDoc = docSnap;
-        });
+        let recipientDoc = null;
+        querySnapshot.forEach(docSnap => {
+          recipientDoc = docSnap;
+        });
 
-        if (!recipientDoc) {
-          throw new Error("Recipient not found");
-        }
+        const recipientUid = recipientDoc.id;
+        if (recipientUid === currentUser.uid) throw new Error("You cannot transfer balance to yourself.");
 
-        const recipientUid = recipientDoc.id;
+        await runTransaction(db, async (transaction) => {
+          const senderRef = doc(db, "users", currentUser.uid);
+          const recipientRef = doc(db, "users", recipientUid);
 
-        if (recipientUid === currentUser.uid) {
-          throw new Error("You cannot transfer balance to yourself.");
-        }
+          const senderDoc = await transaction.get(senderRef);
+          const recipientDocTxn = await transaction.get(recipientRef);
 
-        await runTransaction(db, async (transaction) => {
-          const senderRef = doc(db, "users", currentUser.uid);
-          const recipientRef = doc(db, "users", recipientUid);
+          const senderBalance = senderDoc.data().balance || 0;
+          const recipientBalance = recipientDocTxn.data().balance || 0;
 
-          const senderDoc = await transaction.get(senderRef);
-          const recipientDocTxn = await transaction.get(recipientRef);
+          if (senderBalance < amount) throw new Error("Insufficient balance");
 
-          if (!senderDoc.exists()) throw new Error("Sender data not found");
-          if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
+          transaction.update(senderRef, { balance: senderBalance - amount });
+          transaction.update(recipientRef, { balance: recipientBalance + amount });
+        });
 
-          const senderBalance = senderDoc.data().balance || 0;
-          const recipientBalance = recipientDocTxn.data().balance || 0;
+        Swal.close();
+        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        form.reset();
 
-          if (senderBalance < amount) {
-            throw new Error("Insufficient balance");
-          }
-
-          transaction.update(senderRef, {
-            balance: senderBalance - amount
-          });
-
-          transaction.update(recipientRef, {
-            balance: recipientBalance + amount
-          });
-        });
-
-        Swal.close(); // Close loading spinner
-        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
-        form.reset();
-
-      } catch (error) {
-        Swal.close(); // Close loading spinner if error occurs
-        toast('error', error.message || 'Transfer failed');
-      }
-    });
-  </script>
+      } catch (error) {
+        Swal.close();
+        toast('error', error.message || 'Transfer failed');
+      }
+    });
+  </script>
 </body>
 </html>
