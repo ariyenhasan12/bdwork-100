@@ -20,6 +20,10 @@
       <label class="block text-gray-300 mb-1" for="transferAmount">Amount to Transfer (৳)</label>
       <input type="number" id="transferAmount" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Amount" min="1" step="0.01" required />
     </div>
+    <div>
+      <label class="block text-gray-300 mb-1" for="password">Your Password</label>
+      <input type="password" id="password" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Enter your password to confirm" required />
+    </div>
     <button type="submit" class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold w-full hover:bg-yellow-300 transition">
       Transfer
     </button>
@@ -27,7 +31,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -44,13 +48,13 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentUserUid = null;
+    let currentUser = null;
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = "login.html";
       } else {
-        currentUserUid = user.uid;
+        currentUser = user;
       }
     });
 
@@ -59,24 +63,24 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (!currentUserUid) {
+      if (!currentUser) {
         Swal.fire('Error', 'User not logged in.', 'error');
         return;
       }
 
       const recipientEmail = document.getElementById("recipientEmail").value.trim().toLowerCase();
       const amount = parseFloat(document.getElementById("transferAmount").value);
+      const password = document.getElementById("password").value;
 
-      if (!recipientEmail) {
-        Swal.fire('Error', 'Please enter recipient email.', 'error');
-        return;
-      }
-      if (isNaN(amount) || amount <= 0) {
-        Swal.fire('Error', 'Please enter a valid amount greater than zero.', 'error');
+      if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
+        Swal.fire('Error', 'Please fill out all fields correctly.', 'error');
         return;
       }
 
       try {
+        // Re-authenticate user
+        const credential = await signInWithEmailAndPassword(auth, currentUser.email, password);
+
         // Find recipient by email
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", recipientEmail));
@@ -88,7 +92,7 @@
 
         let recipientDoc = null;
         querySnapshot.forEach(docSnap => {
-          recipientDoc = docSnap; // get first match
+          recipientDoc = docSnap;
         });
 
         if (!recipientDoc) {
@@ -97,13 +101,13 @@
 
         const recipientUid = recipientDoc.id;
 
-        if (recipientUid === currentUserUid) {
+        if (recipientUid === currentUser.uid) {
           throw new Error("You cannot transfer balance to yourself.");
         }
 
-        // Run transaction for balance transfer
+        // Transaction
         await runTransaction(db, async (transaction) => {
-          const senderRef = doc(db, "users", currentUserUid);
+          const senderRef = doc(db, "users", currentUser.uid);
           const recipientRef = doc(db, "users", recipientUid);
 
           const senderDoc = await transaction.get(senderRef);
