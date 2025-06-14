@@ -148,10 +148,14 @@
       }
 
       try {
-        // Show loading spinner with dark background
+        // Show loading spinner with bg-gray-900 and text-gray-100
         Swal.fire({
           title: 'Processing...',
-          background: 'rgb(31 41 55)', // bg-gray-900 in rgb
+          background: '#1a202c', // fallback bg
+          customClass: {
+            popup: 'bg-gray-900 text-gray-100',
+            title: 'text-gray-100'
+          },
           allowOutsideClick: false,
           didOpen: () => {
             Swal.showLoading();
