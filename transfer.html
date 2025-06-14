@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Balance Transfer - Good Job</title>
+  <title>Balance Transfer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+  </style>
 </head>
 <body class="bg-black text-white min-h-screen flex flex-col">
 
@@ -90,7 +95,7 @@
 
       const userDoc = await getDoc(doc(db, "users", currentUserId));
       if (!userDoc.exists()) {
-        Swal.fire("Error", "User data not found", "error");
+        showToast("Error: User data not found", "error");
         return;
       }
       currentUserData = userDoc.data();
@@ -99,6 +104,20 @@
 
     function updateBalanceUI(balance) {
       userBalanceEl.innerHTML = `<i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>${parseFloat(balance).toFixed(2)}`;
+    }
+
+    function showToast(title, icon = 'success') {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon,
+        title,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: '#1a202c',
+        color: '#fff'
+      });
     }
 
     transferForm.addEventListener("submit", async (e) => {
@@ -110,52 +129,46 @@
       const amount = parseFloat(transferForm.transferAmount.value);
 
       if (!recipientEmail || isNaN(amount) || amount <= 0) {
-        Swal.fire("Invalid Input", "Please enter valid recipient email and amount.", "warning");
+        showToast("Invalid recipient email or amount.", "warning");
         return;
       }
 
       if (amount > currentUserData.balance) {
-        Swal.fire("Insufficient Balance", "You do not have enough balance to transfer.", "error");
+        showToast("Insufficient balance to transfer.", "error");
         return;
       }
 
       try {
-        // Find recipient by email
         const q = query(collection(db, "users"), where("email", "==", recipientEmail));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          Swal.fire("Not Found", "Recipient email not found.", "error");
+          showToast("Recipient email not found.", "error");
           return;
         }
 
-        // Assuming first match is the recipient
         const recipientDoc = querySnapshot.docs[0];
         const recipientData = recipientDoc.data();
 
-        // Update sender balance
         const senderRef = doc(db, "users", currentUserId);
         await updateDoc(senderRef, {
           balance: currentUserData.balance - amount
         });
 
-        // Update recipient balance
         const recipientRef = doc(db, "users", recipientDoc.id);
         await updateDoc(recipientRef, {
           balance: (recipientData.balance || 0) + amount
         });
 
-        // Update local data and UI
         currentUserData.balance -= amount;
         updateBalanceUI(currentUserData.balance);
 
-        Swal.fire("Success", `৳${amount.toFixed(2)} transferred to ${recipientEmail}`, "success");
-
+        showToast(`৳${amount.toFixed(2)} transferred to ${recipientEmail}`, "success");
         transferForm.reset();
 
       } catch (error) {
         console.error("Transfer Error:", error);
-        Swal.fire("Error", "Something went wrong during the transfer.", "error");
+        showToast("Something went wrong during transfer.", "error");
       }
     });
   </script>
