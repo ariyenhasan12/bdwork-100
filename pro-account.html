@@ -35,6 +35,15 @@
   </style>
 </head>
 <body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
+  
+  <!-- Loader Screen -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-400 border-solid mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
 
   <!-- Header -->
   <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
@@ -52,82 +61,81 @@
     </div>
   </header>
 
-
-
   <!-- Main Content -->
   <main class="px-3">
-       <!-- PRO ACCOUNT -->
+    <!-- PRO ACCOUNT -->
     <div class="space-y-6 mt-8 mb-5 m-auto px-1">
-    <section class="relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 overflow-hidden animate-borderGlow">
-      
-          <!-- Glow Background -->
-          <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
+      <section class="relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 overflow-hidden animate-borderGlow">
+        
+        <!-- Glow Background -->
+        <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
 
-          <div class="relative z-10 text-center mb-5">
-            <h2 class="text-xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">Pro Membership</h2>
-            <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
+        <div class="relative z-10 text-center mb-5">
+          <h2 class="text-xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">Pro Membership</h2>
+          <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
+        </div>
+           
+        <div class="relative z-10 space-y-6 gap-8 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700 shadow-6xl">
+          
+          <!-- Pricing -->
+          <div class="text-center">
+            <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
+            <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳<span id="proActivationCost"></span></h3>
+            <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
           </div>
-             
-          <div class="relative z-10 space-y-6 gap-8 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700 shadow-6xl">
-            
-            <!-- Pricing -->
-            <div class="text-center">
-              <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
-              <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳<span id="proActivationCost"></span></h3>
-              <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
-            </div>
 
-            <!-- Features -->
-            <ul class="text-sm space-y-3 text-gray-200 md:col-span-1 col-span-2">
-              <li class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                  <i class="fa-solid fa-bolt"></i>
-                </span> 
-                Earn up to 5x faster
-              </li>
-              <li class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                  <i class="fa-solid fa-percent"></i>
-                </span> 
-                Daily return of 3.33%
-              </li>
-              <li class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                  <i class="fa-solid fa-crown"></i>
-                </span> 
-                Premium income tasks unlocked
-              </li>
-              <li class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                  <i class="fa-solid fa-headset"></i>
-                </span> 
-                VIP customer support
-              </li>
-              <li class="flex items-center gap-3">
-                <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                  <i class="fa-solid fa-coins"></i>
-                </span> 
-                Instant withdrawal anytime
-              </li>
-            </ul>
+          <!-- Features -->
+          <ul class="text-sm space-y-3 text-gray-200 md:col-span-1 col-span-2">
+            <li class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-bolt"></i>
+              </span> 
+              Earn up to 5x faster
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-percent"></i>
+              </span> 
+              Daily return of 3.33%
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-crown"></i>
+              </span> 
+              Premium income tasks unlocked
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-headset"></i>
+              </span> 
+              VIP customer support
+            </li>
+            <li class="flex items-center gap-3">
+              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+                <i class="fa-solid fa-coins"></i>
+              </span> 
+              Instant withdrawal anytime
+            </li>
+          </ul>
 
-            <!-- CTA Button -->
-<div class="flex flex-col items-center gap-3">
-  <button id="activateProBtn"
-        onclick="activateProAccount()"
-    class="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg transition duration-600 text-lg
-           transform hover:scale-105 hover:brightness-110 active:scale-95
-            hover:animate-none">
-    Loading...
-  </button>
-
+          <!-- CTA Button -->
+          <div class="flex flex-col items-center gap-3">
+            <button id="activateProBtn"
+                    onclick="activateProAccount()"
+                    class="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg transition duration-600 text-lg
+                           transform hover:scale-105 hover:brightness-110 active:scale-95
+                            hover:animate-none">
+              Loading...
+            </button>
           </div>
         </div>
+      </section>
+    </div>
   </main>
   
-            <p id="isProStatus" class="hidden"></p>
-             <p id="proExpiryDate" class="hidden"></p>
-             <p id="proDailyBonus" class="hidden"></p>
+  <p id="isProStatus" class="hidden"></p>
+  <p id="proExpiryDate" class="hidden"></p>
+  <p id="proDailyBonus" class="hidden"></p>
   
   <!-- Bottom Navigation Bar -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
@@ -163,82 +171,92 @@
     </div>
   </nav>
  
- <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { renderDailyBonusButton } from "./dailyBonus.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    let currentUserData = null;
-    let proSettings = null;
+    let currentUserData = null;
+    let proSettings = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+    function hideLoadingOverlay() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (overlay) {
+        overlay.style.display = 'none';
+      }
+    }
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      currentUserData = { uid: user.uid, ...userSnap.data() };
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
 
-      const settingsSnap = await getDoc(doc(db, "settings", "proAccount"));
-      proSettings = settingsSnap.data();
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      currentUserData = { uid: user.uid, ...userSnap.data() };
 
-      document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
-      document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
-      document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
+      const settingsSnap = await getDoc(doc(db, "settings", "proAccount"));
+      proSettings = settingsSnap.data();
 
-      const now = new Date();
-      let isPro = false;
-      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
-        const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
-        if (expiry > now) {
-          isPro = true;
-          document.getElementById("proExpiryDate").innerText = expiry.toLocaleDateString();
-        } else {
-          await updateDoc(userRef, { isPro: false, proExpiryTimestamp: null });
-        }
-      }
+      document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
+      document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
+      document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
 
-      document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
-      const btn = document.getElementById("activateProBtn");
-      btn.disabled = isPro;
-      btn.innerText = isPro ? "Already Activated" : "Upgrade Now";
+      const now = new Date();
+      let isPro = false;
+      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
+        const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
+        if (expiry > now) {
+          isPro = true;
+          document.getElementById("proExpiryDate").innerText = expiry.toLocaleDateString();
+        } else {
+          await updateDoc(userRef, { isPro: false, proExpiryTimestamp: null });
+        }
+      }
 
-      btn.onclick = async () => {
-        const balance = currentUserData.balance || 0;
-        const cost = proSettings.activationCost;
-        const validity = proSettings.validity;
+      document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
+      const btn = document.getElementById("activateProBtn");
+      btn.disabled = isPro;
+      btn.innerText = isPro ? "Already Activated" : "Upgrade Now";
 
-        if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
+      btn.onclick = async () => {
+        const balance = currentUserData.balance || 0;
+        const cost = proSettings.activationCost;
+        const validity = proSettings.validity;
 
-        const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
-        await updateDoc(userRef, {
-          isPro: true,
-          balance: balance - cost,
-          proExpiryTimestamp: Timestamp.fromDate(expiry)
-        });
+        if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
 
-        alert("Pro Account Activated! Now claim your daily bonus.");
-        location.reload();
-      };
+        const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
+        await updateDoc(userRef, {
+          isPro: true,
+          balance: balance - cost,
+          proExpiryTimestamp: Timestamp.fromDate(expiry)
+        });
 
-      // Render claim bonus button
-      renderDailyBonusButton("dailyBonusContainer");
-    });
-  </script>
+        alert("Pro Account Activated! Now claim your daily bonus.");
+        location.reload();
+      };
+
+      // Render claim bonus button
+      renderDailyBonusButton("dailyBonusContainer");
+
+      // Hide loading overlay after everything is loaded
+      hideLoadingOverlay();
+    });
+  </script>
 </body>
-    </html>
+</html>
