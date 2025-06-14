@@ -225,6 +225,14 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Hide loader when page and user data fully loaded
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if(loader){
+        loader.style.display = 'none';
+      }
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = "index.html";
 
