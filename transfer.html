@@ -5,68 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Balance Transfer</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
   </style>
 </head>
-<body class="bg-black text-white min-h-screen flex flex-col">
+<body class="bg-black text-white min-h-screen flex flex-col items-center justify-center p-4">
 
-  <header class="bg-black shadow-md py-3 px-5 flex items-center justify-between border-b border-gray-700">
-    <h1 class="text-yellow-400 font-bold text-2xl" style="font-family: 'Audiowide', cursive;">Balance Transfer</h1>
-    <button onclick="window.location.href='dashboard.html'" class="text-gray-400 hover:text-yellow-400">
-      <i class="fa-solid fa-arrow-left"></i> Back
-    </button>
-  </header>
+  <h1 class="text-yellow-400 text-2xl font-bold mb-6">Balance Transfer by Email</h1>
 
-  <main class="flex-grow max-w-md mx-auto p-5">
-    <div class="mb-6 border border-gray-700 rounded-md p-4 bg-gray-900 glow-yellow">
-      <h2 class="text-lg font-semibold mb-2">Your Current Balance</h2>
-      <p id="userBalance" class="text-yellow-400 text-3xl font-bold flex items-center">
-        <i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>0.00
-      </p>
+  <form id="transferForm" class="bg-gray-900 p-6 rounded-lg w-full max-w-md space-y-4">
+    <div>
+      <label class="block text-gray-300 mb-1" for="recipientEmail">Recipient Email</label>
+      <input type="email" id="recipientEmail" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Enter recipient's email" required />
     </div>
-
-    <form id="transferForm" class="bg-gray-900 p-6 rounded-md border border-gray-700 space-y-4">
-      <div>
-        <label for="recipientEmail" class="block mb-1 text-gray-300 font-medium">Recipient Email</label>
-        <input
-          type="email"
-          id="recipientEmail"
-          required
-          class="w-full rounded-md p-2 text-black"
-          placeholder="Enter recipient email"
-        />
-      </div>
-      <div>
-        <label for="transferAmount" class="block mb-1 text-gray-300 font-medium">Amount to Transfer</label>
-        <input
-          type="number"
-          id="transferAmount"
-          min="1"
-          step="0.01"
-          required
-          class="w-full rounded-md p-2 text-black"
-          placeholder="Enter amount"
-        />
-      </div>
-
-      <button
-        type="submit"
-        class="w-full bg-yellow-400 text-black font-semibold py-2 rounded-md hover:bg-yellow-500 transition"
-      >
-        Transfer
-      </button>
-    </form>
-  </main>
+    <div>
+      <label class="block text-gray-300 mb-1" for="transferAmount">Amount to Transfer (৳)</label>
+      <input type="number" id="transferAmount" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Amount" min="1" step="0.01" required />
+    </div>
+    <div>
+      <label class="block text-gray-300 mb-1" for="password">Your Password</label>
+      <input type="password" id="password" class="w-full p-2 rounded bg-gray-800 text-white outline-none" placeholder="Enter your password to confirm" required />
+    </div>
+    <button type="submit" class="bg-yellow-400 text-black px-5 py-2 rounded font-semibold w-full hover:bg-yellow-300 transition">
+      Transfer
+    </button>
+  </form>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, query, where, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -82,93 +57,106 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let currentUserData = null;
-    let currentUserId = null;
+    let currentUser = null;
 
-    const userBalanceEl = document.getElementById("userBalance");
-    const transferForm = document.getElementById("transferForm");
-
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-
-      currentUserId = user.uid;
-
-      const userDoc = await getDoc(doc(db, "users", currentUserId));
-      if (!userDoc.exists()) {
-        showToast("Error: User data not found", "error");
-        return;
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        currentUser = user;
       }
-      currentUserData = userDoc.data();
-      updateBalanceUI(currentUserData.balance || 0);
     });
 
-    function updateBalanceUI(balance) {
-      userBalanceEl.innerHTML = `<i class="fa-solid fa-bangladeshi-taka-sign mr-1"></i>${parseFloat(balance).toFixed(2)}`;
-    }
-
-    function showToast(title, icon = 'success') {
+    const toast = (icon, title) => {
       Swal.fire({
         toast: true,
         position: 'top-end',
-        icon,
-        title,
+        icon: icon,
+        title: title,
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true,
         background: '#1a202c',
         color: '#fff'
       });
-    }
+    };
 
-    transferForm.addEventListener("submit", async (e) => {
+    const form = document.getElementById("transferForm");
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (!currentUserData) return;
-
-      const recipientEmail = transferForm.recipientEmail.value.trim();
-      const amount = parseFloat(transferForm.transferAmount.value);
-
-      if (!recipientEmail || isNaN(amount) || amount <= 0) {
-        showToast("Invalid recipient email or amount.", "warning");
+      if (!currentUser) {
+        toast('error', 'User not logged in.');
         return;
       }
 
-      if (amount > currentUserData.balance) {
-        showToast("Insufficient balance to transfer.", "error");
+      const recipientEmail = document.getElementById("recipientEmail").value.trim().toLowerCase();
+      const amount = parseFloat(document.getElementById("transferAmount").value);
+      const password = document.getElementById("password").value;
+
+      if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
+        toast('error', 'Please fill out all fields correctly.');
         return;
       }
 
       try {
-        const q = query(collection(db, "users"), where("email", "==", recipientEmail));
+        await signInWithEmailAndPassword(auth, currentUser.email, password);
+
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", recipientEmail));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-          showToast("Recipient email not found.", "error");
-          return;
+          throw new Error("Recipient email not found");
         }
 
-        const recipientDoc = querySnapshot.docs[0];
-        const recipientData = recipientDoc.data();
-
-        const senderRef = doc(db, "users", currentUserId);
-        await updateDoc(senderRef, {
-          balance: currentUserData.balance - amount
+        let recipientDoc = null;
+        querySnapshot.forEach(docSnap => {
+          recipientDoc = docSnap;
         });
 
-        const recipientRef = doc(db, "users", recipientDoc.id);
-        await updateDoc(recipientRef, {
-          balance: (recipientData.balance || 0) + amount
+        if (!recipientDoc) {
+          throw new Error("Recipient not found");
+        }
+
+        const recipientUid = recipientDoc.id;
+
+        if (recipientUid === currentUser.uid) {
+          throw new Error("You cannot transfer balance to yourself.");
+        }
+
+        await runTransaction(db, async (transaction) => {
+          const senderRef = doc(db, "users", currentUser.uid);
+          const recipientRef = doc(db, "users", recipientUid);
+
+          const senderDoc = await transaction.get(senderRef);
+          const recipientDocTxn = await transaction.get(recipientRef);
+
+          if (!senderDoc.exists()) throw new Error("Sender data not found");
+          if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
+
+          const senderBalance = senderDoc.data().balance || 0;
+          const recipientBalance = recipientDocTxn.data().balance || 0;
+
+          if (senderBalance < amount) {
+            throw new Error("Insufficient balance");
+          }
+
+          transaction.update(senderRef, {
+            balance: senderBalance - amount
+          });
+
+          transaction.update(recipientRef, {
+            balance: recipientBalance + amount
+          });
         });
 
-        currentUserData.balance -= amount;
-        updateBalanceUI(currentUserData.balance);
-
-        showToast(`৳${amount.toFixed(2)} transferred to ${recipientEmail}`, "success");
-        transferForm.reset();
+        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        form.reset();
 
       } catch (error) {
-        console.error("Transfer Error:", error);
-        showToast("Something went wrong during transfer.", "error");
+        toast('error', error.message || 'Transfer failed');
       }
     });
   </script>
