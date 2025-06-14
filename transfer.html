@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Balance Transfer</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
-  <style>
-    .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-    }
-    
-    .swal2-timer-progress-bar {
-      background: #facc15 !important;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Balance Transfer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+  </style>
 </head>
 <body class="bg-black text-white">
 
-  <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        GJ
-      </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
-    </div>
-    <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </div>
-    </div>
-  </header>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-  <!-- Transfer Form -->
-  <main class="max-w-xl mx-auto mt-10 px-4 mb-6">
-    <div class="glow-yellow bg-black p-6 rounded-lg border border-solid border-gray-700">
+  <!-- Transfer Form -->
+  <main class="max-w-xl mx-auto mt-10 px-4 mb-6">
+    <div class="glow-yellow bg-black p-6 rounded-lg border border-solid border-gray-700">
 
-      <!-- Info Text -->
-      <div class="mb-6">
-        <h2 class="text-xl font-semibold mb-2">How Balance Transfer Works</h2>
-        <p class="text-gray-300 text-sm leading-relaxed">
-          Use this form to securely transfer balance to another user by entering their Sender Email, the transfer amount, 
-          and your Password. Make sure all the details are correct before submitting. Transactions are processed 
-          instantly and are non-reversible. <br/>
-          <span class="font-semibold text-indigo-400">Note: A 10% charge will be applied to the transfer amount.</span>
-        </p>
-      </div>
+      <!-- Info Text -->
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold mb-2">How Balance Transfer Works</h2>
+        <p class="text-gray-300 text-sm leading-relaxed">
+          Use this form to securely transfer balance to another user by entering their Sender Email, the transfer amount, 
+          and your Password. Make sure all the details are correct before submitting. Transactions are processed 
+          instantly and are non-reversible. <br/>
+          <span class="font-semibold text-indigo-400">Note: A 10% charge will be applied to the transfer amount.</span>
+        </p>
+      </div>
 
-      <!-- Form Title -->
-      <h2 class="text-xl font-semibold mb-4">Transfer Your Balance</h2>
+      <!-- Form Title -->
+      <h2 class="text-xl font-semibold mb-4">Transfer Your Balance</h2>
 
-      <form id="transferForm">
-        <div class="mb-4">
-          <label for="recipientEmail" class="block text-sm font-medium mb-1">Sender Email</label>
-          <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
-        </div>
+      <form id="transferForm">
+        <div class="mb-4">
+          <label for="recipientEmail" class="block text-sm font-medium mb-1">Sender Email</label>
+          <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
+        </div>
 
-        <div class="mb-2">
-          <label for="transferAmount" class="block text-sm font-medium mb-1">Transfer Amount</label>
-          <input type="number" id="transferAmount" name="transferAmount" placeholder="Enter your amount"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required min="1">
-        </div>
+        <div class="mb-2">
+          <label for="transferAmount" class="block text-sm font-medium mb-1">Transfer Amount</label>
+          <input type="number" id="transferAmount" name="transferAmount" placeholder="Enter your amount"
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required min="10">
+        </div>
 
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium mb-1">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your account password"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
-        </div>
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium mb-1">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your account password"
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
+        </div>
 
-        <div class="flex justify-center mt-6">
-          <button type="submit"
-            class="w-1/2 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-sm transition-all">
-            Transfer Now
-          </button>
-        </div>
-      </form>
-    </div>
-  </main>
+        <div class="flex justify-center mt-6">
+          <button type="submit"
+            class="w-1/2 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-sm transition-all">
+            Transfer Now
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
 
-  <script type="module">
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
