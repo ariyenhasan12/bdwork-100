@@ -56,7 +56,7 @@
       <!-- Form Title -->
       <h2 class="text-xl font-semibold mb-4">Transfer Your Balance</h2>
 
-      <form id="transferForm" onsubmit="return false;">
+      <form id="transferForm">
         <div class="mb-4">
           <label for="recipientEmail" class="block text-sm font-medium mb-1">Sender Email</label>
           <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
@@ -76,7 +76,7 @@
         </div>
 
         <div class="flex justify-center mt-6">
-          <button type="button" onclick="handleTransfer()"
+          <button type="submit"
             class="w-1/2 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-sm transition-all">
             Transfer Now
           </button>
@@ -128,7 +128,11 @@
       });
     };
 
-    async function handleTransfer() {
+    const form = document.getElementById("transferForm");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
       if (!currentUser) {
         toast('error', 'User not logged in.');
         return;
@@ -144,7 +148,6 @@
       }
 
       try {
-        // Re-authenticate user with password
         await signInWithEmailAndPassword(auth, currentUser.email, password);
 
         const usersRef = collection(db, "users");
@@ -197,12 +200,12 @@
         });
 
         toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
-        document.getElementById("transferForm").reset();
+        form.reset();
 
       } catch (error) {
         toast('error', error.message || 'Transfer failed');
       }
-    }
+    });
   </script>
 </body>
 </html>
