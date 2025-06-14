@@ -87,7 +87,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -148,8 +148,20 @@
       }
 
       try {
-        await signInWithEmailAndPassword(auth, currentUser.email, password);
+        // Show loading spinner
+        Swal.fire({
+          title: 'Processing...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
 
+        // Re-authenticate user with password
+        const credential = EmailAuthProvider.credential(currentUser.email, password);
+        await reauthenticateWithCredential(currentUser, credential);
+
+        // Query recipient user document
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", recipientEmail));
         const querySnapshot = await getDocs(q);
@@ -199,10 +211,12 @@
           });
         });
 
+        Swal.close(); // Close loading spinner
         toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
         form.reset();
 
       } catch (error) {
+        Swal.close(); // Close loading spinner if error occurs
         toast('error', error.message || 'Transfer failed');
       }
     });
