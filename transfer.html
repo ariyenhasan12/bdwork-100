@@ -49,7 +49,7 @@
           Use this form to securely transfer balance to another user by entering their Sender Email, the transfer amount, 
           and your Password. Make sure all the details are correct before submitting. Transactions are processed 
           instantly and are non-reversible. <br/>
-          <span class="font-semibold text-indigo-400">Note: A transfer charge will be applied as per current settings.</span>
+          <span class="font-semibold text-indigo-400">Note: A 10% charge will be applied to the transfer amount.</span>
         </p>
       </div>
 
@@ -59,13 +59,13 @@
       <form id="transferForm">
         <div class="mb-4">
           <label for="recipientEmail" class="block text-sm font-medium mb-1">Sender Email</label>
-          <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter recipient email"
+          <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
             class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
         </div>
 
         <div class="mb-2">
           <label for="transferAmount" class="block text-sm font-medium mb-1">Transfer Amount</label>
-          <input type="number" id="transferAmount" name="transferAmount" placeholder="Enter amount"
+          <input type="number" id="transferAmount" name="transferAmount" placeholder="Enter your amount"
             class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required min="1">
         </div>
 
@@ -88,7 +88,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, doc, runTransaction, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, doc, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
@@ -148,10 +148,10 @@
       }
 
       try {
-        // Show loading spinner
+        // Show loading spinner with bg-gray-900 and text-gray-100
         Swal.fire({
           title: 'Processing...',
-          background: '#1a202c',
+          background: '#1a202c', // fallback bg
           customClass: {
             popup: 'bg-gray-900 text-gray-100',
             title: 'text-gray-100'
@@ -165,23 +165,6 @@
         // Re-authenticate user with password
         const credential = EmailAuthProvider.credential(currentUser.email, password);
         await reauthenticateWithCredential(currentUser, credential);
-
-        // Load transfer settings from Firestore
-        const settingsRef = doc(db, 'settings', 'transferSettings');
-        const settingsSnap = await getDoc(settingsRef);
-
-        let minTransferLimit = 0;
-        let transferChargePercent = 0;
-
-        if (settingsSnap.exists()) {
-          const settingsData = settingsSnap.data();
-          minTransferLimit = settingsData.minTransferLimit || 0;
-          transferChargePercent = settingsData.transferChargePercent || 0;
-        }
-
-        if (amount < minTransferLimit) {
-          throw new Error(`Minimum transfer amount is ৳${minTransferLimit}`);
-        }
 
         // Query recipient user document
         const usersRef = collection(db, "users");
@@ -220,17 +203,12 @@
           const senderBalance = senderDoc.data().balance || 0;
           const recipientBalance = recipientDocTxn.data().balance || 0;
 
-          // Calculate charge and total deduction
-          const chargeAmount = (amount * transferChargePercent) / 100;
-          const totalDeduct = amount + chargeAmount;
-
-          if (senderBalance < totalDeduct) {
-            throw new Error(`Insufficient balance to cover amount plus charge (৳${totalDeduct.toFixed(2)})`);
+          if (senderBalance < amount) {
+            throw new Error("Insufficient balance");
           }
 
-          // Update balances
           transaction.update(senderRef, {
-            balance: senderBalance - totalDeduct
+            balance: senderBalance - amount
           });
 
           transaction.update(recipientRef, {
@@ -238,12 +216,12 @@
           });
         });
 
-        Swal.close();
+        Swal.close(); // Close loading spinner
         toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
         form.reset();
 
       } catch (error) {
-        Swal.close();
+        Swal.close(); // Close loading spinner if error occurs
         toast('error', error.message || 'Transfer failed');
       }
     });
