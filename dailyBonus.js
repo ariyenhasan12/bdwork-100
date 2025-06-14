@@ -37,7 +37,7 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
 
-      const settingsRef = doc(db, "proplan", "proAccount");
+      const settingsRef = doc(db, "settings", "proAccount");
       const settingsSnap = await getDoc(settingsRef);
       const settings = settingsSnap.data();
 
