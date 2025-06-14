@@ -96,7 +96,8 @@
     </div>
   </nav>
   
-<script type="module">
+
+   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import {
       getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, arrayUnion
@@ -118,6 +119,14 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    // Hide loader when page and user data fully loaded
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if(loader){
+        loader.style.display = 'none';
+      }
+    }
 
     const tasksList = document.getElementById("tasksList");
 
@@ -171,6 +180,7 @@
       onSnapshot(tasksCol, (snapshot) => {
         if (snapshot.empty) {
           tasksList.innerHTML = "<p class='text-center text-gray-200 text-lg'>No tasks available right now.</p>";
+          hideLoader(); // Hide loader even if no tasks
           return;
         }
 
@@ -246,6 +256,7 @@
             });
           }
         });
+        hideLoader(); // Hide loader after tasks loaded and rendered
       });
     }
 
@@ -293,7 +304,7 @@
 
       loadTasks();
     }
-  </script>
+   </script>           
 </body>
 </body>
 </html>
