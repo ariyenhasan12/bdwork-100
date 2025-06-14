@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-900 text-white p-8 max-w-md mx-auto min-h-screen flex flex-col justify-center">
+  <h1 class="text-3xl font-bold mb-8 text-yellow-400">Admin Panel - Transfer Settings</h1>
+
+  <form id="settingsForm" class="space-y-6">
+    <div>
+      <label for="minTransferLimit" class="block mb-2 text-lg font-semibold">Minimum Transfer Limit (৳)</label>
+      <input
+        type="number"
+        id="minTransferLimit"
+        min="0"
+        class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:outline-yellow-400"
+        required
+      />
+    </div>
+
+    <div>
+      <label for="transferChargePercent" class="block mb-2 text-lg font-semibold">Transfer Charge (%)</label>
+      <input
+        type="number"
+        id="transferChargePercent"
+        min="0"
+        max="100"
+        class="w-full p-3 rounded bg-gray-800 border border-gray-700 focus:outline-yellow-400"
+        required
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="bg-yellow-400 text-black font-bold px-6 py-3 rounded hover:bg-yellow-500 transition"
+    >
+      Update Settings
+    </button>
+  </form>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const minLimitInput = document.getElementById('minTransferLimit');
+    const chargeInput = document.getElementById('transferChargePercent');
+    const form = document.getElementById('settingsForm');
+
+    // Simple auth check, redirect if not logged in (expand with real admin logic)
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        loadSettings();
+      }
+    });
+
+    async function loadSettings() {
+      const docRef = doc(db, 'allsettings', 'allsettings');
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        minLimitInput.value = data.minTransferLimit ?? 0;
+        chargeInput.value = data.transferChargePercent ?? 0;
+      } else {
+        minLimitInput.value = 0;
+        chargeInput.value = 0;
+      }
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const minLimit = parseFloat(minLimitInput.value);
+      const chargePercent = parseFloat(chargeInput.value);
+
+      if (minLimit < 0 || chargePercent < 0 || chargePercent > 100) {
+        Swal.fire('Error', 'Please enter valid values.', 'error');
+        return;
+      }
+
+      try {
+        await setDoc(doc(db, 'allsettings', 'allsettings), {
+          minTransferLimit: minLimit,
+          transferChargePercent: chargePercent
+        });
+        Swal.fire('Success', 'Settings updated successfully', 'success');
+      } catch (error) {
+        Swal.fire('Error', error.message, 'error');
+      }
+    });
+  </script>
+</body>
+</html>
