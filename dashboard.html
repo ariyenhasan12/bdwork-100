@@ -1,13 +1,14 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Good Job</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .swal2-timer-progress-bar {
@@ -36,30 +37,22 @@
         transform: rotate(360deg);
       }
     }
-    /* Good Job glowing text for loading */
-    #loadingOverlay .good-job-text {
-      font-family: 'Audiowide', cursive;
-      font-size: 2rem;
-      color: #facc15;
-      text-shadow:
-        0 0 8px #facc15,
-        0 0 20px #facc15,
-        0 0 30px #fbbf24,
-        0 0 40px #fbbf24;
-      font-weight: 700;
-    }
   </style>
 </head>
 <body class="bg-black text-white relative">
 
   <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center space-y-4">
-    <div class="loader"></div>
-    <p class="good-job-text select-none">Good Job</p>
-    <p class="text-yellow-400 font-semibold">Loading...</p>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-400 border-solid mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
   </div>
 
   <!-- Header -->
+
   <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
@@ -76,9 +69,11 @@
   </header>
 
   <!-- Daily Bonus Claim Button -->
+
   <section id="dailyBonusContainer" class="mb-8"></section>
 
   <!-- Profile Modal -->
+
   <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-80 z-50 hidden flex justify-center items-center p-4">
     <div id="profileContainer" class="w-full max-w-md mx-auto space-y-6">
       <section class="bg-black rounded-md shadow-6xl text-white flex flex-col items-center gap-4 border border-gray-700 glow-yellow relative">
@@ -135,6 +130,7 @@
   </div>
 
   <!-- Main Content -->
+
   <main class="px-3 space-y-4">
     <div class="bg-black rounded-md p-4 flex items-center justify-between border border-gray-700 glow-yellow">
       <div class="text-white">
@@ -155,6 +151,7 @@
   </main>
 
   <!-- Bottom Navigation -->
+
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
     <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
@@ -189,6 +186,7 @@
   </nav>
 
   <!-- Firebase and JS -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -244,5 +242,6 @@
       document.getElementById("profileModal").classList.toggle("hidden");
     };
   </script>
+
 </body>
 </html>
