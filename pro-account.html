@@ -226,7 +226,7 @@
       const userSnap = await getDoc(userRef);
       currentUserData = { uid: user.uid, ...userSnap.data() };
 
-      const settingsSnap = await getDoc(doc(db, "proplan", "proAccount"));
+      const settingsSnap = await getDoc(doc(db, "settings", "proAccount"));
       proSettings = settingsSnap.data();
 
       document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
