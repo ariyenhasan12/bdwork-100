@@ -147,76 +147,63 @@
         return;
       }
 
-      // Show confirmation dialog
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: `You are about to transfer ৳${amount.toFixed(2)} to ${recipientEmail}.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Okay',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true,
-      });
+      try {
+        await signInWithEmailAndPassword(auth, currentUser.email, password);
 
-      if (result.isConfirmed) {
-        try {
-          await signInWithEmailAndPassword(auth, currentUser.email, password);
+        const usersRef = collection(db, "users");
+        const q = query(usersRef, where("email", "==", recipientEmail));
+        const querySnapshot = await getDocs(q);
 
-          const usersRef = collection(db, "users");
-          const q = query(usersRef, where("email", "==", recipientEmail));
-          const querySnapshot = await getDocs(q);
-
-          if (querySnapshot.empty) {
-            throw new Error("Recipient email not found");
-          }
-
-          let recipientDoc = null;
-          querySnapshot.forEach(docSnap => {
-            recipientDoc = docSnap;
-          });
-
-          if (!recipientDoc) {
-            throw new Error("Recipient not found");
-          }
-
-          const recipientUid = recipientDoc.id;
-
-          if (recipientUid === currentUser.uid) {
-            throw new Error("You cannot transfer balance to yourself.");
-          }
-
-          await runTransaction(db, async (transaction) => {
-            const senderRef = doc(db, "users", currentUser.uid);
-            const recipientRef = doc(db, "users", recipientUid);
-
-            const senderDoc = await transaction.get(senderRef);
-            const recipientDocTxn = await transaction.get(recipientRef);
-
-            if (!senderDoc.exists()) throw new Error("Sender data not found");
-            if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
-
-            const senderBalance = senderDoc.data().balance || 0;
-            const recipientBalance = recipientDocTxn.data().balance || 0;
-
-            if (senderBalance < amount) {
-              throw new Error("Insufficient balance");
-            }
-
-            transaction.update(senderRef, {
-              balance: senderBalance - amount
-            });
-
-            transaction.update(recipientRef, {
-              balance: recipientBalance + amount
-            });
-          });
-
-          toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
-          form.reset();
-
-        } catch (error) {
-          toast('error', error.message || 'Transfer failed');
+        if (querySnapshot.empty) {
+          throw new Error("Recipient email not found");
         }
+
+        let recipientDoc = null;
+        querySnapshot.forEach(docSnap => {
+          recipientDoc = docSnap;
+        });
+
+        if (!recipientDoc) {
+          throw new Error("Recipient not found");
+        }
+
+        const recipientUid = recipientDoc.id;
+
+        if (recipientUid === currentUser.uid) {
+          throw new Error("You cannot transfer balance to yourself.");
+        }
+
+        await runTransaction(db, async (transaction) => {
+          const senderRef = doc(db, "users", currentUser.uid);
+          const recipientRef = doc(db, "users", recipientUid);
+
+          const senderDoc = await transaction.get(senderRef);
+          const recipientDocTxn = await transaction.get(recipientRef);
+
+          if (!senderDoc.exists()) throw new Error("Sender data not found");
+          if (!recipientDocTxn.exists()) throw new Error("Recipient data not found");
+
+          const senderBalance = senderDoc.data().balance || 0;
+          const recipientBalance = recipientDocTxn.data().balance || 0;
+
+          if (senderBalance < amount) {
+            throw new Error("Insufficient balance");
+          }
+
+          transaction.update(senderRef, {
+            balance: senderBalance - amount
+          });
+
+          transaction.update(recipientRef, {
+            balance: recipientBalance + amount
+          });
+        });
+
+        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        form.reset();
+
+      } catch (error) {
+        toast('error', error.message || 'Transfer failed');
       }
     });
   </script>
