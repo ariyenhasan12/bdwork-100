@@ -148,9 +148,10 @@
       }
 
       try {
-        // Show loading spinner
+        // Show loading spinner with dark background
         Swal.fire({
           title: 'Processing...',
+          background: 'rgb(31 41 55)', // bg-gray-900 in rgb
           allowOutsideClick: false,
           didOpen: () => {
             Swal.showLoading();
