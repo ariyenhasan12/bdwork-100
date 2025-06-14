@@ -2,19 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Balance Transfer</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
-    
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
@@ -25,9 +23,7 @@
   <!-- Header -->
   <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        GJ
-      </div>
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">GJ</div>
       <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
@@ -41,8 +37,6 @@
   <!-- Transfer Form -->
   <main class="max-w-xl mx-auto mt-10 px-4 mb-6">
     <div class="glow-yellow bg-black p-6 rounded-lg border border-solid border-gray-700">
-
-      <!-- Info Text -->
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-2">How Balance Transfer Works</h2>
         <p class="text-gray-300 text-sm leading-relaxed">
@@ -53,30 +47,29 @@
         </p>
       </div>
 
-      <!-- Form Title -->
       <h2 class="text-xl font-semibold mb-4">Transfer Your Balance</h2>
 
-      <form id="transferForm">
+      <form id="transferForm" onsubmit="return false;">
         <div class="mb-4">
           <label for="recipientEmail" class="block text-sm font-medium mb-1">Sender Email</label>
-          <input type="text" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
+          <input type="email" id="recipientEmail" name="recipientEmail" placeholder="Enter your sender email"
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required />
         </div>
 
         <div class="mb-2">
           <label for="transferAmount" class="block text-sm font-medium mb-1">Transfer Amount</label>
           <input type="number" id="transferAmount" name="transferAmount" placeholder="Enter your amount"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required min="1">
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required min="1" />
         </div>
 
         <div class="mb-4">
           <label for="password" class="block text-sm font-medium mb-1">Password</label>
           <input type="password" id="password" name="password" placeholder="Enter your account password"
-            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required>
+            class="w-full px-4 py-2 border border-gray-600 rounded-md outline-none text-white bg-gray-900" required />
         </div>
 
         <div class="flex justify-center mt-6">
-          <button type="submit"
+          <button type="button" id="transferBtn" onclick="transferBalance()"
             class="w-1/2 py-2 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded-sm transition-all">
             Transfer Now
           </button>
@@ -114,27 +107,23 @@
       }
     });
 
-    const toast = (icon, title) => {
+    function toast(icon, title) {
       Swal.fire({
         toast: true,
-        position: 'top-end',
-        icon: icon,
-        title: title,
+        position: "top-end",
+        icon,
+        title,
         showConfirmButton: false,
-        timer: 2000,
+        timer: 3000,
         timerProgressBar: true,
-        background: '#1a202c',
-        color: '#fff'
+        background: "#1a202c",
+        color: "#fff",
       });
-    };
+    }
 
-    const form = document.getElementById("transferForm");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
+    async function transferBalance() {
       if (!currentUser) {
-        toast('error', 'User not logged in.');
+        toast("error", "User not logged in.");
         return;
       }
 
@@ -143,13 +132,19 @@
       const password = document.getElementById("password").value;
 
       if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
-        toast('error', 'Please fill out all fields correctly.');
+        toast("error", "Please fill out all fields correctly.");
         return;
       }
 
       try {
+        // Re-authenticate user with password
         await signInWithEmailAndPassword(auth, currentUser.email, password);
 
+        if (recipientEmail === currentUser.email.toLowerCase()) {
+          throw new Error("You cannot transfer balance to yourself.");
+        }
+
+        // Find recipient by email
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", recipientEmail));
         const querySnapshot = await getDocs(q);
@@ -159,7 +154,7 @@
         }
 
         let recipientDoc = null;
-        querySnapshot.forEach(docSnap => {
+        querySnapshot.forEach((docSnap) => {
           recipientDoc = docSnap;
         });
 
@@ -169,9 +164,10 @@
 
         const recipientUid = recipientDoc.id;
 
-        if (recipientUid === currentUser.uid) {
-          throw new Error("You cannot transfer balance to yourself.");
-        }
+        // Calculate 10% charge and total deduction
+        const chargePercent = 0.10;
+        const chargeAmount = amount * chargePercent;
+        const totalDeduction = amount + chargeAmount;
 
         await runTransaction(db, async (transaction) => {
           const senderRef = doc(db, "users", currentUser.uid);
@@ -186,26 +182,26 @@
           const senderBalance = senderDoc.data().balance || 0;
           const recipientBalance = recipientDocTxn.data().balance || 0;
 
-          if (senderBalance < amount) {
-            throw new Error("Insufficient balance");
+          if (senderBalance < totalDeduction) {
+            throw new Error(`Insufficient balance. You need ৳${totalDeduction.toFixed(2)} (including 10% charge).`);
           }
 
           transaction.update(senderRef, {
-            balance: senderBalance - amount
+            balance: senderBalance - totalDeduction,
           });
 
           transaction.update(recipientRef, {
-            balance: recipientBalance + amount
+            balance: recipientBalance + amount,
           });
         });
 
-        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
-        form.reset();
-
+        toast("success", `৳${amount.toFixed(2)} transferred successfully to ${recipientEmail}. Charge ৳${chargeAmount.toFixed(2)} applied.`);
+        // Clear form fields
+        document.getElementById("transferForm").reset();
       } catch (error) {
-        toast('error', error.message || 'Transfer failed');
+        toast("error", error.message || "Transfer failed");
       }
-    });
+    }
   </script>
 </body>
 </html>
