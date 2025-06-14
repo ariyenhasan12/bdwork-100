@@ -19,40 +19,22 @@
     .user-icon-glow {
       box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
     }
-    /* Enhanced Loading Spinner */
+    /* Improved Loading Spinner */
     .loader {
-      position: relative;
       width: 48px;
       height: 48px;
       border-radius: 50%;
-      background: linear-gradient(45deg, #facc15, #fbbf24, #f59e0b, #b45309);
-      animation: spin 1.3s linear infinite;
-      box-shadow: 0 0 8px #facc15, 0 0 20px #fbbf24, 0 0 30px #f59e0b;
-    }
-    .loader::before {
-      content: "";
-      position: absolute;
-      top: 6px; left: 6px; right: 6px; bottom: 6px;
-      border-radius: 50%;
-      background: black;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 1s ease-in-out infinite;
+      box-shadow:
+        0 0 8px #facc15,
+        inset 0 0 8px #facc15;
     }
     @keyframes spin {
       to {
         transform: rotate(360deg);
       }
-    }
-    /* Glow effect for Good Job text */
-    .glow-text {
-      font-family: 'Audiowide', cursive;
-      font-size: 2rem;
-      color: #facc15;
-      text-shadow:
-        0 0 5px #facc15,
-        0 0 10px #fbbf24,
-        0 0 20px #f59e0b,
-        0 0 30px #b45309,
-        0 0 40px #b45309;
-      user-select: none;
     }
   </style>
 </head>
@@ -70,7 +52,7 @@
       <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
         GJ
       </div>
-      <h2 class="glow-text">Good Job</h2>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
@@ -129,7 +111,7 @@
             </div>
           </div>
           <div class="flex justify-center">
-            <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2 cursor-pointer" onclick="logout()">
+            <div class="mt-2 bg-red-500 text-white text-sm font-semibold px-4 py-2 rounded-md shadow flex items-center gap-2" onclick="logout()">
               <i class="fas fa-sign-out-alt"></i>
               Logout
             </div>
@@ -161,31 +143,31 @@
 
   <!-- Bottom Navigation -->
   <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
-    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Home
     </div>
-    <div onclick="window.location.href='job.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+    <div onclick="window.location.href='job.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Job
     </div>
-    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Pro
     </div>
-    <div onclick="window.location.href='transfer.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+    <div onclick="window.location.href='transfer.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
         <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
       </div>
       Transfer
     </div>
-    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
       <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
         <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
       </div>
