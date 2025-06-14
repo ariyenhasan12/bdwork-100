@@ -133,6 +133,24 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
+      // Show confirmation dialog
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "Do you want to proceed with the transfer?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Okay',
+        cancelButtonText: 'Cancel',
+        background: '#1a202c',
+        color: '#fff',
+        reverseButtons: true
+      });
+
+      if (!result.isConfirmed) {
+        // If user clicks Cancel, do nothing
+        return;
+      }
+
       if (!currentUser) {
         toast('error', 'User not logged in.');
         return;
@@ -148,6 +166,7 @@
       }
 
       try {
+        // Reauthenticate current user with password
         await signInWithEmailAndPassword(auth, currentUser.email, password);
 
         const usersRef = collection(db, "users");
@@ -173,6 +192,10 @@
           throw new Error("You cannot transfer balance to yourself.");
         }
 
+        // Apply 10% charge on the amount
+        const charge = amount * 0.10;
+        const totalDeduction = amount + charge;
+
         await runTransaction(db, async (transaction) => {
           const senderRef = doc(db, "users", currentUser.uid);
           const recipientRef = doc(db, "users", recipientUid);
@@ -186,12 +209,12 @@
           const senderBalance = senderDoc.data().balance || 0;
           const recipientBalance = recipientDocTxn.data().balance || 0;
 
-          if (senderBalance < amount) {
-            throw new Error("Insufficient balance");
+          if (senderBalance < totalDeduction) {
+            throw new Error(`Insufficient balance. You need at least ৳${totalDeduction.toFixed(2)} including 10% charge.`);
           }
 
           transaction.update(senderRef, {
-            balance: senderBalance - amount
+            balance: senderBalance - totalDeduction
           });
 
           transaction.update(recipientRef, {
@@ -199,7 +222,7 @@
           });
         });
 
-        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail} (Charge applied: ৳${charge.toFixed(2)})`);
         form.reset();
 
       } catch (error) {
