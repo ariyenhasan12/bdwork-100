@@ -134,7 +134,7 @@
       e.preventDefault();
 
       if (!currentUser) {
-        Swal.fire({ icon: 'error', title: 'User not logged in.' });
+        toast('error', 'User not logged in.');
         return;
       }
 
@@ -143,7 +143,7 @@
       const password = document.getElementById("password").value;
 
       if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
-        Swal.fire({ icon: 'error', title: 'Please fill out all fields correctly.' });
+        toast('error', 'Please fill out all fields correctly.');
         return;
       }
 
@@ -217,7 +217,7 @@
 
       } catch (error) {
         Swal.close(); // Close loading spinner if error occurs
-        Swal.fire({ icon: 'error', title: error.message || 'Transfer failed' });
+        toast('error', error.message || 'Transfer failed');
       }
     });
   </script>
