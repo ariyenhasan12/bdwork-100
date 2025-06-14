@@ -188,92 +188,91 @@
     </div>
   </nav>
  
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-    import { renderDailyBonusButton } from "./dailyBonus.js";
+   <!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, updateDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { renderDailyBonusButton } from "./dailyBonus.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+    authDomain: "bdwork-346d3.firebaseapp.com",
+    projectId: "bdwork-346d3",
+    storageBucket: "bdwork-346d3.appspot.com",
+    messagingSenderId: "900963179093",
+    appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+    measurementId: "G-FM1YJ8E5GK"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-    let currentUserData = null;
-    let proSettings = null;
+  let currentUserData = null;
+  let proSettings = null;
 
-    function hideLoadingOverlay() {
-      const overlay = document.getElementById('loadingOverlay');
-      if (overlay) {
-        overlay.style.display = 'none';
+  function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+      overlay.style.display = 'none';
+    }
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return window.location.href = "login.html";
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+    currentUserData = { uid: user.uid, ...userSnap.data() };
+
+    // 🔄 Changed from "settings" to "proplan"
+    const settingsSnap = await getDoc(doc(db, "proplan", "proAccount"));
+    proSettings = settingsSnap.data();
+
+    document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
+    document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
+    document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
+
+    const now = new Date();
+    let isPro = false;
+    if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
+      const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
+      if (expiry > now) {
+        isPro = true;
+        document.getElementById("proExpiryDate").innerText = expiry.toLocaleDateString();
+      } else {
+        await updateDoc(userRef, { isPro: false, proExpiryTimestamp: null });
       }
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
+    document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
+    const btn = document.getElementById("activateProBtn");
+    btn.disabled = isPro;
+    btn.innerText = isPro ? "Already Activated" : "Upgrade Now";
 
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
-      currentUserData = { uid: user.uid, ...userSnap.data() };
+    btn.onclick = async () => {
+      const balance = currentUserData.balance || 0;
+      const cost = proSettings.activationCost;
+      const validity = proSettings.validity;
 
-      const settingsSnap = await getDoc(doc(db, "settings", "proAccount"));
-      proSettings = settingsSnap.data();
+      if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
 
-      document.getElementById("proActivationCost").innerText = proSettings.activationCost ?? "-";
-      document.getElementById("proDailyBonus").innerText = proSettings.dailyBonus ?? "-";
-      document.getElementById("proValidity").innerText = proSettings.validity ?? "-";
+      const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
+      await updateDoc(userRef, {
+        isPro: true,
+        balance: balance - cost,
+        proExpiryTimestamp: Timestamp.fromDate(expiry)
+      });
 
-      const now = new Date();
-      let isPro = false;
-      if (currentUserData.isPro && currentUserData.proExpiryTimestamp) {
-        const expiry = currentUserData.proExpiryTimestamp.toDate?.() ?? new Date(currentUserData.proExpiryTimestamp);
-        if (expiry > now) {
-          isPro = true;
-          document.getElementById("proExpiryDate").innerText = expiry.toLocaleDateString();
-        } else {
-          await updateDoc(userRef, { isPro: false, proExpiryTimestamp: null });
-        }
-      }
+      alert("Pro Account Activated! Now claim your daily bonus.");
+      location.reload();
+    };
 
-      document.getElementById("isProStatus").innerText = isPro ? "Yes" : "No";
-      const btn = document.getElementById("activateProBtn");
-      btn.disabled = isPro;
-      btn.innerText = isPro ? "Already Activated" : "Upgrade Now";
+    renderDailyBonusButton("dailyBonusContainer");
 
-      btn.onclick = async () => {
-        const balance = currentUserData.balance || 0;
-        const cost = proSettings.activationCost;
-        const validity = proSettings.validity;
-
-        if (balance < cost) return alert(`Insufficient balance. Need ৳${cost}`);
-
-        const expiry = new Date(now.getTime() + validity * 24 * 60 * 60 * 1000);
-        await updateDoc(userRef, {
-          isPro: true,
-          balance: balance - cost,
-          proExpiryTimestamp: Timestamp.fromDate(expiry)
-        });
-
-        alert("Pro Account Activated! Now claim your daily bonus.");
-        location.reload();
-      };
-
-      // Render claim bonus button
-      renderDailyBonusButton("dailyBonusContainer");
-
-      // Hide loading overlay after everything is loaded
-      hideLoadingOverlay();
-    });
-  </script>
+    hideLoadingOverlay();
+  });
+</script>
 </body>
 </html>
