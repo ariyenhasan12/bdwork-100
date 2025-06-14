@@ -91,7 +91,7 @@
     const proValidityInput = document.getElementById("proValidity");
     const updateProSettingsBtn = document.getElementById("updateProSettings");
 
-    const proSettingsDocRef = doc(db, "proplan", "proAccount");
+    const proSettingsDocRef = doc(db, "settings", "proAccount");
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
