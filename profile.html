@@ -1,267 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Profile</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-     .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-     }
-    
-    .user-icon-glow {
-      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
-    }
-    @keyframes borderGlow {
-      0%, 100% {
-        border-color: #facc15;
-        box-shadow: 0 0 20px #facc15;
-      }
-      50% {
-        border-color: #5f27cd;
-        box-shadow: 0 0 20px #5f27cd;
-      }
-    }
-    .animate-borderGlow {
-      animation: borderGlow 5s ease-in-out infinite;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+     .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+     }
+    
+    .user-icon-glow {
+      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
+    }
+    @keyframes borderGlow {
+      0%, 100% {
+        border-color: #facc15;
+        box-shadow: 0 0 20px #facc15;
+      }
+      50% {
+        border-color: #5f27cd;
+        box-shadow: 0 0 20px #5f27cd;
+      }
+    }
+    .animate-borderGlow {
+      animation: borderGlow 5s ease-in-out infinite;
+    }
+  </style>
 </head>
 <body class="bg-black text-white">
+  
+  <!-- Loader Screen -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-400 border-solid mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
 
-  <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        GJ
-      </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
-    </div>
-    <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center  rounded-sm border border-gray-700">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </div>
-    </div>
-  </header>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center  rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-  <main class="px-4 mb-20">
-    <!-- User Info Card -->
-    <div class="bg-black rounded-xl p-6 w-full max-w-md mb-6 mx-auto border border-gray-700 animate-borderGlow">
-      <div class="flex items-start justify-between">
-        <div class="mb-2">
-          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center user-icon-glow">
-            <i class="fas fa-user text-4xl text-white"></i>
-          </div>
-        </div>
-        <div>
-          <div class="flex items-center justify-center text-gray-400 text-lg mt-4 bg-black p-2 rounded-md border border-gray-600 w-8 h-8 hover:border-purple-500">
-            <i class="fas fa-edit"></i>
-          </div>
-        </div>
-      </div>
-      <div class="mb-4">
-        <p id="username" class="text-xl font-semibold text-white mb-2">Loading...</p>
-        <p id="email" class="text-sm text-gray-400">Loading...</p>
-      </div>
-      <!-- Membership Badge -->
-      <div class="mt-2 space-x-6 flex">
-        <div class="inline-flex items-center gap-1 bg-green-600 bg-opacity-40 text-green-400 text-xs font-medium px-3 py-0.5 rounded-full border border-green-500">
-          <i class="fas fa-check-circle text-sm"></i> Verified
-        </div>
-        <div id="accountStatus"></div>
-      </div>
-    </div>
+  <main class="px-4 mb-20">
+    <!-- User Info Card -->
+    <div class="bg-black rounded-xl p-6 w-full max-w-md mb-6 mx-auto border border-gray-700 animate-borderGlow">
+      <div class="flex items-start justify-between">
+        <div class="mb-2">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center user-icon-glow">
+            <i class="fas fa-user text-4xl text-white"></i>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center justify-center text-gray-400 text-lg mt-4 bg-black p-2 rounded-md border border-gray-600 w-8 h-8 hover:border-purple-500 cursor-pointer">
+            <i class="fas fa-edit"></i>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <p id="username" class="text-xl font-semibold text-white mb-2">Loading...</p>
+        <p id="email" class="text-sm text-gray-400">Loading...</p>
+      </div>
+      <!-- Membership Badge -->
+      <div class="mt-2 space-x-6 flex">
+        <div class="inline-flex items-center gap-1 bg-green-600 bg-opacity-40 text-green-400 text-xs font-medium px-3 py-0.5 rounded-full border border-green-500">
+          <i class="fas fa-check-circle text-sm"></i> Verified
+        </div>
+        <div id="accountStatus"></div>
+      </div>
+    </div>
 
-    <!-- Financial Card -->
-    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
-      <div class="flex items-center mb-4 gap-2">
-        <i class="fas fa-coins text-yellow-400 text-lg"></i>
-        <h2 class="text-lg font-semibold text-white">Financial</h2>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <div class="flex-1 bg-yellow-400 text-black py-2.5 rounded-lg text-center font-bold">
-          <i class="fas fa-download mr-1"></i> Deposit
-        </div>
-        <div onclick="window.location.href='withdraw.html'" class="flex-1 bg-purple-600 text-white py-2.5 rounded-lg text-center font-bold">
-          <i class="fas fa-upload mr-1"></i> Withdrawal
-        </div>
-      </div>
-    </div>
+    <!-- Financial Card -->
+    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
+      <div class="flex items-center mb-4 gap-2">
+        <i class="fas fa-coins text-yellow-400 text-lg"></i>
+        <h2 class="text-lg font-semibold text-white">Financial</h2>
+      </div>
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex-1 bg-yellow-400 text-black py-2.5 rounded-lg text-center font-bold cursor-pointer">
+          <i class="fas fa-download mr-1"></i> Deposit
+        </div>
+        <div onclick="window.location.href='withdraw.html'" class="flex-1 bg-purple-600 text-white py-2.5 rounded-lg text-center font-bold cursor-pointer">
+          <i class="fas fa-upload mr-1"></i> Withdrawal
+        </div>
+      </div>
+    </div>
 
-    <!-- History Card -->
-    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
-      <div class="flex items-center mb-4 gap-2">
-        <div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-30 text-yellow-500 text-md font-medium px-2 py-1 rounded-md border border-yellow-600">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-        </div>
-        <h2 class="text-lg font-semibold text-yellow-400">History</h2>
-      </div>
-      <div class="flex items-center justify-between gap-4">
-        <div onclick="window.location.href='deposit-history.html'" class="flex-1 h-12 bg-gray-900 text-white p-2 rounded-lg border border-gray-700 hover:border-green-500 transition flex items-center gap-3">
-          <div class="w-8 h-8 flex items-center justify-center bg-green-600 bg-opacity-30 border border-green-500 text-green-400 rounded-md">
-            <i class="fas fa-coins text-sm animate-pulse"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold">Deposit</h3>
-            <p style="font-size: 10px;" class="text-gray-400">View History</p>
-          </div>
-        </div>
-        <div onclick="window.location.href='withdraw-history.html'" class="flex-1 h-12 bg-gray-900 text-white p-2 rounded-lg border border-gray-700 hover:border-purple-500 transition flex items-center gap-3">
-          <div class="w-8 h-8 flex items-center justify-center bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 rounded-md">
-            <i class="fas fa-coins text-sm animate-pulse"></i>
-          </div>
-          <div>
-            <h3 class="text-sm font-semibold">Withdrawal</h3>
-            <p style="font-size: 10px;" class="text-gray-400">View History</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- History Card -->
+    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
+      <div class="flex items-center mb-4 gap-2">
+        <div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-30 text-yellow-500 text-md font-medium px-2 py-1 rounded-md border border-yellow-600">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <h2 class="text-lg font-semibold text-yellow-400">History</h2>
+      </div>
+      <div class="flex items-center justify-between gap-4">
+        <div onclick="window.location.href='deposit-history.html'" class="flex-1 h-12 bg-gray-900 text-white p-2 rounded-lg border border-gray-700 hover:border-green-500 transition flex items-center gap-3 cursor-pointer">
+          <div class="w-8 h-8 flex items-center justify-center bg-green-600 bg-opacity-30 border border-green-500 text-green-400 rounded-md">
+            <i class="fas fa-coins text-sm animate-pulse"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold">Deposit</h3>
+            <p style="font-size: 10px;" class="text-gray-400">View History</p>
+          </div>
+        </div>
+        <div onclick="window.location.href='withdraw-history.html'" class="flex-1 h-12 bg-gray-900 text-white p-2 rounded-lg border border-gray-700 hover:border-purple-500 transition flex items-center gap-3 cursor-pointer">
+          <div class="w-8 h-8 flex items-center justify-center bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 rounded-md">
+            <i class="fas fa-coins text-sm animate-pulse"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold">Withdrawal</h3>
+            <p style="font-size: 10px;" class="text-gray-400">View History</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Quick Settings Card -->
-    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
-      <div class="flex items-center mb-4 gap-2">
-        <i class="fas fa-cog text-yellow-400 text-lg"></i>
-        <h2 class="text-lg font-semibold text-white">Quick Settings</h2>
-      </div>
-      <ul class="space-y-6 text-sm">
-        <!-- Payment Method -->
-        <li class="flex flex-col gap-2 border border-gray-700 p-3 rounded-lg bg-gray-900">
-          <div class="flex items-center justify-between pb-3 border-b border-gray-600">
-            <div class="flex items-center gap-2">
-              <i class="fas fa-credit-card text-yellow-400"></i>
-              <p class="text-yellow-400 text-sm font-semibold">Payment Method</p>
-            </div>
-            <div class="bg-yellow-400 text-black text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1">
-              <i class="fas fa-plus text-xs"></i> Add Method
-            </div>
-          </div>
-          <div class="mt-3">
-            <h2 class="text-white text-xl font-semibold text-center mb-2">No Payment Methods</h2>
-            <p class="text-gray-text-center text-center">You haven't added any payment methods yet.</p>
-          </div>
-        </li>
+    <!-- Quick Settings Card -->
+    <div class="bg-black rounded-xl p-4 w-full max-w-md mt-6 mx-auto border border-gray-700 glow-yellow">
+      <div class="flex items-center mb-4 gap-2">
+        <i class="fas fa-cog text-yellow-400 text-lg"></i>
+        <h2 class="text-lg font-semibold text-white">Quick Settings</h2>
+      </div>
+      <ul class="space-y-6 text-sm">
+        <!-- Payment Method -->
+        <li class="flex flex-col gap-2 border border-gray-700 p-3 rounded-lg bg-gray-900">
+          <div class="flex items-center justify-between pb-3 border-b border-gray-600">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-credit-card text-yellow-400"></i>
+              <p class="text-yellow-400 text-sm font-semibold">Payment Method</p>
+            </div>
+            <div class="bg-yellow-400 text-black text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 cursor-pointer">
+              <i class="fas fa-plus text-xs"></i> Add Method
+            </div>
+          </div>
+          <div class="mt-3">
+            <h2 class="text-white text-xl font-semibold text-center mb-2">No Payment Methods</h2>
+            <p class="text-gray-text-center text-center">You haven't added any payment methods yet.</p>
+          </div>
+        </li>
 
-        <!-- Language -->
-        <li class="flex items-center justify-between border border-gray-700 p-3 rounded-lg bg-gray-900">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 flex items-center justify-center bg-yellow-400 bg-opacity-30 border border-yellow-400 text-yellow-300 rounded-md">
-              <i class="fas fa-language"></i>
-            </div>
-            <div class="flex flex-col leading-tight">
-              <span class="font-semibold">Language</span>
-              <span class="text-gray-300 text-sm">English</span>
-            </div>
-          </div>
-          <i class="fas fa-angle-right text-gray-400"></i>
-        </li>
+        <!-- Language -->
+        <li class="flex items-center justify-between border border-gray-700 p-3 rounded-lg bg-gray-900">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 flex items-center justify-center bg-yellow-400 bg-opacity-30 border border-yellow-400 text-yellow-300 rounded-md">
+              <i class="fas fa-language"></i>
+            </div>
+            <div class="flex flex-col leading-tight">
+              <span class="font-semibold">Language</span>
+              <span class="text-gray-300 text-sm">English</span>
+            </div>
+          </div>
+          <i class="fas fa-angle-right text-gray-400"></i>
+        </li>
 
-        <!-- Log Out Button -->
-        <li class="bg-yellow-400 flex justify-center items-center p-3 rounded-lg w-1/2 mx-auto">
-          <div onclick="logout()" class="flex items-center gap-2 text-black font-extrabold text-1xl text-center">
-            <i class="fas fa-sign-out-alt"></i> Log Out
-          </div>
-        </li>
-      </ul>
-    </div>
-  </main>
+        <!-- Log Out Button -->
+        <li class="bg-yellow-400 flex justify-center items-center p-3 rounded-lg w-1/2 mx-auto cursor-pointer">
+          <div onclick="logout()" class="flex items-center gap-2 text-black font-extrabold text-1xl text-center">
+            <i class="fas fa-sign-out-alt"></i> Log Out
+          </div>
+        </li>
+      </ul>
+    </div>
+  </main>
 
-  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
-    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Home
-    </div>
-    <div class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Job
-    </div>
-    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Pro
-    </div>
-    <div class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Earning
-    </div>
-    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
-        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
-      </div> 
-      Profile
-    </div>
-  </nav>
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </div>
+    <div class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Job
+    </div>
+    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Pro
+    </div>
+    <div class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Earning
+    </div>
+    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold cursor-pointer">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div> 
+      Profile
+    </div>
+  </nav>
 
-  <!-- Firebase Script -->
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  <!-- Firebase Script -->
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "index.html";
+    // Hide loader when page and user data fully loaded
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if(loader){
+        loader.style.display = 'none';
+      }
+    }
 
-      try {
-        const docRef = doc(db, "users", user.uid);
-        const docSnap = await getDoc(docRef);
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const username = data.username || "N/A";
-          document.getElementById("username").innerText = username;
-          document.getElementById("email").innerText = data.email || user.email || "N/A";
-          document.getElementById("accountStatus").innerHTML = data.isPro
-  ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
-      <i class="fas fa-star text-sm"></i> Pro Member
-    </div>`
-  : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
-      <i class="fas fa-bolt text-sm"></i> Regular Member
-    </div>`;
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
 
-        } else {
-          alert("User data not found.");
-        }
-      } catch (err) {
-        alert("Error loading profile: " + err.message);
-      }
-    });
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const username = data.username || "N/A";
+          document.getElementById("username").innerText = username;
+          document.getElementById("email").innerText = data.email || user.email || "N/A";
+          document.getElementById("accountStatus").innerHTML = data.isPro
+            ? `<div class="inline-flex items-center gap-1 bg-yellow-400 bg-opacity-40 text-yellow-400 text-xs font-medium px-3 py-0.5 rounded-full border border-yellow-400">
+              <i class="fas fa-star text-sm"></i> Pro Member
+            </div>`
+            : `<div class="inline-flex items-center gap-1 bg-purple-600 bg-opacity-40 text-purple-300 text-xs font-medium px-3 py-0.5 rounded-full border border-purple-500">
+              <i class="fas fa-bolt text-sm"></i> Regular Member
+            </div>`;
 
-    // Logout function
-    window.logout = async () => {
-      try {
-        await signOut(auth);
-        window.location.href = "index.html";
-      } catch (error) {
-        alert("Logout failed: " + error.message);
-      }
-    };
-  </script>
+          // After data loaded, hide the loading overlay
+          hideLoader();
+        } else {
+          alert("User data not found.");
+          hideLoader();
+        }
+      } catch (err) {
+        alert("Error loading profile: " + err.message);
+        hideLoader();
+      }
+    });
+
+    // Logout function
+    window.logout = async () => {
+      try {
+        await signOut(auth);
+        window.location.href = "index.html";
+      } catch (error) {
+        alert("Logout failed: " + error.message);
+      }
+    };
+  </script>
 </body>
 </html>
