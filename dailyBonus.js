@@ -37,11 +37,11 @@ export function renderDailyBonusButton(containerId = "dailyBonusContainer") {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
 
-      const proPlanRef = doc(db, "proplan", "proAccount");
-      const proPlanSnap = await getDoc(proPlanRef);
-      const proPlan = proPlanSnap.data();
+      const settingsRef = doc(db, "settings", "proAccount");
+      const settingsSnap = await getDoc(settingsRef);
+      const settings = settingsSnap.data();
 
-      const dailyBonus = proPlan.dailyBonus || 0;
+      const dailyBonus = settings.dailyBonus || 0;
       const now = new Date();
 
       const lastClaimDate = userData.lastBonusClaim?.toDate?.() ?? new Date(userData.lastBonusClaim || 0);
