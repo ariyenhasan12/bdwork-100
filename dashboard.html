@@ -36,6 +36,18 @@
         transform: rotate(360deg);
       }
     }
+    /* Good Job glowing text for loading */
+    #loadingOverlay .good-job-text {
+      font-family: 'Audiowide', cursive;
+      font-size: 2rem;
+      color: #facc15;
+      text-shadow:
+        0 0 8px #facc15,
+        0 0 20px #facc15,
+        0 0 30px #fbbf24,
+        0 0 40px #fbbf24;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body class="bg-black text-white relative">
@@ -43,6 +55,7 @@
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center space-y-4">
     <div class="loader"></div>
+    <p class="good-job-text select-none">Good Job</p>
     <p class="text-yellow-400 font-semibold">Loading...</p>
   </div>
 
