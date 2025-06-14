@@ -9,7 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
@@ -67,13 +67,27 @@
       }
     });
 
+    const toast = (icon, title) => {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: icon,
+        title: title,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        background: '#1a202c',
+        color: '#fff'
+      });
+    };
+
     const form = document.getElementById("transferForm");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       if (!currentUser) {
-        Swal.fire('Error', 'User not logged in.', 'error');
+        toast('error', 'User not logged in.');
         return;
       }
 
@@ -82,15 +96,13 @@
       const password = document.getElementById("password").value;
 
       if (!recipientEmail || isNaN(amount) || amount <= 0 || !password) {
-        Swal.fire('Error', 'Please fill out all fields correctly.', 'error');
+        toast('error', 'Please fill out all fields correctly.');
         return;
       }
 
       try {
-        // Re-authenticate user
-        const credential = await signInWithEmailAndPassword(auth, currentUser.email, password);
+        await signInWithEmailAndPassword(auth, currentUser.email, password);
 
-        // Find recipient by email
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("email", "==", recipientEmail));
         const querySnapshot = await getDocs(q);
@@ -114,7 +126,6 @@
           throw new Error("You cannot transfer balance to yourself.");
         }
 
-        // Transaction
         await runTransaction(db, async (transaction) => {
           const senderRef = doc(db, "users", currentUser.uid);
           const recipientRef = doc(db, "users", recipientUid);
@@ -141,19 +152,11 @@
           });
         });
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Transfer Successful',
-          text: `৳${amount.toFixed(2)} has been transferred to ${recipientEmail}`,
-          timer: 3000,
-          timerProgressBar: true,
-          showConfirmButton: false
-        });
-
+        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
         form.reset();
 
       } catch (error) {
-        Swal.fire('Error', error.message || 'Transfer failed', 'error');
+        toast('error', error.message || 'Transfer failed');
       }
     });
   </script>
