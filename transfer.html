@@ -152,7 +152,16 @@
           });
         });
 
-        toast('success', `৳${amount.toFixed(2)} transferred to ${recipientEmail}`);
+        Swal.fire({
+          icon: 'success',
+          title: `৳${amount.toFixed(2)} transferred to ${recipientEmail}`,
+          showConfirmButton: false,
+          timer: 2500,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+
         form.reset();
 
       } catch (error) {
