@@ -30,6 +30,23 @@
     .animate-borderGlow {
       animation: borderGlow 5s ease-in-out infinite;
     }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 2s ease-in-out infinite;
+      box-shadow:
+        0 0 8px #facc15,
+        inset 0 0 8px #facc15;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 <body class="bg-black text-white">
@@ -37,7 +54,7 @@
   <!-- Loader Screen -->
   <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div class="text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-yellow-400 border-solid mx-auto mb-4"></div>
+      <div class="loader mx-auto mb-4"></div>
       <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
       <p class="text-gray-400 text-xs">Loading...</p>
     </div>
