@@ -138,7 +138,17 @@
       const transactionId = document.getElementById("transactionId").value.trim();
 
       if (!method || isNaN(amount) || amount <= 0 || !address || !transactionId) {
-        alert("Please select a method and fill in all fields correctly.");
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please fill out all fields correctly.',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
         return;
       }
 
@@ -154,12 +164,34 @@
           timestamp: Timestamp.now(),
           status: "pending"
         });
-        alert("Deposit request submitted successfully!");
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Deposit Request Successful!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+
         this.reset();
         hiddenInput.value = '';
         options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50'));
       } catch (err) {
-        alert("Error submitting deposit: " + err.message);
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Error: ' + err.message,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
       }
     });
   </script>
