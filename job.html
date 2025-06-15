@@ -222,17 +222,17 @@
           const completed = userData.completedTasks?.includes(task.id);
 
           let taskHtml = `
-            <p class="font-semibold text-2xl text-indigo-400 mb-3"><i class="fas fa-briefcase text-yellow-400 text-2xl mr-1"></i>${task.name}</p>
-            <div class="border border-gray-700 p-2 mb-5 rounded">
-              <h3 class="flex items-center gap-1 text-yellow-400 font-semibold tracking-wide text-lg mb-1 drop-shadow-neon">
+            <p class="font-semibold text-2xl text-indigo-400 mb-3 flex items-center"><i class="fas fa-briefcase text-yellow-400 text-2xl mr-2"></i>${task.name}</p>
+            <div class="border border-gray-700 p-4 mb-5 rounded">
+              <h3 class="flex items-center gap-2 text-yellow-400 font-semibold tracking-wide text-lg mb-2">
                 <i class="fas fa-info-circle text-1xl"></i>
                 Job Description
               </h3>
               <p class="text-gray-200 mb-1">${task.description || ""}</p>
             </div>
-            <div class="flex justify-between items-center flex-wrap gap-4 mb-4">
-              ${task.view ? `<a href="${task.view}" target="_blank" class="px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition whitespace-nowrap">Open Job <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>` : ""}
-              <p class="bg-yellow-400 px-4 py-1.5 rounded font-semibold text-indigo-600">Reward: ৳${typeof task.reward === 'number' ? task.reward.toFixed(2) : '0.00'}</p>
+            <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-4 mb-6">
+              ${task.view ? `<a href="${task.view}" target="_blank" class="flex-1 px-4 py-2 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition text-center">Open Job <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>` : ""}
+              <p class="flex-1 sm:flex-none sm:w-auto text-center bg-yellow-400 px-4 py-2 rounded font-semibold text-indigo-600">Reward: ৳${typeof task.reward === 'number' ? task.reward.toFixed(2) : '0.00'}</p>
             </div>
           `;
 
