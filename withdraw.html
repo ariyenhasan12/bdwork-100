@@ -1,127 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Withdraw Balance</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Withdraw Balance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans">
-  <main class="max-w-xl mx-auto px-4 py-10">
+  <main class="max-w-xl mx-auto px-4 py-10">
     <div class="text-center mb-10">
       <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
     </div>
-    <h1 class="text-3xl font-bold text-center mb-6">💸 Withdraw Balance</h1>
+    <h1 class="text-3xl font-bold text-center mb-6">💸 Withdraw Balance</h1>
 
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-      <div class="flex flex-col gap-4">
-        <select id="withdrawMethod" class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option value="">Select Method</option>
-          <option value="BKash">BKash</option>
-          <option value="Nagad">Nagad</option>
-          <option value="USDT">USDT</option>
-        </select>
+    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+      <div class="flex flex-col gap-4">
+        <!-- Custom Method Selector -->
+        <div>
+          <p class="block text-sm font-medium text-gray-600 mb-1">Select Method</p>
+          <div id="withdrawMethodContainer" class="flex space-x-4">
+            <div data-method="BKash" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+              <i class="fas fa-wallet"></i>
+              <span class="ml-2">bKash</span>
+            </div>
+            <div data-method="Nagad" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+              <i class="fas fa-wallet"></i>
+              <span class="ml-2">Nagad</span>
+            </div>
+            <div data-method="USDT" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+              <i class="fas fa-coins"></i>
+              <span class="ml-2">USDT</span>
+            </div>
+          </div>
+          <input type="hidden" id="withdrawMethod" value="">
+        </div>
 
-        <input
-          id="withdrawAmount"
-          type="number"
-          min="1"
-          placeholder="Enter amount"
-          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-        />
+        <input
+          id="withdrawAmount"
+          type="number"
+          min="1"
+          placeholder="Enter amount"
+          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        />
 
-        <input
-          id="withdrawAddress"
-          type="text"
-          placeholder="Enter Number / Wallet Address"
-          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-        />
+        <input
+          id="withdrawAddress"
+          type="text"
+          placeholder="Enter Number / Wallet Address"
+          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+        />
 
-        <button onclick="withdraw()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 w-full transition">
-          Withdraw
-        </button>
-      </div>
-    </div>
-  </main>
+        <button onclick="withdraw()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 w-full transition">
+          Withdraw
+        </button>
+      </div>
+    </div>
+  </main>
 
-  <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentUserData = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUserData = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          currentUserData = { uid: user.uid, ...userDoc.data() };
-        }
-      } catch (err) {
-        alert("Error loading user: " + err.message);
-      }
-    });
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserData = { uid: user.uid, ...userDoc.data() };
+        }
+      } catch (err) {
+        alert("Error loading user: " + err.message);
+      }
+    });
 
-    window.withdraw = async function () {
-      const amountInput = document.getElementById("withdrawAmount");
-      const methodInput = document.getElementById("withdrawMethod");
-      const addressInput = document.getElementById("withdrawAddress");
+    const methodOptions = document.querySelectorAll('.method-option');
+    const hiddenMethodInput = document.getElementById('withdrawMethod');
+    methodOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50'));
+        option.classList.add('border-indigo-500', 'bg-indigo-50');
+        hiddenMethodInput.value = option.getAttribute('data-method');
+      });
+    });
 
-      const amount = parseFloat(amountInput.value);
-      const method = methodInput.value.trim();
-      const address = addressInput.value.trim();
+    window.withdraw = async function () {
+      const amountInput = document.getElementById("withdrawAmount");
+      const addressInput = document.getElementById("withdrawAddress");
 
-      if (isNaN(amount) || amount <= 0) return alert("Enter valid amount.");
-      if (!method) return alert("Please select a withdrawal method.");
-      if (!address) return alert("Please enter number or wallet address.");
-      if (!currentUserData) return alert("User data not loaded yet.");
+      const amount = parseFloat(amountInput.value);
+      const method = hiddenMethodInput.value.trim();
+      const address = addressInput.value.trim();
 
-      const currentBalance = currentUserData.balance || 0;
-      if (amount > currentBalance) return alert("Insufficient balance.");
+      if (isNaN(amount) || amount <= 0) return alert("Enter valid amount.");
+      if (!method) return alert("Please select a withdrawal method.");
+      if (!address) return alert("Please enter number or wallet address.");
+      if (!currentUserData) return alert("User data not loaded yet.");
 
-      try {
-        await addDoc(collection(db, "withdraws"), {
-          uid: currentUserData.uid,
-          userId: currentUserData.uid,
-          userEmail: currentUserData.email,
-          amount: amount,
-          method: method,
-          address: address,
-          timestamp: Timestamp.now(),
-          status: "pending"
-        });
+      const currentBalance = currentUserData.balance || 0;
+      if (amount > currentBalance) return alert("Insufficient balance.");
 
-        const newBalance = currentBalance - amount;
-        await updateDoc(doc(db, "users", currentUserData.uid), { balance: newBalance });
-        currentUserData.balance = newBalance;
+      try {
+        await addDoc(collection(db, "withdraws"), {
+          uid: currentUserData.uid,
+          userId: currentUserData.uid,
+          userEmail: currentUserData.email,
+          amount: amount,
+          method: method,
+          address: address,
+          timestamp: Timestamp.now(),
+          status: "pending"
+        });
 
-        amountInput.value = "";
-        methodInput.value = "";
-        addressInput.value = "";
+        const newBalance = currentBalance - amount;
+        await updateDoc(doc(db, "users", currentUserData.uid), { balance: newBalance });
+        currentUserData.balance = newBalance;
 
-        alert(`Withdraw request of ৳${amount} submitted via ${method}!`);
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    };
-  </script>
+        amountInput.value = "";
+        hiddenMethodInput.value = "";
+        addressInput.value = "";
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50'));
+
+        alert(`Withdraw request of ৳${amount} submitted via ${method}!`);
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    };
+  </script>
 </body>
 </html>
