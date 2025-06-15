@@ -121,9 +121,10 @@
 
     const options = document.querySelectorAll('.method-option');
     const hiddenInput = document.getElementById('depositMethod');
+
     options.forEach(opt => {
       opt.addEventListener('click', () => {
-        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+        options.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
         opt.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
         hiddenInput.value = opt.getAttribute('data-method');
       });
