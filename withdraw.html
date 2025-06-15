@@ -119,6 +119,7 @@
           icon: 'error',
           title: 'Error',
           text: 'Error loading user: ' + err.message,
+          position: 'top-end',
           background: '#1a202c',
           color: '#fff'
         });
@@ -143,13 +144,13 @@
       const method = hiddenMethodInput.value.trim();
       const address = addressInput.value.trim();
 
-      if (isNaN(amount) || amount <= 0) return Swal.fire({ icon: 'warning', text: 'Enter valid amount.', background: '#1a202c', color: '#fff' });
-      if (!method) return Swal.fire({ icon: 'warning', text: 'Please select a withdrawal method.', background: '#1a202c', color: '#fff' });
-      if (!address) return Swal.fire({ icon: 'warning', text: 'Please enter number or wallet address.', background: '#1a202c', color: '#fff' });
-      if (!currentUserData) return Swal.fire({ icon: 'error', text: 'User data not loaded yet.', background: '#1a202c', color: '#fff' });
+      if (isNaN(amount) || amount <= 0) return Swal.fire({ icon: 'warning', text: 'Enter valid amount.', position: 'top-end', background: '#1a202c', color: '#fff' });
+      if (!method) return Swal.fire({ icon: 'warning', text: 'Please select a withdrawal method.', position: 'top-end', background: '#1a202c', color: '#fff' });
+      if (!address) return Swal.fire({ icon: 'warning', text: 'Please enter number or wallet address.', position: 'top-end', background: '#1a202c', color: '#fff' });
+      if (!currentUserData) return Swal.fire({ icon: 'error', text: 'User data not loaded yet.', position: 'top-end', background: '#1a202c', color: '#fff' });
 
       const currentBalance = currentUserData.balance || 0;
-      if (amount > currentBalance) return Swal.fire({ icon: 'error', text: 'Insufficient balance.', background: '#1a202c', color: '#fff' });
+      if (amount > currentBalance) return Swal.fire({ icon: 'error', text: 'Insufficient balance.', position: 'top-end', background: '#1a202c', color: '#fff' });
 
       try {
         await addDoc(collection(db, "withdraws"), {
@@ -189,6 +190,7 @@
           icon: 'error',
           title: 'Error',
           text: err.message,
+          position: 'top-end',
           background: '#1a202c',
           color: '#fff'
         });
