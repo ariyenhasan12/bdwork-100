@@ -1,194 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pro Account</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
-    .glow-yellow {
-      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pro Account</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
 
-    .user-icon-glow {
-      box-shadow: 0 0 15px 4px rgba(175, 85, 247, 0.8);
-    }
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
-    @keyframes borderGlow {
-      0%, 100% {
-        border-color: #facc15;
-        box-shadow: 0 0 20px #facc15;
-      }
-      50% {
-        border-color: #5f27cd;
-        box-shadow: 0 0 20px #5f27cd;
-      }
-    }
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
 
-    .animate-borderGlow {
-      animation: borderGlow 5s ease-in-out infinite;
-    }
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    .loader {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 6px solid rgba(255, 255, 255, 0.15);
-      border-top-color: #facc15;
-      animation: spin 2s ease-in-out infinite;
-      box-shadow:
-        0 0 8px #facc15,
-        inset 0 0 8px #facc15;
-    }
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
+  <style>
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+
+    @keyframes borderGlow {
+      0%, 100% {
+        border-color: #facc15;
+        box-shadow: 0 0 20px #facc15;
+      }
+      50% {
+        border-color: #5f27cd;
+        box-shadow: 0 0 20px #5f27cd;
+      }
+    }
+
+    .animate-borderGlow {
+      animation: borderGlow 5s ease-in-out infinite;
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 2s ease-in-out infinite;
+      box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
-<body class="bg-black text-white flex flex-col min-h-screen pb-16 relative">
-  
-  <!-- Loader Screen -->
-  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
-    <div class="text-center">
-      <div class="loader mx-auto mb-4"></div>
-      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
-      <p class="text-gray-400 text-xs">Loading...</p>
-    </div>
-  </div>
 
-  <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
-    <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
-        GJ
-      </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
-    </div>
-    <div class="flex items-center gap-6 text-2xl text-gray-100">
-      <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
-        <i class="fa-solid fa-ellipsis-vertical"></i>
-      </div>
-    </div>
-  </header>
+<body class="bg-black text-white">
+  
+  <!-- Loader Screen -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="loader mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
 
-  <!-- Main Content -->
-  <main class="px-3">
-    <!-- PRO ACCOUNT -->
-    <div class="space-y-6 mt-8 mb-5 m-auto px-1">
-      <section class="relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 overflow-hidden animate-borderGlow">
-        
-        <!-- Glow Background -->
-        <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-6xl py-2 px-4 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700 cursor-pointer">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
-        <div class="relative z-10 text-center mb-5">
-          <h2 class="text-xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">Pro Membership</h2>
-          <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
-        </div>
-           
-        <div class="relative z-10 space-y-6 gap-8 bg-black bg-opacity-50 rounded-2xl p-4 border border-gray-700 shadow-6xl">
-          
-          <!-- Pricing -->
-          <div class="text-center">
-            <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
-            <h3 class="text-5xl font-black text-yellow-400 leading-tight">৳<span id="proActivationCost"></span></h3>
-            <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
-          </div>
+  <!-- Main Content -->
+  <main class="px-4 mb-20 mt-8">
+    <section class="relative bg-black p-5 rounded-xl border border-yellow-400 shadow-xl hover:shadow-yellow-500/30 transition-all duration-300 overflow-hidden animate-borderGlow">
+      
+      <!-- Glow Background -->
+      <div class="absolute -top-10 -right-10 w-72 h-72 bg-yellow-500 opacity-20 rounded-full filter blur-3xl z-0 animate-pulse"></div>
 
-          <!-- Features -->
-          <ul class="text-sm space-y-3 text-gray-200 md:col-span-1 col-span-2">
-            <li class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-bolt"></i>
-              </span> 
-              Earn up to 5x faster
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-percent"></i>
-              </span> 
-              Daily return of 3.33%
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-crown"></i>
-              </span> 
-              Premium income tasks unlocked
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-headset"></i>
-              </span> 
-              VIP customer support
-            </li>
-            <li class="flex items-center gap-3">
-              <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
-                <i class="fa-solid fa-coins"></i>
-              </span> 
-              Instant withdrawal anytime
-            </li>
-          </ul>
+      <div class="relative z-10 text-center mb-5">
+        <h2 class="text-3xl font-extrabold text-yellow-400 drop-shadow-md mb-3 uppercase">Pro Account</h2>
+        <p class="text-gray-300 text-sm">Unlock premium features and boost your income journey.</p>
+      </div>
 
-          <!-- CTA Button -->
-          <div class="flex flex-col items-center gap-3">
-            <button id="activateProBtn"
-                    onclick="activateProAccount()"
-                    class="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg transition duration-600 text-lg
-                           transform hover:scale-105 hover:brightness-110 active:scale-95
-                            hover:animate-none">
-              Loading...
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-  
-  <p id="isProStatus" class="hidden"></p>
+      <div class="relative z-10 space-y-6 gap-8 bg-black shadow-6xl bg-opacity-50 rounded-2xl p-4 border border-gray-700">
+        
+        <!-- Pricing -->
+        <div class="text-center">
+          <p class="text-xs uppercase text-gray-400 mb-1">Subscription Price</p>
+          <h3 id="proPrice" class="text-5xl font-black text-yellow-400 leading-tight">৳<span id="proActivationCost"></span></h3>
+          <p class="text-sm text-gray-400 mt-1">Valid for <span id="proValidity"></span> days from activation</p>
+        </div>
+
+        <!-- Features -->
+        <ul class="text-sm space-y-3 text-gray-200 md:col-span-1 col-span-2">
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+              <i class="fa-solid fa-bolt"></i>
+            </span> 
+            Earn up to 5x faster
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+              <i class="fa-solid fa-percent"></i>
+            </span> 
+            Daily return of 3.33%
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+              <i class="fa-solid fa-crown"></i>
+            </span> 
+            Premium income tasks unlocked
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+              <i class="fa-solid fa-headset"></i>
+            </span> 
+            VIP customer support
+          </li>
+          <li class="flex items-center gap-3">
+            <span class="w-7 h-7 rounded-full bg-yellow-400 bg-opacity-30 flex items-center justify-center text-yellow-400">
+              <i class="fa-solid fa-coins"></i>
+            </span> 
+            Instant withdrawal anytime
+          </li>
+        </ul>
+
+        <!-- CTA Button -->
+        <div class="flex flex-col items-center gap-3">
+          <button id="activateProBtn"
+           onclick="activateProAccount()"
+            class="bg-yellow-400 text-black font-bold py-3 px-8 rounded-full shadow-lg text-lg transform hover:scale-105">
+            Activate Pro
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <p id="isProStatus" class="hidden"></p>
   <p id="proExpiryDate" class="hidden"></p>
   <p id="proDailyBonus" class="hidden"></p>
-  
-  <!-- Bottom Navigation Bar -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
-    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Home
-    </div>
-    <div class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Job
-    </div>
-    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Pro
-    </div>
-    <div class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
-        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
-      </div>
-      Earning
-    </div>
-    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
-      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
-        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
-      </div> 
-      Profile
-    </div>
-  </nav>
- 
-  <!-- Firebase -->
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+    <div onclick="window.location.href='dashboard.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Home
+    </div>
+    <div onclick="window.location.href='job.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Job
+    </div>
+    <div onclick="window.location.href='pro-account.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+      Pro
+    </div>
+    <div onclick="window.location.href='transfer.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+        <i class="fa-solid fa-coins text-lg text-gray-300 hover:text-yellow-400"></i>
+      </div>
+        Transfer
+    </div>
+    <div onclick="window.location.href='profile.html'" class="nav-item flex flex-col items-center text-xs font-semibold">
+      <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+        <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+      </div> 
+      Profile
+    </div>
+  </nav>
+
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
