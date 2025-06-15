@@ -137,7 +137,22 @@
       const address = document.getElementById("paymentAddress").value.trim();
       const transactionId = document.getElementById("transactionId").value.trim();
 
-      if (!method || isNaN(amount) || amount <= 0 || !address || !transactionId) {
+      if (!method) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please select a deposit method.',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+        return;
+      }
+
+      if (isNaN(amount) || amount <= 0 || !address || !transactionId) {
         Swal.fire({
           toast: true,
           position: 'top-end',
@@ -179,7 +194,7 @@
 
         this.reset();
         hiddenInput.value = '';
-        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50'));
+        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50', 'border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
       } catch (err) {
         Swal.fire({
           toast: true,
