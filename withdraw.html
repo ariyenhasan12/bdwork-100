@@ -9,12 +9,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+  
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
-
+    
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
@@ -166,18 +166,7 @@
         addressInput.value = "";
         methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
 
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: 'Withdraw request of ৳${amount} submitted via ${method}!',
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
-        });
-
+        alert(`Withdraw request of ৳${amount} submitted via ${method}!`);
       } catch (err) {
         alert("Error: " + err.message);
       }
