@@ -53,10 +53,20 @@
         Submit Deposit Request
       </button>
     </form>
+
+    <!-- Additional Notice Section -->
+    <section class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow-sm">
+      <h2 class="font-semibold text-yellow-700 mb-2"><i class="fas fa-exclamation-circle mr-2"></i>Important Notes:</h2>
+      <ul class="text-sm text-yellow-800 list-disc pl-5 space-y-1">
+        <li>If the transfer time is up, please fill out the deposit form again.</li>
+        <li>The transfer amount must match the order you created, otherwise the money cannot be credited successfully.</li>
+        <li>If you transfer the wrong amount, our company will not be responsible for the lost amount!</li>
+        <li><strong>Note:</strong> Do not cancel the deposit order after the money has been transferred.</li>
+      </ul>
+    </section>
   </main>
 
   <script type="module">
-    // Firebase config and imports
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
       authDomain: "bdwork-346d3.firebaseapp.com",
@@ -81,7 +91,6 @@
       else currentUser = user;
     });
 
-    // Handle method selection
     const options = document.querySelectorAll('.method-option');
     const hiddenInput = document.getElementById('depositMethod');
     options.forEach(opt => {
@@ -92,7 +101,6 @@
       });
     });
 
-    // Form submission
     document.getElementById("depositForm").addEventListener("submit", async function (e) {
       e.preventDefault();
       const method = hiddenInput.value;
