@@ -124,8 +124,8 @@
 
     options.forEach(opt => {
       opt.addEventListener('click', () => {
-        options.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-500', 'text-indigo-700'));
-        opt.classList.add('border-indigo-500', 'bg-indigo-500', 'text-indigo-700');
+        options.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-200', 'text-indigo-700'));
+        opt.classList.add('border-indigo-500', 'bg-indigo-200', 'text-indigo-700');
         hiddenInput.value = opt.getAttribute('data-method');
       });
     });
