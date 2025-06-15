@@ -1,1 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Deposit Balance</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+
+    .loader {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 6px solid rgba(255, 255, 255, 0.15);
+      border-top-color: #facc15;
+      animation: spin 2s ease-in-out infinite;
+      box-shadow: 0 0 8px #facc15, inset 0 0 8px #facc15;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+    <div class="text-center">
+      <div class="loader mx-auto mb-4"></div>
+      <h1 class="text-2xl font-bold animate-pulse bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h1>
+      <p class="text-gray-400 text-xs">Loading...</p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-center bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-100">
+      <i class="fa-solid fa-headset font-bold text-1xl"></i>
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-xl mx-auto px-4 py-3 mb-20">
+    <h1 class="text-2xl font-bold mb-6 text-center text-yellow-400">💰 Deposit Balance</h1>
+
+    <form id="depositForm" class="bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-700 space-y-4">
+      <!-- Custom Method Selector -->
+      <div>
+        <p class="block text-sm font-medium text-gray-400 mb-1">Select Method</p>
+        <div id="methodContainer" class="flex space-x-4">
+          <div data-method="bKash" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
+            <i class="fas fa-wallet"></i>
+            <span class="ml-2">bKash</span>
+          </div>
+          <div data-method="Nagad" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
+            <i class="fas fa-wallet"></i>
+            <span class="ml-2">Nagad</span>
+          </div>
+          <div data-method="USDT" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
+            <i class="fas fa-coins"></i>
+            <span class="ml-2">USDT</span>
+          </div>
+        </div>
+        <input type="hidden" id="depositMethod" name="depositMethod" value="">
+      </div>
+
+      <div>
+        <label for="depositAmount" class="block text-sm font-medium text-gray-400 mb-1">Amount</label>
+        <input type="number" id="depositAmount" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
+      </div>
+
+      <div>
+        <label for="paymentAddress" class="block text-sm font-medium text-gray-400 mb-1">Sender Address</label>
+        <input type="text" id="paymentAddress" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter your sender address..." required>
+      </div>
+
+      <div>
+        <label for="transactionId" class="block text-sm font-medium text-gray-400 mb-1">Transaction ID</label>
+        <input type="text" id="transactionId" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter transaction ID..." required>
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+        Submit Deposit Request
+      </button>
+    </form>
+
+    <!-- Additional Notice Section -->
+    <section class="mt-6 bg-yellow-900 bg-opacity-20 border-l-4 border-yellow-400 p-4 rounded-xl shadow-sm">
+      <h2 class="font-semibold text-yellow-300 mb-2"><i class="fas fa-exclamation-circle mr-2"></i>Important Notes:</h2>
+      <ul class="text-sm text-yellow-200 list-disc pl-5 space-y-1">
+        <li>If the transfer time is up, please fill out the deposit form again.</li>
+        <li>The transfer amount must match the order you created, otherwise the money cannot be credited successfully.</li>
+        <li>If you transfer the wrong amount, our company will not be responsible for the lost amount!</li>
+        <li><strong>Note:</strong> Do not cancel the deposit order after the money has been transferred.</li>
+      </ul>
+    </section>
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+  <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Home
+  </a>
+
+  <a href="job.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Job
+  </a>
+
+  <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Pro
+  </a>
+
+  <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-users text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Team
+  </a>
+
+  <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+      <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+    </div> 
+    Profile
+  </a>
+  </nav>
+
+  <script type="module">
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function hideLoader() {
+      const loader = document.getElementById('loadingOverlay');
+      if (loader) loader.style.display = 'none';
+    }
+
+    let currentUser = null;
+    onAuthStateChanged(auth, (user) => {
+      if (!user) window.location.href = "login.html";
+      else {
+        currentUser = user;
+        hideLoader(); // Hide loader after auth state is confirmed
+      }
+    });
+
+    const options = document.querySelectorAll('.method-option');
+    const hiddenInput = document.getElementById('depositMethod');
+
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        options.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-200', 'text-indigo-700'));
+        opt.classList.add('border-indigo-500', 'bg-indigo-200', 'text-indigo-700');
+        hiddenInput.value = opt.getAttribute('data-method');
+      });
+    });
+
+    document.getElementById("depositForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const method = hiddenInput.value;
+      const amount = parseFloat(document.getElementById("depositAmount").value);
+      const address = document.getElementById("paymentAddress").value.trim();
+      const transactionId = document.getElementById("transactionId").value.trim();
+
+      if (!method) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please select a deposit method.',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+        return;
+      }
+
+      if (isNaN(amount) || amount <= 0 || !address || !transactionId) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Please fill out all fields correctly.',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+        return;
+      }
+
+      try {
+        await addDoc(collection(db, "deposits"), {
+          uid: currentUser.uid,
+          userId: currentUser.uid,
+          userEmail: currentUser.email,
+          amount,
+          method,
+          address,
+          transactionId,
+          timestamp: Timestamp.now(),
+          status: "pending"
+        });
+
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'success',
+          title: 'Deposit Request Successful!',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+
+        this.reset();
+        hiddenInput.value = '';
+        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50', 'border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+      } catch (err) {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon: 'error',
+          title: 'Error: ' + err.message,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }
+    });
+  </script>
+</body>
+</html>
