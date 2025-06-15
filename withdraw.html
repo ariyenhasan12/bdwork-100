@@ -9,12 +9,12 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+
   <style>
     .swal2-timer-progress-bar {
       background: #facc15 !important;
     }
-    
+
     .glow-yellow {
       box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
     }
@@ -86,91 +86,97 @@
   </main>
 
   <script type="module">
-    const firebaseConfig = {
-      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
-      authDomain: "bdwork-346d3.firebaseapp.com",
-      projectId: "bdwork-346d3",
-      storageBucket: "bdwork-346d3.appspot.com",
-      messagingSenderId: "900963179093",
-      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
-      measurementId: "G-FM1YJ8E5GK"
-    };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
+      authDomain: "bdwork-346d3.firebaseapp.com",
+      projectId: "bdwork-346d3",
+      storageBucket: "bdwork-346d3.appspot.com",
+      messagingSenderId: "900963179093",
+      appId: "1:900963179093:web:81e42d67bb31d603cc92dc",
+      measurementId: "G-FM1YJ8E5GK"
+    };
 
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    let currentUserData = null;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUserData = null;
 
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) return window.location.href = "login.html";
-      try {
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          currentUserData = { uid: user.uid, ...userDoc.data() };
-        }
-      } catch (err) {
-        alert("Error loading user: " + err.message);
-      }
-    });
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) return window.location.href = "login.html";
+      try {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          currentUserData = { uid: user.uid, ...userDoc.data() };
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error loading user: ' + err.message,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }
+    });
 
-    const methodOptions = document.querySelectorAll('.method-option');
-    const hiddenMethodInput = document.getElementById('withdrawMethod');
-    methodOptions.forEach(option => {
-      option.addEventListener('click', () => {
-        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
-        option.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
-        hiddenMethodInput.value = option.getAttribute('data-method');
-      });
-    });
+    const methodOptions = document.querySelectorAll('.method-option');
+    const hiddenMethodInput = document.getElementById('withdrawMethod');
+    methodOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+        option.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+        hiddenMethodInput.value = option.getAttribute('data-method');
+      });
+    });
 
-    window.withdraw = async function () {
-      const amountInput = document.getElementById("withdrawAmount");
-      const addressInput = document.getElementById("withdrawAddress");
+    window.withdraw = async function () {
+      const amountInput = document.getElementById("withdrawAmount");
+      const addressInput = document.getElementById("withdrawAddress");
 
-      const amount = parseFloat(amountInput.value);
-      const method = hiddenMethodInput.value.trim();
-      const address = addressInput.value.trim();
+      const amount = parseFloat(amountInput.value);
+      const method = hiddenMethodInput.value.trim();
+      const address = addressInput.value.trim();
 
-      if (isNaN(amount) || amount <= 0) return alert("Enter valid amount.");
-      if (!method) return alert("Please select a withdrawal method.");
-      if (!address) return alert("Please enter number or wallet address.");
-      if (!currentUserData) return alert("User data not loaded yet.");
+      if (isNaN(amount) || amount <= 0) return Swal.fire({ icon: 'warning', text: 'Enter valid amount.', background: '#1a202c', color: '#fff' });
+      if (!method) return Swal.fire({ icon: 'warning', text: 'Please select a withdrawal method.', background: '#1a202c', color: '#fff' });
+      if (!address) return Swal.fire({ icon: 'warning', text: 'Please enter number or wallet address.', background: '#1a202c', color: '#fff' });
+      if (!currentUserData) return Swal.fire({ icon: 'error', text: 'User data not loaded yet.', background: '#1a202c', color: '#fff' });
 
-      const currentBalance = currentUserData.balance || 0;
-      if (amount > currentBalance) return alert("Insufficient balance.");
+      const currentBalance = currentUserData.balance || 0;
+      if (amount > currentBalance) return Swal.fire({ icon: 'error', text: 'Insufficient balance.', background: '#1a202c', color: '#fff' });
 
-      try {
-        await addDoc(collection(db, "withdraws"), {
-          uid: currentUserData.uid,
-          userId: currentUserData.uid,
-          userEmail: currentUserData.email,
-          amount: amount,
-          method: method,
-          address: address,
-          timestamp: Timestamp.now(),
-          status: "pending"
-        });
+      try {
+        await addDoc(collection(db, "withdraws"), {
+          uid: currentUserData.uid,
+          userId: currentUserData.uid,
+          userEmail: currentUserData.email,
+          amount: amount,
+          method: method,
+          address: address,
+          timestamp: Timestamp.now(),
+          status: "pending"
+        });
 
-        const newBalance = currentBalance - amount;
-        await updateDoc(doc(db, "users", currentUserData.uid), { balance: newBalance });
-        currentUserData.balance = newBalance;
+        const newBalance = currentBalance - amount;
+        await updateDoc(doc(db, "users", currentUserData.uid), { balance: newBalance });
+        currentUserData.balance = newBalance;
 
-        amountInput.value = "";
-        hiddenMethodInput.value = "";
-        addressInput.value = "";
-        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+        amountInput.value = "";
+        hiddenMethodInput.value = "";
+        addressInput.value = "";
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
 
-        Swal.fire({
+        Swal.fire({
           toast: true,
           position: 'top-end',
           icon: 'success',
-          title: 'Withdraw request of ৳${amount} submitted via ${method}!',
+          title: `Withdraw request of ৳${amount} submitted via ${method}!`,
           showConfirmButton: false,
           timer: 2000,
           timerProgressBar: true,
@@ -178,10 +184,16 @@
           color: '#fff'
         });
 
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
-    };
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: err.message,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      }
+    };
   </script>
 </body>
 </html>
