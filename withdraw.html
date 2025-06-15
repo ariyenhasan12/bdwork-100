@@ -7,29 +7,55 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+    
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
-  <main class="max-w-xl mx-auto px-4 py-10">
-    <div class="text-center mb-10">
-      <a href="dashboard.html" class="text-blue-600 hover:underline">← Back to Dashboard</a>
-    </div>
-    <h1 class="text-3xl font-bold text-center mb-6">💸 Withdraw Balance</h1>
+<body class="bg-black text-white">
 
-    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-700 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-300">
+      <i class="fa-solid fa-headset font-bold"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto px-4">
+    <h1 class="text-3xl font-bold text-center mb-6 text-yellow-400">💸 Withdraw Balance</h1>
+
+    <div class="bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-700">
       <div class="flex flex-col gap-4">
         <!-- Custom Method Selector -->
         <div>
-          <p class="block text-sm font-medium text-gray-600 mb-1">Select Method</p>
+          <p class="block text-sm font-medium text-gray-300 mb-1">Select Method</p>
           <div id="withdrawMethodContainer" class="flex space-x-4">
-            <div data-method="BKash" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+            <div data-method="BKash" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500 text-gray-300">
               <i class="fas fa-wallet"></i>
               <span class="ml-2">bKash</span>
             </div>
-            <div data-method="Nagad" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+            <div data-method="Nagad" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500 text-gray-300">
               <i class="fas fa-wallet"></i>
               <span class="ml-2">Nagad</span>
             </div>
-            <div data-method="USDT" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500">
+            <div data-method="USDT" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-indigo-500 text-gray-300">
               <i class="fas fa-coins"></i>
               <span class="ml-2">USDT</span>
             </div>
@@ -42,14 +68,14 @@
           type="number"
           min="1"
           placeholder="Enter amount"
-          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          class="border border-gray-600 rounded-md px-4 py-2 w-full bg-gray-800 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
         />
 
         <input
           id="withdrawAddress"
           type="text"
           placeholder="Enter Number / Wallet Address"
-          class="border border-gray-300 rounded-md px-4 py-2 w-full focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+          class="border border-gray-600 rounded-md px-4 py-2 w-full bg-gray-800 text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
         />
 
         <button onclick="withdraw()" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 w-full transition">
@@ -97,8 +123,8 @@
     const hiddenMethodInput = document.getElementById('withdrawMethod');
     methodOptions.forEach(option => {
       option.addEventListener('click', () => {
-        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50'));
-        option.classList.add('border-indigo-500', 'bg-indigo-50');
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+        option.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
         hiddenMethodInput.value = option.getAttribute('data-method');
       });
     });
@@ -138,7 +164,7 @@
         amountInput.value = "";
         hiddenMethodInput.value = "";
         addressInput.value = "";
-        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50'));
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
 
         alert(`Withdraw request of ৳${amount} submitted via ${method}!`);
       } catch (err) {
