@@ -123,8 +123,8 @@
     const hiddenInput = document.getElementById('depositMethod');
     options.forEach(opt => {
       opt.addEventListener('click', () => {
-        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50'));
-        opt.classList.add('border-blue-500', 'bg-blue-50');
+        methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
+        opt.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
         hiddenInput.value = opt.getAttribute('data-method');
       });
     });
