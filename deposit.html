@@ -7,26 +7,54 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .swal2-timer-progress-bar {
+      background: #facc15 !important;
+    }
+
+    .glow-yellow {
+      box-shadow: 0 0 5px rgba(234, 179, 8, 0.5);
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-black text-white">
+
+  <!-- Header -->
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-700 flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+        GJ
+      </div>
+      <h2 class="text-xl font-bold text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+    </div>
+    <div class="flex items-center gap-6 text-2xl text-gray-300">
+      <i class="fa-solid fa-headset font-bold"></i>
+      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+        <i class="fa-solid fa-ellipsis-vertical"></i>
+      </div>
+    </div>
+  </header>
 
   <main class="max-w-xl mx-auto px-4 py-8">
-    <h1 class="text-2xl font-bold mb-6 text-center">💰 Deposit Balance</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center text-yellow-400">💰 Deposit Balance</h1>
 
-    <form id="depositForm" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-4">
+    <form id="depositForm" class="bg-gray-900 p-6 rounded-2xl shadow-lg border border-gray-700 space-y-4">
       <!-- Custom Method Selector -->
       <div>
-        <p class="block text-sm font-medium text-gray-600 mb-1">Select Method</p>
+        <p class="block text-sm font-medium text-gray-400 mb-1">Select Method</p>
         <div id="methodContainer" class="flex space-x-4">
-          <div data-method="bKash" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+          <div data-method="bKash" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
             <i class="fas fa-wallet"></i>
             <span class="ml-2">bKash</span>
           </div>
-          <div data-method="Nagad" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+          <div data-method="Nagad" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
             <i class="fas fa-wallet"></i>
             <span class="ml-2">Nagad</span>
           </div>
-          <div data-method="USDT" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+          <div data-method="USDT" class="method-option flex-1 border border-gray-600 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500 text-white">
             <i class="fas fa-coins"></i>
             <span class="ml-2">USDT</span>
           </div>
@@ -35,18 +63,18 @@
       </div>
 
       <div>
-        <label for="depositAmount" class="block text-sm font-medium text-gray-600 mb-1">Amount</label>
-        <input type="number" id="depositAmount" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
+        <label for="depositAmount" class="block text-sm font-medium text-gray-400 mb-1">Amount</label>
+        <input type="number" id="depositAmount" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter amount..." min="0" required>
       </div>
 
       <div>
-        <label for="paymentAddress" class="block text-sm font-medium text-gray-600 mb-1">Payment Address / Sender Number</label>
-        <input type="text" id="paymentAddress" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
+        <label for="paymentAddress" class="block text-sm font-medium text-gray-400 mb-1">Payment Address / Sender Number</label>
+        <input type="text" id="paymentAddress" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter your payment address..." required>
       </div>
 
       <div>
-        <label for="transactionId" class="block text-sm font-medium text-gray-600 mb-1">Transaction ID</label>
-        <input type="text" id="transactionId" class="w-full border border-gray-300 rounded-lg px-3 py-2" placeholder="Enter transaction ID..." required>
+        <label for="transactionId" class="block text-sm font-medium text-gray-400 mb-1">Transaction ID</label>
+        <input type="text" id="transactionId" class="w-full border border-gray-600 bg-black text-white rounded-lg px-3 py-2" placeholder="Enter transaction ID..." required>
       </div>
 
       <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
@@ -55,9 +83,9 @@
     </form>
 
     <!-- Additional Notice Section -->
-    <section class="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-xl shadow-sm">
-      <h2 class="font-semibold text-yellow-700 mb-2"><i class="fas fa-exclamation-circle mr-2"></i>Important Notes:</h2>
-      <ul class="text-sm text-yellow-800 list-disc pl-5 space-y-1">
+    <section class="mt-6 bg-yellow-900 bg-opacity-20 border-l-4 border-yellow-400 p-4 rounded-xl shadow-sm">
+      <h2 class="font-semibold text-yellow-300 mb-2"><i class="fas fa-exclamation-circle mr-2"></i>Important Notes:</h2>
+      <ul class="text-sm text-yellow-200 list-disc pl-5 space-y-1">
         <li>If the transfer time is up, please fill out the deposit form again.</li>
         <li>The transfer amount must match the order you created, otherwise the money cannot be credited successfully.</li>
         <li>If you transfer the wrong amount, our company will not be responsible for the lost amount!</li>
