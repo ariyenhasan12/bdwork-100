@@ -119,7 +119,7 @@
           toast: true,
           position: 'top-end',
           icon: 'error',
-          title: 'Error loading user: ' + err.message',
+          title: 'Error loading user',
           text: err.message,
           showConfirmButton: false,
           timer: 2000,
@@ -148,22 +148,36 @@
       const method = hiddenMethodInput.value.trim();
       const address = addressInput.value.trim();
 
-      if (isNaN(amount) || amount <= 0) return Swal.fire({ icon: 'warning', text: 'Enter valid amount.', position: 'top-end', background: '#1a202c', color: '#fff' });
-      if (!method) return Swal.fire({ icon: 'warning', text: 'Please select a withdrawal method.', position: 'top-end', background: '#1a202c', color: '#fff' });
-      if (!address) return Swal.fire({ icon: 'warning', text: 'Please enter number or wallet address.', position: 'top-end', background: '#1a202c', color: '#fff' });
-      if (!currentUserData) return Swal.fire({ icon: 'error', text: 'User data not loaded yet.', position: 'top-end', background: '#1a202c', color: '#fff' });
+      const showToast = (icon, text) => {
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          icon,
+          title: text,
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          background: '#1a202c',
+          color: '#fff'
+        });
+      };
+
+      if (isNaN(amount) || amount <= 0) return showToast('warning', 'Enter valid amount.');
+      if (!method) return showToast('warning', 'Please select a withdrawal method.');
+      if (!address) return showToast('warning', 'Please enter number or wallet address.');
+      if (!currentUserData) return showToast('error', 'User data not loaded yet.');
 
       const currentBalance = currentUserData.balance || 0;
-      if (amount > currentBalance) return Swal.fire({ icon: 'error', text: 'Insufficient balance.', position: 'top-end', background: '#1a202c', color: '#fff' });
+      if (amount > currentBalance) return showToast('error', 'Insufficient balance.');
 
       try {
         await addDoc(collection(db, "withdraws"), {
           uid: currentUserData.uid,
           userId: currentUserData.uid,
           userEmail: currentUserData.email,
-          amount: amount,
-          method: method,
-          address: address,
+          amount,
+          method,
+          address,
           timestamp: Timestamp.now(),
           status: "pending"
         });
@@ -177,31 +191,10 @@
         addressInput.value = "";
         methodOptions.forEach(o => o.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700'));
 
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'success',
-          title: `Withdraw request of ৳${amount} submitted via ${method}!`,
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
-        });
+        showToast('success', `Withdraw request of ৳${amount} submitted via ${method}!`);
 
       } catch (err) {
-        Swal.fire({
-          toast: true,
-          position: 'top-end',
-          icon: 'error',
-          title: 'Error',
-          text: err.message,
-          showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          background: '#1a202c',
-          color: '#fff'
-        });
+        showToast('error', err.message);
       }
     };
   </script>
