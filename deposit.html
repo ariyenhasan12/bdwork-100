@@ -14,13 +14,24 @@
     <h1 class="text-2xl font-bold mb-6 text-center">💰 Deposit Balance</h1>
 
     <form id="depositForm" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-4">
+      <!-- Custom Method Selector -->
       <div>
-        <label for="depositMethod" class="block text-sm font-medium text-gray-600 mb-1">Select Method</label>
-        <select id="depositMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700">
-          <option value="bKash">bKash</option>
-          <option value="Nagad">Nagad</option>
-          <option value="USDT">USDT</option>
-        </select>
+        <p class="block text-sm font-medium text-gray-600 mb-1">Select Method</p>
+        <div id="methodContainer" class="flex space-x-4">
+          <div data-method="bKash" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+            <i class="fab fa-bkash"></i>
+            <span class="ml-2">bKash</span>
+          </div>
+          <div data-method="Nagad" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+            <i class="fas fa-wallet"></i>
+            <span class="ml-2">Nagad</span>
+          </div>
+          <div data-method="USDT" class="method-option flex-1 border border-gray-300 rounded-lg px-4 py-3 text-center cursor-pointer transition hover:border-blue-500">
+            <i class="fas fa-coins"></i>
+            <span class="ml-2">USDT</span>
+          </div>
+        </div>
+        <input type="hidden" id="depositMethod" name="depositMethod" value="">
       </div>
 
       <div>
@@ -45,6 +56,7 @@
   </main>
 
   <script type="module">
+    // Firebase config and imports
     const firebaseConfig = {
       apiKey: "AIzaSyCkYWvYNsg2-CR88Js6gcP2nXfvwI4TW30",
       authDomain: "bdwork-346d3.firebaseapp.com",
@@ -57,36 +69,39 @@
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import {
-      getFirestore, collection, addDoc, Timestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     let currentUser = null;
-
-    // ✅ Wait for login
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        currentUser = user;
-      }
+      if (!user) window.location.href = "login.html";
+      else currentUser = user;
     });
 
-    // ✅ Deposit Form Submission
+    // Handle method selection
+    const options = document.querySelectorAll('.method-option');
+    const hiddenInput = document.getElementById('depositMethod');
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50'));
+        opt.classList.add('border-blue-500', 'bg-blue-50');
+        hiddenInput.value = opt.getAttribute('data-method');
+      });
+    });
+
+    // Form submission
     document.getElementById("depositForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-
-      const method = document.getElementById("depositMethod").value;
+      const method = hiddenInput.value;
       const amount = parseFloat(document.getElementById("depositAmount").value);
       const address = document.getElementById("paymentAddress").value.trim();
       const transactionId = document.getElementById("transactionId").value.trim();
 
       if (!method || isNaN(amount) || amount <= 0 || !address || !transactionId) {
-        alert("Please enter a valid method, amount, payment address, and transaction ID.");
+        alert("Please select a method and fill in all fields correctly.");
         return;
       }
 
@@ -95,15 +110,17 @@
           uid: currentUser.uid,
           userId: currentUser.uid,
           userEmail: currentUser.email,
-          amount: amount,
-          method: method,
-          address: address,
-          transactionId: transactionId,
+          amount,
+          method,
+          address,
+          transactionId,
           timestamp: Timestamp.now(),
           status: "pending"
         });
         alert("Deposit request submitted successfully!");
-        document.getElementById("depositForm").reset();
+        this.reset();
+        hiddenInput.value = '';
+        options.forEach(o => o.classList.remove('border-blue-500', 'bg-blue-50'));
       } catch (err) {
         alert("Error submitting deposit: " + err.message);
       }
