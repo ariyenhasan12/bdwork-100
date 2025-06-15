@@ -45,21 +45,21 @@
   </div>
 
   <!-- Header -->
-  <header class="bg-black w-full max-w-md shadow-md py-2 px-4 mb-6 mx-auto border-b border-gray-600 flex items-center justify-between">
+  <header class="bg-black w-full max-w-md shadow-md py-2 px-3 mb-2 mx-auto border-b border-gray-600 flex items-center justify-between">
     <div class="flex items-center gap-2">
-      <div class="bg-purple-600 bg-opacity-30 border border-purple-500 text-purple-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
+      <div class="bg-yellow-600 bg-opacity-50 border border-yellow-500 text-yellow-300 w-9 h-9 flex items-center justify-center font-bold rounded-full" style="font-family: 'Audiowide', cursive;">
         GJ
       </div>
-      <h2 class="text-xl font-bold text-center text-yellow-400" style="font-family: 'Audiowide', cursive;">Good Job</h2>
+      <h2 class="text-xl font-bold text-center bg-gradient-to-r from-yellow-400 via-green-300 to-yellow-400 bg-clip-text text-transparent" style="font-family: 'Audiowide', cursive;">Good Job</h2>
     </div>
     <div class="flex items-center gap-6 text-2xl text-gray-100">
       <i class="fa-solid fa-headset font-bold text-1xl"></i>
-      <div class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700">
+      <div id="ProfileBtn" class="bg-gray-900 w-5 h-8 hover:border-purple-500 flex items-center justify-center rounded-sm border border-gray-700" onclick="toggleProfile()">
         <i class="fa-solid fa-ellipsis-vertical"></i>
       </div>
     </div>
   </header>
-
+  
   <!-- Main Content -->
   <main class="px-3 max-w-md mx-auto">
     <h1 class="text-xl text-yellow-300 font-bold mb-6">
@@ -120,6 +120,43 @@
       </div>
     </div>
   </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-700 flex justify-around items-center py-2 rounded-t-2xl shadow-inner text-white h-16 z-10">
+  <a href="dashboard.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-house text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Home
+  </a>
+
+  <a href="job.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-briefcase text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Job
+  </a>
+
+  <a href="pro-account.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-star text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Pro
+  </a>
+
+  <a href="team.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-500">
+      <i class="fa-solid fa-users text-lg text-gray-300 hover:text-yellow-400"></i>
+    </div>
+    Team
+  </a>
+
+  <a href="profile.html" class="nav-item flex flex-col items-center text-xs font-semibold no-underline">
+    <div class="bg-gray-900 bg-opacity-70 w-9 h-9 rounded-full mb-1 flex items-center justify-center border border-gray-400">
+      <i class="fa-solid fa-user text-lg text-gray-400 hover:text-yellow-400"></i>
+    </div> 
+    Profile
+  </a>
+  </nav>
   
   <!-- Firebase Script -->
   <script type="module">
